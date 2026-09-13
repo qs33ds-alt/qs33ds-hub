@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QS33DS · Portal</title>
+
+<style>
+:root{
+  --bg:#eef3f5;
+  --ink:#183540;
+  --muted:#74858c;
+  --line:#d4e0e4;
+  --white:rgba(255,255,255,.82);
+
+  --blue:#5f8fa5;
+  --green:#6d9e91;
+  --violet:#8b88ad;
+  --amber:#bd9870;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  min-height:100vh;
+  font-family:IBM Plex Sans,Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 15%,rgba(95,143,165,.12),transparent 28%),
+    radial-gradient(circle at 85% 80%,rgba(109,158,145,.11),transparent 30%),
+    linear-gradient(135deg,#f6f9fa,#e8eef1);
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.32;
+  background-image:
+    linear-gradient(rgba(80,110,125,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(80,110,125,.07) 1px,transparent 1px);
+  background-size:42px 42px;
+  mask-image:linear-gradient(to bottom,black,transparent 80%);
+}
+
+.shell{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  max-width:1100px;
+  margin:auto;
+  padding:56px 32px 38px;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:30px;
+  margin-bottom:52px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.logo{
+  width:50px;
+  height:50px;
+  border:1px solid #a9bec7;
+  border-radius:50%;
+  position:relative;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.55);
+  box-shadow:0 10px 30px rgba(36,65,76,.08);
+}
+
+.logo:before,
+.logo:after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(77,129,149,.35);
+}
+
+.logo:before{width:31px;height:31px}
+.logo:after{width:13px;height:13px;background:#658fa1}
+
+.title small{
+  display:block;
+  font-size:10px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:#81939a;
+  margin-bottom:5px;
+}
+
+.title h1{
+  margin:0;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:500;
+  font-size:30px;
+  letter-spacing:.01em;
+}
+
+.status{
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#71858d;
+  padding:8px 12px;
+  border:1px solid #cad9de;
+  border-radius:100px;
+  background:rgba(255,255,255,.55);
+}
+
+.intro{
+  max-width:610px;
+  margin-bottom:26px;
+}
+
+.intro h2{
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:400;
+  font-size:21px;
+  margin:0 0 7px;
+}
+
+.intro p{
+  color:var(--muted);
+  margin:0;
+  font-size:13px;
+  line-height:1.55;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+
+.card{
+  min-height:190px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px;
+  text-decoration:none;
+  color:inherit;
+  background:var(--white);
+  backdrop-filter:blur(16px);
+  box-shadow:0 14px 35px rgba(42,69,80,.07);
+  position:relative;
+  overflow:hidden;
+  transition:.18s ease;
+}
+
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 19px 40px rgba(42,69,80,.12);
+}
+
+.card:after{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  right:-75px;
+  bottom:-95px;
+  border-radius:50%;
+  border:1px solid currentColor;
+  opacity:.12;
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:28px;
+}
+
+.symbol{
+  width:46px;
+  height:46px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  font-family:Georgia,serif;
+  font-size:19px;
+  border:1px solid currentColor;
+  background:rgba(255,255,255,.48);
+}
+
+.arrow{
+  font-size:19px;
+  opacity:.45;
+}
+
+.code{
+  font-size:9px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  opacity:.72;
+}
+
+.card h3{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:21px;
+  font-weight:500;
+  margin:5px 0 5px;
+}
+
+.card p{
+  margin:0;
+  font-size:11px;
+  color:#71838a;
+}
+
+.q33{color:var(--blue)}
+.cognitive{color:var(--green)}
+.agent{color:var(--violet)}
+.seed{color:var(--amber)}
+
+footer{
+  margin-top:auto;
+  padding-top:44px;
+  font-size:9px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#89999f;
+}
+
+@media(max-width:700px){
+  .shell{padding:30px 18px}
+  header{margin-bottom:36px}
+  .status{display:none}
+  .grid{grid-template-columns:1fr}
+  .card{min-height:160px}
+  .title h1{font-size:25px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="shell">
+
+<header>
+  <div class="brand">
+    <div class="logo"></div>
+    <div class="title">
+      <small>Digital environment</small>
+      <h1>QS33DS</h1>
+    </div>
+  </div>
+
+  <div class="status">System · Online</div>
+</header>
+
+<section class="intro">
+  <h2>Entorno de aplicaciones</h2>
+  <p>Acceso central a las herramientas y sistemas QS33DS.</p>
+</section>
+
+<main class="grid">
+
+  <a class="card q33" href="./q33/">
+    <div class="top">
+      <div class="symbol">Q</div>
+      <div class="arrow">↗</div>
+    </div>
+    <div class="code">QS33DS · 01</div>
+    <h3>Q33</h3>
+    <p>Publisher · arquitectura psicológica</p>
+  </a>
+
+  <a class="card cognitive" href="./cognitive/">
+    <div class="top">
+      <div class="symbol">C</div>
+      <div class="arrow">↗</div>
+    </div>
+    <div class="code">QS33DS · 02</div>
+    <h3>Q Cognitive</h3>
+    <p>Sistema cognitivo</p>
+  </a>
+
+  <a class="card agent" href="./agente/">
+    <div class="top">
+      <div class="symbol">A</div>
+      <div class="arrow">↗</div>
+    </div>
+    <div class="code">QS33DS · 03</div>
+    <h3>Agente</h3>
+    <p>Agente psicológico interactivo</p>
+  </a>
+
+  <a class="card seed" href="./semilla/">
+    <div class="top">
+      <div class="symbol">S</div>
+      <div class="arrow">↗</div>
+    </div>
+    <div class="code">QS33DS · 04</div>
+    <h3>Portal Semilla</h3>
+    <p>Entorno personal y evolutivo</p>
+  </a>
+
+</main>
+
+<footer>
+  QS33DS · Digital Architecture
+</footer>
+
+</div>
+
+</body>
+</html>
