@@ -22,6 +22,34 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
 </style>
 </head>
 <body>
+<div id="astrodbAuthPanel" style="
+position:fixed;
+top:12px;
+right:14px;
+z-index:9999;
+display:flex;
+align-items:center;
+gap:8px;
+padding:7px 10px;
+background:#fff;
+border:1px solid #ddd;
+border-radius:8px;
+font:12px system-ui,sans-serif;
+box-shadow:0 2px 8px rgba(0,0,0,.06);
+">
+  <span id="astrodbAuthEstado">Comprobando sesión…</span>
+  <button id="astrodbBtnLogin" type="button"
+    
+    style="padding:5px 9px;cursor:pointer;">
+    Entrar
+  </button>
+  <button id="astrodbBtnLogout" type="button"
+    
+    style="padding:5px 9px;cursor:pointer;display:none;">
+    Cerrar sesión
+  </button>
+</div>
+
 <aside class="sidebar no-print">
   <div class="brand">ASTRODB PRO <span>v10.0</span></div>
   <button id="btnNueva" class="btn btn-gold btn-block">Nueva ficha</button>
@@ -674,6 +702,213 @@ function render(){
 function fichaActualComoObjeto(forceNew=false){return {id:forceNew?Date.now():idActivo||Date.now(),nombre:$('nombre').value||'Sin nombre',dia:$('dia').value,mes:$('mes').value,anio:$('anio').value,hora:$('hora').value,ciudad:$('ciudad').value,lat:$('lat').value,lon:$('lon').value,tz:$('tz').value,planetas:window.cartaActual?.planetas||[],casas:window.cartaActual?.casas||[],interpretacion:($('interpretacionDirecta')?.value||'')};}
 function persistirDatos(){localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));actualizarSelectorCartas();render();}
 
+
+/* ============================================================
+   ASTRODB · CAPA REMOTA SUPABASE
+   El motor astrológico y NatalCore permanecen independientes.
+   ============================================================ */
+
+const ASTRODB_SUPABASE_URL = 'https://didehazzbdhgjpxvhycx.supabase.co';
+
+/*
+ * La Publishable Key se configurará separadamente.
+ * Nunca introducir service_role ni claves secretas en este HTML.
+ */
+const ASTRODB_SUPABASE_KEY = 'sb_publishable_XGUwWEkOvofRnr3Qu-fWUw_KH_8zxwR';
+
+let astrodbSupabase = null;
+let astrodbUser = null;
+
+
+
+function actualizarEstadoAuthAstroDB(){
+  const estado = document.getElementById('astrodbAuthEstado');
+  const login = document.getElementById('astrodbBtnLogin');
+  const logout = document.getElementById('astrodbBtnLogout');
+
+  if(!estado) return;
+
+  if(astrodbUser){
+    estado.textContent = astrodbUser.email || 'Sesión iniciada';
+    if(login) login.style.display = 'none';
+    if(logout) logout.style.display = '';
+  }else{
+    estado.textContent = 'Sin sesión';
+    if(login) login.style.display = '';
+    if(logout) logout.style.display = 'none';
+  }
+}
+
+async function astrodbLogin(){
+  if(!astrodbSupabase){
+    alert('Supabase todavía no está inicializado.');
+    return;
+  }
+
+  const email = prompt('Email de acceso a AstroDB:');
+  if(!email) return;
+
+  const password = prompt('Contraseña:');
+  if(!password) return;
+
+  const {data,error} = await astrodbSupabase.auth.signInWithPassword({
+    email: email.trim(),
+    password
+  });
+
+  if(error){
+    console.error('[AstroDB] Error de acceso:', error);
+    alert('No se pudo iniciar sesión: ' + error.message);
+    return;
+  }
+
+  astrodbUser = data.user || null;
+
+  console.info(
+    '[AstroDB] Sesión iniciada:',
+    astrodbUser ? astrodbUser.email : 'sin usuario'
+  );
+
+  alert('Sesión iniciada correctamente.');
+  location.reload();
+}
+
+async function astrodbLogout(){
+  if(!astrodbSupabase) return;
+
+  await astrodbSupabase.auth.signOut();
+  astrodbUser = null;
+
+  console.info('[AstroDB] Sesión cerrada.');
+  location.reload();
+}
+
+async function iniciarSupabaseAstroDB(){
+  if(!ASTRODB_SUPABASE_KEY){
+    console.info('[AstroDB] Supabase pendiente de Publishable Key. Modo local activo.');
+    return false;
+  }
+
+  try{
+    if(!window.supabase){
+      await new Promise((resolve,reject)=>{
+        const sc=document.createElement('script');
+        sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+        sc.onload=resolve;
+        sc.onerror=()=>reject(new Error('No se pudo cargar Supabase JS'));
+        document.head.appendChild(sc);
+      });
+    }
+
+    astrodbSupabase=window.supabase.createClient(
+      ASTRODB_SUPABASE_URL,
+      ASTRODB_SUPABASE_KEY
+    );
+
+    const {data:{session}}=await astrodbSupabase.auth.getSession();
+    astrodbUser=session?.user || null;
+    actualizarEstadoAuthAstroDB();
+
+    console.info(
+      astrodbUser
+        ? '[AstroDB] Supabase conectado.'
+        : '[AstroDB] Supabase conectado sin sesión.'
+    );
+
+    return true;
+  }catch(err){
+    console.warn('[AstroDB] Supabase no disponible. Se mantiene almacenamiento local.',err);
+    astrodbSupabase=null;
+    astrodbUser=null;
+    return false;
+  }
+}
+
+function fichaARegistroSupabase(ficha){
+  let natalcore=null;
+
+  try{
+    if(
+      ficha &&
+      Array.isArray(ficha.planetas) &&
+      ficha.planetas.length &&
+      Array.isArray(ficha.casas) &&
+      ficha.casas.length &&
+      String(ficha.id)===String(idActivo)
+    ){
+      natalcore=construirNatalCore();
+    }
+  }catch(err){
+    console.warn('[AstroDB] NatalCore no incorporado al guardado remoto:',err);
+  }
+
+  return {
+    name: ficha.nombre || 'Sin nombre',
+
+    birth_date:
+      ficha.anio && ficha.mes && ficha.dia
+        ? `${String(ficha.anio).padStart(4,'0')}-${String(ficha.mes).padStart(2,'0')}-${String(ficha.dia).padStart(2,'0')}`
+        : null,
+
+    birth_time: ficha.hora || null,
+    birth_place: ficha.ciudad || null,
+
+    latitude:
+      ficha.lat!=='' && ficha.lat!=null
+        ? Number(ficha.lat)
+        : null,
+
+    longitude:
+      ficha.lon!=='' && ficha.lon!=null
+        ? Number(ficha.lon)
+        : null,
+
+    timezone: ficha.tz || null,
+
+    input_data: {
+      astrodb_local_id: ficha.id,
+      dia: ficha.dia,
+      mes: ficha.mes,
+      anio: ficha.anio,
+      hora: ficha.hora,
+      ciudad: ficha.ciudad,
+      lat: ficha.lat,
+      lon: ficha.lon,
+      tz: ficha.tz
+    },
+
+    chart_data: {
+      planetas: ficha.planetas || [],
+      casas: ficha.casas || []
+    },
+
+    natalcore: natalcore || {},
+
+    astrodb_version:
+      typeof ASTRODB_NATALCORE_VERSION!=='undefined'
+        ? ASTRODB_NATALCORE_VERSION
+        : 'v100'
+  };
+}
+
+async function guardarFichaSupabase(ficha){
+  if(!astrodbSupabase || !astrodbUser) return null;
+
+  const registro=fichaARegistroSupabase(ficha);
+  registro.user_id=astrodbUser.id;
+
+  const {data,error}=await astrodbSupabase
+    .from('astrodb_charts')
+    .insert(registro)
+    .select('id')
+    .single();
+
+  if(error) throw error;
+
+  return data;
+}
+
+
 function actualizarSelectorAspectos(planetas){
   const sel=$('filtroAspectosPlaneta');
   if(!sel)return;
@@ -707,8 +942,153 @@ function pintarTablaAspectos(){
 }
 
 
-function guardar(){const f=fichaActualComoObjeto(false); if(idActivo && datos.some(x=>String(x.id)===String(idActivo)))datos=datos.map(x=>String(x.id)===String(idActivo)?f:x); else{datos.push(f);idActivo=f.id;} persistirDatos();alert(`Ficha guardada. Total de fichas: ${datos.length}.`);}
-function guardarComoNueva(){const f=fichaActualComoObjeto(true);datos.push(f);idActivo=f.id;persistirDatos();alert(`Guardada como nueva ficha. Total de fichas: ${datos.length}.`);}
+
+/* ==========================================================
+   ASTRODB · SINCRONIZACIÓN PRIVADA SUPABASE
+   La persistencia local sigue siendo la capa primaria.
+   Supabase actúa como almacenamiento privado sincronizado.
+   ========================================================== */
+
+async function guardarFichaSupabase(ficha){
+  if(!astrodbSupabase || !astrodbUser || !ficha) return false;
+
+  try{
+    const nombre =
+      ficha.nombre ||
+      ficha.name ||
+      'Sin nombre';
+
+    const payload = {
+      user_id: astrodbUser.id,
+      name: nombre,
+
+      birth_date:
+        ficha.dia && ficha.mes && ficha.anio
+          ? String(ficha.anio).padStart(4,'0') + '-' +
+            String(ficha.mes).padStart(2,'0') + '-' +
+            String(ficha.dia).padStart(2,'0')
+          : null,
+
+      birth_time:
+        ficha.hora || null,
+
+      birth_place:
+        ficha.ciudad || null,
+
+      latitude:
+        ficha.lat !== '' && ficha.lat != null
+          ? Number(ficha.lat)
+          : null,
+
+      longitude:
+        ficha.lon !== '' && ficha.lon != null
+          ? Number(ficha.lon)
+          : null,
+
+      timezone:
+        ficha.tz || null,
+
+      input_data: ficha,
+
+      natalcore:
+        (typeof construirNatalCore === 'function' &&
+         window.cartaActual &&
+         Array.isArray(window.cartaActual.planetas) &&
+         window.cartaActual.planetas.length)
+          ? construirNatalCore()
+          : {},
+
+      astrodb_version:
+        typeof ASTRODB_NATALCORE_VERSION !== 'undefined'
+          ? String(ASTRODB_NATALCORE_VERSION)
+          : 'v100',
+
+      natalcore_version:
+        typeof NATALCORE_SCHEMA_VERSION !== 'undefined'
+          ? String(NATALCORE_SCHEMA_VERSION)
+          : null,
+
+      updated_at: new Date().toISOString()
+    };
+
+    const {data:existente,error:errorBusqueda} =
+      await astrodbSupabase
+        .from('astrodb_charts')
+        .select('id')
+        .eq('user_id',astrodbUser.id)
+        .eq('name',nombre)
+        .limit(1)
+        .maybeSingle();
+
+    if(errorBusqueda) throw errorBusqueda;
+
+    let resultado;
+
+    if(existente?.id){
+      resultado = await astrodbSupabase
+        .from('astrodb_charts')
+        .update(payload)
+        .eq('id',existente.id)
+        .select('id')
+        .single();
+    }else{
+      resultado = await astrodbSupabase
+        .from('astrodb_charts')
+        .insert(payload)
+        .select('id')
+        .single();
+    }
+
+    if(resultado.error) throw resultado.error;
+
+    console.info(
+      '[AstroDB] Carta sincronizada con Supabase:',
+      nombre,
+      resultado.data?.id || ''
+    );
+
+    return true;
+
+  }catch(error){
+    console.error('[AstroDB] Error sincronizando carta:',error);
+    return false;
+  }
+}
+
+async function sincronizarFichaActivaSupabase(){
+  if(!astrodbSupabase || !astrodbUser) return false;
+
+  try{
+    const ficha =
+      typeof fichaActualComoObjeto === 'function'
+        ? fichaActualComoObjeto(false)
+        : null;
+
+    if(!ficha) return false;
+
+    return await guardarFichaSupabase(ficha);
+
+  }catch(error){
+    console.error('[AstroDB] Error preparando sincronización:',error);
+    return false;
+  }
+}
+
+
+function guardar(){const f=fichaActualComoObjeto(false); if(idActivo && datos.some(x=>String(x.id)===String(idActivo)))datos=datos.map(x=>String(x.id)===String(idActivo)?f:x); else{datos.push(f);idActivo=f.id;} persistirDatos();
+sincronizarFichaActivaSupabase().then(ok=>{
+  console.info(ok
+    ? '[AstroDB] Guardado local + nube completado.'
+    : '[AstroDB] Guardado local completado; nube no disponible.');
+});
+alert(`Ficha guardada. Total de fichas: ${datos.length}.`);}
+function guardarComoNueva(){const f=fichaActualComoObjeto(true);datos.push(f);idActivo=f.id;persistirDatos();
+sincronizarFichaActivaSupabase().then(ok=>{
+  console.info(ok
+    ? '[AstroDB] Nueva ficha sincronizada con la nube.'
+    : '[AstroDB] Nueva ficha guardada localmente; nube no disponible.');
+});
+alert(`Guardada como nueva ficha. Total de fichas: ${datos.length}.`);}
 
 function cargar(id){const f=datos.find(x=>x.id===id); if(!f)return; idActivo=id; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(k=>$(k).value=f[k]||''); $('titulo').textContent=f.nombre||'Ficha'; setCarta(f.planetas||[],f.casas||[]); if($('interpretacionDirecta'))$('interpretacionDirecta').value=f.interpretacion||''; render();}
 function eliminar(){if(!idActivo||!confirm('¿Eliminar ficha?'))return; datos=datos.filter(x=>x.id!==idActivo);localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));idActivo=null;render();nueva();}
@@ -1413,7 +1793,35 @@ function bind(){
   on('btnDescargarNatalCore','click',descargarNatalCore);
 }
 
-document.addEventListener('DOMContentLoaded',()=>{mostrarPanelDatosCopiables();datos=cargarTodasLasFichasGuardadas();initSelects();bind();actualizarSelectorCartas();render();});
+document.addEventListener('DOMContentLoaded',async()=>{
+  mostrarPanelDatosCopiables();
+  datos=cargarTodasLasFichasGuardadas();
+  initSelects();
+  bind();
+  actualizarSelectorCartas();
+  render();
+  await iniciarSupabaseAstroDB();
+
+const loginBtn = document.getElementById('astrodbBtnLogin');
+const logoutBtn = document.getElementById('astrodbBtnLogout');
+
+if (loginBtn) {
+  loginBtn.addEventListener('click', () => {
+    astrodbLogin().catch(err => {
+      console.error('[AstroDB] Error login:', err);
+      alert('Error al abrir el acceso: ' + (err?.message || err));
+    });
+  });
+}
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+    astrodbLogout().catch(err => {
+      console.error('[AstroDB] Error logout:', err);
+    });
+  });
+}
+});
 })();
 </script>
 
