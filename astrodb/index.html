@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AstroDB Pro v10.0 · interfaz limpia · retrógrados</title>
+<style>
+:root{--accent:#a97912;--accent-soft:#f8f0dc;--bg:#f5f5f3;--panel:#fff;--line:#deded9;--text:#232323;--muted:#737373;--ok:#16803a;--bad:#b91c1c;--shadow:0 4px 16px rgba(0,0,0,.05)}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif;min-height:100vh;display:flex;background:var(--bg)}
+.sidebar{width:250px;background:#fafafa;border-right:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px;overflow:auto;max-height:100vh;position:sticky;top:0}.main{flex:1;padding:20px;min-width:0;overflow:auto}.brand{font-weight:800;font-size:13px;letter-spacing:.07em;color:#6e5318;padding:3px 2px 8px}.brand span{font-weight:500;color:var(--muted);letter-spacing:0}
+.btn{border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;font-weight:700;background:#fff;color:var(--text);box-shadow:none}.btn:hover{background:#f3f3ef}.btn-gold{background:var(--accent);border-color:var(--accent);color:#fff}.btn-gold:hover{background:#8d650d}.btn-dark{background:#fff}.btn-red{background:#fff;color:#a51d1d;border-color:#e5bcbc}.btn-red:hover{background:#fff2f2}.btn-block{width:100%}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}.sideCard{padding:10px;margin:0}.sideCard h3{font-size:12px;margin:0 0 7px;color:#66501d}.sideCard p{margin:6px 0}.sideDetails{border:1px solid var(--line);border-radius:10px;background:#fff}.sideDetails>summary{cursor:pointer;padding:10px 11px;font-size:12px;font-weight:800;color:#555;list-style:none}.sideDetails>summary::-webkit-details-marker{display:none}.sideDetails>summary:after{content:'＋';float:right;font-weight:500;color:var(--muted)}.sideDetails[open]>summary:after{content:'−'}.detailsBody{padding:0 10px 10px;border-top:1px solid #eee}
+.grid{display:grid;gap:14px}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid12{grid-template-columns:minmax(280px,4fr) minmax(420px,6fr)}
+label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:800;display:block;margin-top:9px}input,select,textarea{width:100%;background:#fff;color:#222;border:1px solid #d6d6d1;border-radius:8px;padding:9px;margin-top:4px}input:focus,select:focus,textarea:focus{outline:2px solid rgba(169,121,18,.14);border-color:var(--accent)}textarea{min-height:120px;resize:vertical}.relative{position:relative}.hidden{display:none!important}.small{font-size:12px;color:var(--muted)}.tiny{font-size:10px;color:var(--muted)}
+.suggestions{position:absolute;background:#fff;border:1px solid var(--line);border-radius:8px;z-index:20;max-height:220px;overflow:auto;width:100%;box-shadow:0 10px 24px rgba(0,0,0,.12)}.suggestions div{padding:9px;font-size:12px;border-bottom:1px solid #eee;cursor:pointer}.suggestions div:hover{background:var(--accent-soft)}
+.listItem{padding:8px 9px;border-radius:8px;background:#fff;border:1px solid transparent;cursor:pointer;font-size:12px}.listItem:hover,.listItem.active{background:var(--accent-soft);border-color:#ead9ad;font-weight:700}.savedList{max-height:220px;overflow:auto;border-top:1px solid #eee;margin-top:8px;padding-top:7px}
+#astroWheel{width:100%;max-width:620px;height:auto;display:block;margin:auto;background:#fff;border-radius:50%}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{border-bottom:1px solid #ecece8;padding:7px;text-align:left;vertical-align:top}.table th{color:#705718;font-size:11px}.status{font-size:11px;padding:9px;border-radius:8px;background:#fafafa;border:1px solid var(--line);white-space:pre-wrap}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap}.editorTop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.editorTop h2{margin:0;color:#6e5318;font-size:20px}.tabbar{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:12px}.tabbtn{background:#fff;color:#444;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:700;font-size:11px}.tabbtn.active{background:var(--accent-soft);color:#5f4813;border-color:#dec991}.tabpane{display:none}.tabpane.active{display:block}.compactCard{padding:0;overflow:hidden}.compactCardHeader{padding:13px 13px 0}.compactCardBody{padding:0 13px 13px}.tabCounter{display:inline-block;min-width:18px;text-align:center;background:#eee;border-radius:99px;padding:1px 5px;font-size:9px;margin-left:4px}.tabbtn.active .tabCounter{background:#e0cf9e}
+.home{max-width:560px;margin:12vh auto;text-align:center;box-shadow:none}.homeMark{font-size:42px;margin-bottom:8px}.home h2{margin:5px 0}.quickRow{display:flex;gap:6px}.quickRow>*{flex:1}.sectionTitle{margin:0 0 8px;font-size:16px}.mutedBox{background:#fafafa;border:1px solid #eee;border-radius:9px;padding:10px}
+@media(max-width:900px){body{display:block}.sidebar{width:100%;max-height:none;position:static;border-right:0;border-bottom:1px solid var(--line)}.grid2,.grid3,.grid12{grid-template-columns:1fr}.main{padding:12px}.savedList{max-height:160px}}
+@media print{.sidebar,.no-print{display:none!important}.main{padding:0}.card{border:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<aside class="sidebar no-print">
+  <div class="brand">ASTRODB PRO <span>v10.0</span></div>
+  <button id="btnNueva" class="btn btn-gold btn-block">Nueva ficha</button>
+
+  <div class="sideCard card">
+    <label style="margin-top:0">Abrir ficha</label>
+    <select id="selectorCartas"><option value="">Selecciona una ficha...</option></select>
+    <div id="lista" class="savedList"></div>
+    <button id="btnAbrirSeleccion" class="btn btn-dark btn-block" style="margin-top:8px">Abrir seleccionada</button>
+  </div>
+
+  <details class="sideDetails">
+    <summary>Comparativa global</summary>
+    <div class="detailsBody">
+      <label>Planeta</label><select id="fPlaneta"><option value="">Cualquier planeta</option></select>
+      <label>Signo</label><select id="fSigno"><option value="">Cualquier signo</option></select>
+      <label>Casa</label><select id="fCasa"><option value="">Cualquier casa</option></select>
+      <button id="btnFiltrar" class="btn btn-gold btn-block" style="margin-top:9px">Buscar</button>
+      <div class="quickRow" style="margin-top:6px"><button id="btnLimpiarFiltro" class="btn btn-dark">Limpiar</button><button id="btnExportarFiltro" class="btn btn-dark">CSV</button></div>
+    </div>
+  </details>
+
+  <details class="sideDetails">
+    <summary>Base de datos</summary>
+    <div class="detailsBody">
+      <div class="quickRow" style="margin-top:9px"><button id="btnGuardarComoBD" class="btn btn-gold" type="button">Guardar</button><button id="btnExportarBD" class="btn btn-dark" type="button">JSON</button></div>
+      <button id="btnMostrarJSONBD" class="btn btn-dark btn-block" type="button" style="margin-top:6px">Mostrar / copiar JSON</button>
+      <label class="btn btn-dark btn-block" for="inputImportarBD" style="cursor:pointer;text-transform:none;font-size:12px;text-align:center;margin-top:6px">Importar JSON</label>
+      <input id="inputImportarBD" type="file" accept=".json,application/json" style="display:none">
+      <p id="estadoImportExport" class="tiny"></p>
+      <textarea id="jsonBDTexto" style="display:none;min-height:180px;font-family:monospace;font-size:11px" placeholder="JSON de la base"></textarea>
+    </div>
+  </details>
+
+  <details class="sideDetails">
+    <summary>NatalCore</summary>
+    <div class="detailsBody">
+      <p class="tiny">Capa 0 estructural de la ficha activa.</p>
+      <button id="btnMostrarNatalCore" class="btn btn-gold btn-block" type="button">Generar / copiar</button>
+      <div class="quickRow" style="margin-top:6px"><button id="btnValidarNatalCore" class="btn btn-dark" type="button">Validar</button><button id="btnDescargarNatalCore" class="btn btn-dark" type="button">Descargar</button></div>
+      <p id="estadoNatalCore" class="tiny">Calcula o abre una ficha.</p>
+      <textarea id="jsonNatalCoreTexto" style="display:none;min-height:200px;font-family:monospace;font-size:10px" placeholder="JSON NatalCore"></textarea>
+    </div>
+  </details>
+</aside>
+
+<main class="main">
+  <section id="inicio" class="card home">
+    <div class="homeMark">◎</div>
+    <h2>AstroDB Pro</h2>
+    <p class="small">Cartas natales, mandala, base de fichas, comparativas y NatalCore.</p>
+    <button class="btn btn-gold" type="button" onclick="document.getElementById('btnNueva').click()">Crear ficha</button>
+  </section>
+
+  <section id="panelComparativa" class="card no-print hidden">
+    <h2 class="sectionTitle">Comparativa global</h2>
+    <div id="resumenComparativa" class="status">Sin búsqueda activa.</div>
+    <div id="tablaComparativa" style="margin-top:10px"></div>
+  </section>
+
+  <section id="editor" class="hidden">
+    <div class="editorTop no-print">
+      <h2 id="titulo">Nueva consulta</h2>
+      <div class="toolbar">
+        <button id="btnGuardar" class="btn btn-gold">Guardar</button>
+        <button id="btnGuardarNueva" class="btn btn-dark">Duplicar</button>
+        <button id="btnImprimir" class="btn btn-dark">PDF</button>
+        <button id="btnEliminar" class="btn btn-red">Eliminar</button>
+      </div>
+    </div>
+
+    <div class="grid grid12">
+      <div class="card">
+        <h3 class="sectionTitle">Nacimiento</h3>
+        <label>Nombre</label><input id="nombre" type="text" />
+        <div class="grid grid3">
+          <div><label>Día</label><input id="dia" type="number" placeholder="DD" /></div>
+          <div><label>Mes</label><input id="mes" type="number" placeholder="MM" /></div>
+          <div><label>Año</label><input id="anio" type="number" placeholder="AAAA" /></div>
+        </div>
+        <div class="grid grid2">
+          <div><label>Hora local</label><input id="hora" type="time" /></div>
+          <div class="relative"><label>Ciudad</label><input id="ciudad" type="text" placeholder="Buscar ciudad..." autocomplete="off" /><div id="sugerencias" class="suggestions hidden"></div></div>
+        </div>
+        <input id="lat" type="hidden"><input id="lon" type="hidden">
+        <label>Zona horaria</label><input id="tz" type="text" value="Europe/Madrid" />
+        <button id="btnCalcularDatos" class="btn btn-gold btn-block" type="button" style="margin-top:12px">Calcular carta natal</button>
+        <div id="estadoCalculo" class="status" style="margin-top:9px">Swiss Ephemeris · Tropical · Placidus real.</div>
+      </div>
+
+      <div class="card">
+        <h3 class="sectionTitle" style="text-align:center">Mandala natal</h3>
+        <canvas id="astroWheel" width="700" height="700"></canvas>
+        <p id="infoCarta" class="small" style="text-align:center">Calcula una carta para dibujar el mandala.</p>
+      </div>
+    </div>
+
+    <div class="card compactCard">
+      <div class="compactCardHeader">
+        <div class="tabbar" role="tablist" aria-label="Datos astrológicos">
+          <button class="tabbtn active" type="button" data-tab="planetas">Planetas <span id="countPlanetas" class="tabCounter">0</span></button>
+          <button class="tabbtn" type="button" data-tab="casas">Casas <span id="countCasas" class="tabCounter">0</span></button>
+          <button class="tabbtn" type="button" data-tab="aspectos">Aspectos <span id="countAspectos" class="tabCounter">0</span></button>
+          <button class="tabbtn" type="button" data-tab="regentes">Regentes <span id="countRegentes" class="tabCounter">0</span></button>
+        </div>
+      </div>
+      <div class="compactCardBody">
+        <section id="tab-planetas" class="tabpane active">
+          <div id="tablaPlanetas"></div>
+          <div id="cardDatosCopiables" class="mutedBox" style="display:none;margin-top:12px">
+            <strong style="font-size:12px">Documento NatalCore</strong>
+            <p class="tiny">Genera el DOCX estructural de la ficha activa.</p>
+            <div class="toolbar"><button id="btnGenerarTextoCarta" class="btn btn-gold" type="button">Descargar DOCX</button><button id="btnCopiarTextoCarta" class="btn btn-dark" type="button">Vista previa</button></div>
+            <div id="vistaPreviaNatalCoreDoc" class="status" style="display:none;max-height:520px;overflow:auto;background:#fff;margin-top:8px"></div>
+            <textarea id="textoCartaCopiable" style="display:none;min-height:300px;white-space:pre-wrap;font-family:monospace;font-size:12px"></textarea>
+          </div>
+        </section>
+        <section id="tab-casas" class="tabpane"><div id="tablaCasas"></div></section>
+        <section id="tab-aspectos" class="tabpane">
+          <div class="toolbar" style="align-items:center;margin:4px 0 10px"><label for="filtroAspectosPlaneta" style="margin:0">Planeta</label><select id="filtroAspectosPlaneta" style="max-width:220px;margin:0"><option value="">Todos</option></select></div>
+          <div id="tablaAspectos"></div>
+        </section>
+        <section id="tab-regentes" class="tabpane"><div id="tablaRegentes"></div></section>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+
+function norm360(v){ return ((v % 360) + 360) % 360; }
+
+// Conversión correcta para astrología occidental tropical.
+// ASC siempre a la izquierda (180° canvas).
+// El zodiaco avanza en sentido antihorario:
+// Aries -> Tauro -> Géminis...
+function astroAngle(longitude, ascLon){
+  const delta = norm360(longitude - ascLon);
+  return Math.PI - (delta * Math.PI / 180);
+}
+
+function pointOnCircle(cx, cy, r, angle){
+  return {
+    x: cx + Math.cos(angle) * r,
+    y: cy + Math.sin(angle) * r
+  };
+}
+
+
+function signoIdx(signo){
+  const mapa = {
+    'aries':0, 'ari':0,
+    'tauro':1, 'tau':1,
+    'geminis':2, 'gem':2,
+    'cancer':3, 'can':3,
+    'leo':4,
+    'virgo':5, 'vir':5,
+    'libra':6, 'lib':6,
+    'escorpio':7, 'esc':7,
+    'sagitario':8, 'sag':8,
+    'capricornio':9, 'cap':9,
+    'acuario':10, 'acu':10,
+    'piscis':11, 'pis':11
+  };
+  const limpio = (signo||'').toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z]/g,'');
+  return mapa[limpio] ?? -1;
+}
+
+(function(){
+'use strict';
+const SIGNOS=[['Aries','♈'],['Tauro','♉'],['Géminis','♊'],['Cáncer','♋'],['Leo','♌'],['Virgo','♍'],['Libra','♎'],['Escorpio','♏'],['Sagitario','♐'],['Capricornio','♑'],['Acuario','♒'],['Piscis','♓']];
+const COLORS=['#ef4444','#22c55e','#60a5fa','#06b6d4','#ef4444','#22c55e','#60a5fa','#06b6d4','#ef4444','#22c55e','#60a5fa','#06b6d4'];
+const GLIFOS={Sol:'☉',Luna:'☽',Mercurio:'☿',Venus:'♀',Marte:'♂','Júpiter':'♃',Saturno:'♄',Urano:'♅',Neptuno:'♆','Plutón':'♇','Nodo Norte':'☊','Nodo N.':'☊',Quirón:'⚷'};
+const GLIFO_VISUAL={
+  Sol:{size:31,dy:-5}, Luna:{size:34,dy:-5}, Mercurio:{size:31,dy:-5}, Venus:{size:31,dy:-5}, Marte:{size:31,dy:-5},
+  'Júpiter':{size:34,dy:-5}, Saturno:{size:33,dy:-5}, Urano:{size:32,dy:-5}, Neptuno:{size:34,dy:-5}, 'Plutón':{size:31,dy:-5},
+  'Nodo Norte':{size:34,dy:-5}, 'Nodo N.':{size:34,dy:-5}, 'Quirón':{size:32,dy:-5}
+};
+function esRetrogrado(p){
+  if(!p)return false;
+  if(p.retrograde===true || p.retro===true || p.retrogrado===true || p.rx===true)return true;
+  if(typeof p.movimiento==='string' && /^(r|rx|retro|retrogrado|retrógrado)$/i.test(p.movimiento.trim()))return true;
+  const sp=Number(p.speed ?? p.longitudeSpeed ?? p.speedLongitude);
+  return Number.isFinite(sp) && sp < 0;
+}
+const PLANETAS_BASE=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno','Urano','Neptuno','Plutón','Nodo Norte','Quirón'];
+const REG={Aries:['Marte'],Tauro:['Venus'],'Géminis':['Mercurio'],'Cáncer':['Luna'],Leo:['Sol'],Virgo:['Mercurio'],Libra:['Venus'],Escorpio:['Marte','Plutón'],Sagitario:['Júpiter'],Capricornio:['Saturno'],Acuario:['Saturno','Urano'],Piscis:['Júpiter','Neptuno']};
+const STORAGE_KEY='astrodb_v51';
+function leerJSONLocal(key){try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){return []}}
+function claveFicha(f){return [f.nombre||'',f.dia||'',f.mes||'',f.anio||'',f.hora||'',f.ciudad||''].join('|').toLowerCase();}
+function cargarTodasLasFichasGuardadas(){
+  const keys=['astrodb_v51','astrodb_v45','astrodb_v42_estable','astro_data_chromebook_v3','astro_data_chromebook_v4'];
+  const mapa=new Map();
+  keys.forEach(key=>leerJSONLocal(key).forEach(f=>{
+    if(!f||typeof f!=='object')return;
+    const id=f.id || Date.now()+Math.random();
+    const limpia={...f,id};
+    const k=claveFicha(limpia)+'|'+(Array.isArray(limpia.planetas)?limpia.planetas.length:0)+'|'+(Array.isArray(limpia.casas)?limpia.casas.length:0);
+    if(!mapa.has(k))mapa.set(k,limpia);
+  }));
+  const arr=[...mapa.values()].sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));
+  return arr;
+}
+let datos=cargarTodasLasFichasGuardadas(); let idActivo=null; let textoLeido=''; window.cartaActual={planetas:[],casas:[]};
+const $=id=>document.getElementById(id);
+function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+function signoNombre(s){const i=signoIdx(s);return (i>=0&&SIGNOS[i])?SIGNOS[i][0]:(s||'Aries');}
+function lon(signo,grado){let i=signoIdx(signo);if(i<0||!SIGNOS[i])i=0;return ((i*30+Number(grado||0))%360+360)%360;}
+function degText(v){v=Number(v)||0;const d=Math.floor(v);const m=Math.round((v-d)*60);return `${d}°${String(m).padStart(2,'0')}′`;}
+function degdiff(a,b){let d=Math.abs(a-b)%360; return d>180?360-d:d;}
+function inSector(x,start,end){x=(x+360)%360;start=(start+360)%360;end=(end+360)%360;return start<=end?x>=start&&x<end:x>=start||x<end;}
+function casaDe(planeta,casas){if(!casas||casas.length<12)return planeta.casa||''; const x=lon(planeta.signo,planeta.grado); const cs=[...casas].sort((a,b)=>a.casa-b.casa); for(let i=0;i<12;i++){const a=lon(cs[i].signo,cs[i].grado), b=lon(cs[(i+1)%12].signo,cs[(i+1)%12].grado); if(inSector(x,a,b)) return cs[i].casa;} return planeta.casa||'';}
+function showEditor(){ $('inicio').classList.add('hidden'); $('editor').classList.remove('hidden');}
+function nueva(){idActivo=null; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(id=>{const el=$(id); if(el)el.value='';}); if($('tz'))$('tz').value='Europe/Madrid'; $('titulo').textContent='Nueva consulta'; setCarta(null,null); render();
+  mostrarPanelDatosCopiables();
+}
+function setCarta(planetas,casas){window.cartaActual={planetas:planetas||[],casas:casas||[]}; if(planetas&&casas&&planetas.length&&casas.length){planetas.forEach(p=>p.casa=casaDe(p,casas)); dibujar(planetas,casas); tablas(planetas,casas); const retroCount=planetas.filter(esRetrogrado).length; $('infoCarta').textContent=`Carta cargada: ${planetas.length} planetas · ${casas.length} casas · ${retroCount} retrógrado${retroCount===1?'':'s'}.`;} else {clearCanvas(); tablas([],[]); $('infoCarta').textContent='Calcula una carta para dibujar el mandala.';}
+  mostrarPanelDatosCopiables();
+  const area=$('textoCartaCopiable'); if(area && !hayCartaActivaConDatos()) area.value='';
+}
+function clearCanvas(){const c=$('astroWheel'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
+function dibujar(planetas,casas){
+  const c=$('astroWheel'),ctx=c.getContext('2d'),cx=350,cy=350;
+  clearCanvas();
+
+  // Solo cambia el estilo visual del mandala. El cálculo sigue siendo tropical + Placidus real.
+  const R_OUT=326;
+  const R_TICKS_OUT=322;
+  const R_TICKS_IN=292;
+  const R_SIGN=270;
+  const R_HOUSE_NUM=318;
+  const R_PLANET=214;
+  const R_PLANET_DOT=236;
+  const R_ASPECT=178;
+  const R_CENTER=38;
+
+  const cs=[...casas].sort((a,b)=>Number(a.casa)-Number(b.casa));
+  const asc=cs.find(c=>Number(c.casa)===1)||cs[0]||{signo:'Aries',grado:0,longitude:0};
+  const ascLon=degNorm360(asc.longitude ?? lon(asc.signo,asc.grado));
+  const toLon=obj=>degNorm360(obj.longitude ?? lon(obj.signo,obj.grado));
+
+  // ASC fijo a la izquierda. La longitud zodiacal creciente avanza en sentido antihorario.
+  const theta=L=>(180 - degNorm360(degNorm360(L)-ascLon))*Math.PI/180;
+  const xy=(r,L)=>[cx+r*Math.cos(theta(L)), cy+r*Math.sin(theta(L))];
+
+  function lineAt(L,r1,r2,color,w=1,alpha=1){
+    const [x1,y1]=xy(r1,L),[x2,y2]=xy(r2,L);
+    ctx.save();
+    ctx.globalAlpha=alpha;
+    ctx.strokeStyle=color;
+    ctx.lineWidth=w;
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function circle(r,color,w=1,dash=[]){
+    ctx.save();
+    ctx.strokeStyle=color;
+    ctx.lineWidth=w;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function fmtDeg(v){
+    const n=Number(v||0);
+    const g=Math.floor(n);
+    let m=Math.round((n-g)*60);
+    let gg=g;
+    if(m===60){gg+=1;m=0;}
+    return gg+'°'+String(m).padStart(2,'0')+'′';
+  }
+
+  const signColors={
+    Aries:'#c72d63', Tauro:'#9b8f87', 'Géminis':'#f6c431', 'Cáncer':'#3769ad',
+    Leo:'#c72d63', Virgo:'#9b8f87', Libra:'#f6c431', Escorpio:'#3769ad',
+    Sagitario:'#c72d63', Capricornio:'#9b8f87', Acuario:'#f6c431', Piscis:'#3769ad'
+  };
+
+  // Fondo blanco, estilo Cosmograma.
+  ctx.fillStyle='#ffffff';
+  ctx.fillRect(0,0,c.width,c.height);
+
+  // Anillos limpios y finos.
+  circle(R_OUT,'rgba(107,114,128,.42)',1.1);
+  circle(R_TICKS_IN,'rgba(107,114,128,.28)',1);
+  circle(R_PLANET_DOT,'rgba(107,114,128,.30)',1,[2,5]);
+  circle(R_ASPECT,'rgba(107,114,128,.35)',1,[2,4]);
+  circle(R_CENTER,'rgba(107,114,128,.40)',1.2);
+
+  // Marcas de grados: cada 1°, más largas en 5°, 10° y 30°.
+  for(let L=0;L<360;L++){
+    const isSign=L%30===0, is10=L%10===0, is5=L%5===0;
+    const len=isSign?27:(is10?19:(is5?13:7));
+    const col=isSign?'rgba(17,24,39,.85)':(is10?'rgba(75,85,99,.68)':(is5?'rgba(107,114,128,.55)':'rgba(148,163,184,.55)'));
+    const w=isSign?1.7:(is10?1.2:.75);
+    lineAt(L,R_TICKS_OUT,R_TICKS_OUT-len,col,w);
+  }
+
+  // Límites de signos y glifos grandes; signos y casas NO se hacen coincidir.
+  for(let i=0;i<12;i++){
+    const L=i*30;
+    lineAt(L,R_TICKS_IN-2,R_OUT+4,'rgba(75,85,99,.58)',1.2);
+    const mid=L+15;
+    const [sx,sy]=xy(R_SIGN,mid);
+    const signo=SIGNOS[i][0];
+    ctx.fillStyle=signColors[signo]||'#334155';
+    ctx.font='bold 42px Arial';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(SIGNOS[i][1],sx,sy);
+  }
+
+  // Casas Placidus: líneas rectas largas, números fuera, sin “bolas” C1-C12.
+  cs.forEach((ca,i)=>{
+    const L=toLon(ca);
+    const n=Number(ca.casa);
+    const major=[1,4,7,10].includes(n);
+    const next=cs[(i+1)%12];
+    const L2=toLon(next);
+    const span=degNorm360(L2-L)||30;
+    const mid=L+span/2;
+
+    lineAt(L,R_CENTER+2,R_OUT+12,major?'#c22d68':'rgba(17,24,39,.62)',major?2.8:1.35);
+
+    const [hnx,hny]=xy(R_HOUSE_NUM,mid);
+    ctx.fillStyle='#111827';
+    ctx.font=major?'bold 19px Arial':'18px Arial';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(String(n),hnx,hny);
+
+    const [gx,gy]=xy(R_HOUSE_NUM+24,mid);
+    ctx.fillStyle='rgba(17,24,39,.82)';
+    ctx.font='12px Arial';
+    ctx.fillText(fmtDeg(ca.grado),gx,gy);
+  });
+
+  // AC, DC, MC, IC en magenta, con línea más larga.
+  [['AC',1],['DC',7],['MC',10],['IC',4]].forEach(([lab,num])=>{
+    const ca=cs.find(x=>Number(x.casa)===num);
+    if(!ca)return;
+    const L=toLon(ca);
+    lineAt(L,R_OUT-22,R_OUT+44,'#c22d68',2.2);
+    const [lx,ly]=xy(R_OUT+58,L);
+    ctx.fillStyle='#c22d68';
+    ctx.font='bold 18px Arial';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(lab,lx,ly);
+    const [gx,gy]=xy(R_OUT+79,L);
+    ctx.font='12px Arial';
+    ctx.fillText(fmtDeg(ca.grado),gx,gy);
+  });
+
+  // Aspectos: colores próximos al ejemplo.
+  const aspectColor=(hit)=>{
+    if(!hit)return '#999';
+    if(hit.angulo===120)return '#2f5f9f';
+    if(hit.angulo===60)return '#f0b400';
+    if(hit.angulo===90)return '#8b8b8b';
+    if(hit.angulo===0||hit.angulo===180)return '#c22d68';
+    if(hit.angulo===150)return '#d88a00';
+    return hit.color||'#999';
+  };
+  const pts=planetas.map(p=>{const L=longitudAspectoPlaneta(p);return {p,L,xy:xy(R_ASPECT,L)};});
+  for(let i=0;i<pts.length;i++){
+    for(let j=i+1;j<pts.length;j++){
+      const d=degdiff(pts[i].L,pts[j].L);
+      const hit=detectarAspectoPorSeparacion(d, pts[i].p.nombre, pts[j].p.nombre);
+      if(hit){
+        ctx.save();
+        ctx.strokeStyle=aspectColor(hit);
+        ctx.lineWidth=(hit.angulo===90)?1.15:1.45;
+        ctx.globalAlpha=hit.angulo===90?.65:.82;
+        if(hit.angulo===90)ctx.setLineDash([7,6]);
+        ctx.beginPath();
+        ctx.moveTo(pts[i].xy[0],pts[i].xy[1]);
+        ctx.lineTo(pts[j].xy[0],pts[j].xy[1]);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+
+  // Planetas: glifo limpio, grado debajo, punto exacto en la rueda; sin círculo de fondo.
+  const buckets={};
+  planetas.forEach(p=>{
+    const L=degNorm360(p.longitude ?? lon(p.signo,p.grado));
+    const key=Math.round(L/3)*3;
+    (buckets[key]||(buckets[key]=[])).push({...p,_L:L});
+  });
+
+  Object.values(buckets).forEach(group=>{
+    group.forEach((p,j)=>{
+      const r=R_PLANET-j*22;
+      const [gx,gy]=xy(r,p._L);
+      const [dx,dy]=xy(R_PLANET_DOT,p._L);
+
+      ctx.fillStyle='#111827';
+      ctx.beginPath();
+      ctx.arc(dx,dy,2.6,0,Math.PI*2);
+      ctx.fill();
+
+      ctx.strokeStyle='rgba(107,114,128,.38)';
+      ctx.lineWidth=.9;
+      ctx.beginPath();
+      ctx.moveTo(dx,dy);
+      ctx.lineTo(gx,gy);
+      ctx.stroke();
+
+      ctx.fillStyle='#111827';
+      const gv=GLIFO_VISUAL[p.nombre]||{size:32,dy:-5};
+      ctx.font=`${gv.size}px "Noto Sans Symbols 2", "Segoe UI Symbol", "DejaVu Sans", Arial, sans-serif`;
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(GLIFOS[p.nombre]||p.nombre?.[0]||'?',gx,gy+gv.dy);
+
+      ctx.fillStyle='#111827';
+      ctx.font='bold 11px Arial';
+      ctx.fillText(Math.floor(Number(p.grado)||0)+'°',gx,gy+19);
+
+      const isRetro=esRetrogrado(p);
+      if(isRetro){
+        // Marca retrógrada grande y separada del glifo para que no se pierda visualmente.
+        const rx=gx+22, ry=gy-21;
+        ctx.save();
+        ctx.fillStyle='#c22d68';
+        ctx.strokeStyle='#ffffff';
+        ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.arc(rx,ry,10,0,Math.PI*2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle='#ffffff';
+        ctx.font='bold 12px Arial';
+        ctx.textAlign='center';
+        ctx.textBaseline='middle';
+        ctx.fillText('R',rx,ry+.5);
+        ctx.restore();
+      }
+    });
+  });
+
+  ctx.fillStyle='#ffffff';
+  ctx.beginPath();
+  ctx.arc(cx,cy,R_CENTER-2,0,Math.PI*2);
+  ctx.fill();
+  circle(R_CENTER,'rgba(107,114,128,.48)',1.2);
+
+  try{
+    validarCasasPlacidus(cs);
+  }catch(e){
+    ctx.fillStyle='rgba(190,30,30,.92)';
+    ctx.font='bold 13px Arial';
+    ctx.fillText('⚠ Casas no validadas: revisar cálculo Placidus',cx,cy+R_OUT+48);
+  }
+}
+
+function tabla(rows,heads){if(!rows.length)return '<p class="small">Sin datos.</p>'; return '<table class="table"><thead><tr>'+heads.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+'</tbody></table>';}
+
+const ORBES_COSMOGRAMA = {
+  'Sol':        {0:10, 60:8, 90:10, 120:8, 150:3, 180:10},
+  'Luna':       {0:10, 60:8, 90:10, 120:8, 150:3, 180:10},
+  'Mercurio':   {0:8, 60:6, 90:8, 120:6, 150:2, 180:8},
+  'Venus':      {0:8, 60:6, 90:8, 120:6, 150:2, 180:8},
+  'Marte':      {0:8, 60:6, 90:8, 120:6, 150:2, 180:8},
+  'Júpiter':    {0:6, 60:5, 90:6, 120:5, 150:2, 180:6},
+  'Saturno':    {0:6, 60:5, 90:6, 120:5, 150:2, 180:6},
+  'Urano':      {0:5, 60:4, 90:5, 120:4, 150:2, 180:5},
+  'Neptuno':    {0:5, 60:4, 90:5, 120:4, 150:2, 180:5},
+  'Plutón':     {0:5, 60:4, 90:5, 120:4, 150:2, 180:5}
+};
+
+const CONFIG_ASPECTOS = [
+  {nombre:'Conjunción', simbolo:'☌', angulo:0, color:'#6b7280', clave:'Surgimiento y potencial'},
+  {nombre:'Sextil', simbolo:'✶', angulo:60, color:'#2563eb', clave:'Oportunidad y apertura'},
+  {nombre:'Cuadratura', simbolo:'□', angulo:90, color:'#dc2626', clave:'Tensión creativa'},
+  {nombre:'Trígono', simbolo:'△', angulo:120, color:'#16a34a', clave:'Fluidez e integración'},
+  {nombre:'Quincuncio / Inconjunción', simbolo:'⚻', angulo:150, color:'#d97706', clave:'Reajuste permanente'},
+  {nombre:'Oposición', simbolo:'☍', angulo:180, color:'#9333ea', clave:'Espejo y proyección'}
+];
+
+function longitudAspectoPlaneta(p){
+  if(p && p.signo !== undefined && p.grado !== undefined) return degNorm360(lon(p.signo,p.grado));
+  if(p && typeof p.longitude === 'number') return degNorm360(p.longitude);
+  return 0;
+}
+
+function orbePermitido(aspecto, p1, p2){
+  const o1 = (ORBES_COSMOGRAMA[p1] && ORBES_COSMOGRAMA[p1][aspecto.angulo]) || 0;
+  const o2 = (ORBES_COSMOGRAMA[p2] && ORBES_COSMOGRAMA[p2][aspecto.angulo]) || 0;
+  // Criterio Cosmograma/práctica astrológica: si uno de los planetas admite un orbe mayor
+  // —especialmente luminarias— el aspecto se conserva dentro de ese margen.
+  // Esto recupera casos como Luna oposición Saturno en la carta de Montilla.
+  return Math.max(o1, o2);
+}
+
+function detectarAspectoPorSeparacion(separacion, p1, p2){
+  let mejor = null;
+  CONFIG_ASPECTOS.forEach(a => {
+    const orbeMax = orbePermitido(a, p1, p2);
+    const orbeReal = Math.abs(separacion - a.angulo);
+    if(orbeReal <= orbeMax){
+      const candidato = {...a, orbeReal, orbeMax};
+      if(!mejor || candidato.orbeReal < mejor.orbeReal) mejor = candidato;
+    }
+  });
+  return mejor;
+}
+
+
+function diagnosticoAspecto(p1,p2){
+  const L1 = longitudAspectoPlaneta(p1);
+  const L2 = longitudAspectoPlaneta(p2);
+  const separacion = degdiff(L1,L2);
+  const hit = detectarAspectoPorSeparacion(separacion, p1.nombre, p2.nombre);
+  return {p1:p1.nombre,L1,p2:p2.nombre,L2,separacion,aspecto:hit};
+}
+
+function calcularAspectos(planetas){
+  const asp=[];
+  const ps=(planetas||[]).filter(p=>p && p.nombre && p.nombre!=='Nodo Norte');
+  for(let i=0;i<ps.length;i++){
+    for(let j=i+1;j<ps.length;j++){
+      const L1=longitudAspectoPlaneta(ps[i]);
+      const L2=longitudAspectoPlaneta(ps[j]);
+      const separacion=degdiff(L1,L2);
+      const hit=detectarAspectoPorSeparacion(separacion, ps[i].nombre, ps[j].nombre);
+      if(hit){
+        asp.push({
+          p1:ps[i].nombre,
+          p2:ps[j].nombre,
+          nombre:hit.nombre,
+          simbolo:hit.simbolo,
+          angulo:hit.angulo,
+          separacion:separacion,
+          orbe:hit.orbeReal,
+          orbeMax:hit.orbeMax,
+          clave:hit.clave,
+          color:hit.color
+        });
+      }
+    }
+  }
+  return asp.sort((a,b)=>a.orbe-b.orbe);
+}
+function calcularRegentes(planetas,casas){return [...casas].sort((a,b)=>a.casa-b.casa).map(c=>{const rs=REG[signoNombre(c.signo)]||[];return {casa:c.casa, cuspide:signoNombre(c.signo), grado:c.grado, regentes:rs.map(r=>{const p=planetas.find(x=>x.nombre===r);return {regente:r, planeta:p||null};})};});}
+function tablas(planetas,casas){
+  const asp=calcularAspectos(planetas);
+  const regsData=calcularRegentes(planetas,casas);
+
+  window.aspectosActuales=asp;
+  window.planetasAspectosActuales=planetas||[];
+  window.casasActuales=casas||[];
+  window.regentesActuales=regsData||[];
+
+  $('tablaPlanetas').innerHTML=tabla(
+    planetas.map(p=>{
+      const retro=esRetrogrado(p);
+      return [p.nombre,`${degText(p.grado)} ${p.signo}`,p.casa||'',retro?'<strong style="color:#c22d68">R</strong>':'D'];
+    }),
+    ['Planeta','Posición','Casa','Mov.']
+  );
+
+  $('tablaCasas').innerHTML=tabla(
+    [...casas].sort((a,b)=>a.casa-b.casa).map(c=>[c.casa,`${degText(c.grado)} ${c.signo}`]),
+    ['Casa','Cúspide']
+  );
+
+  actualizarSelectorAspectos(planetas);
+  pintarTablaAspectos();
+
+  const regs=regsData.map(r=>[
+    r.casa,
+    `${degText(r.grado)} ${r.cuspide}`,
+    r.regentes.map(x=>x.planeta?`${x.regente}: casa ${x.planeta.casa} (${x.planeta.signo})`:x.regente).join('<br>')
+  ]);
+  $('tablaRegentes').innerHTML=tabla(regs,['Casa','Cúspide','Regente localizado']);
+
+  actualizarContadoresTabs(planetas.length,casas.length,asp.length,regsData.length);
+}
+function refrescarDatosDesdeLocal(){
+  datos=cargarTodasLasFichasGuardadas();
+  return datos;
+}
+function actualizarSelectorCartas(){
+  const sel=$('selectorCartas'); if(!sel)return;
+  const current=sel.value;
+  const ordenadas=datos.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
+  sel.innerHTML='<option value="">Selecciona una ficha... ('+ordenadas.length+')</option>'+ordenadas.map(d=>`<option value="${d.id}">${d.nombre||'Sin nombre'}${d.dia?` · ${d.dia}/${d.mes}/${d.anio}`:''}</option>`).join('');
+  if([...sel.options].some(o=>o.value===current))sel.value=current;
+}
+
+function coincidenciasGlobales(){
+  const fp=$('fPlaneta').value, fs=$('fSigno').value, fc=$('fCasa').value;
+  const rows=[];
+  datos.forEach(d=>{
+    (d.planetas||[]).forEach(p=>{
+      const pcasa=p.casa||casaDe(p,d.casas||[]);
+      const okP=!fp||p.nombre===fp;
+      const okS=!fs||norm(signoNombre(p.signo))===norm(fs);
+      const okC=!fc||String(pcasa)===String(fc);
+      if(okP&&okS&&okC){
+        rows.push({id:d.id,nombre:d.nombre||'Sin nombre',fecha:[d.dia,d.mes,d.anio].filter(Boolean).join('/'),planeta:p.nombre,signo:signoNombre(p.signo),grado:p.grado,casa:pcasa});
+      }
+    });
+  });
+  return rows;
+}
+function aplicarComparativaGlobal(){
+  const rows=coincidenciasGlobales();
+  const fp=$('fPlaneta').value||'cualquier planeta', fs=$('fSigno').value||'cualquier signo', fc=$('fCasa').value?`casa ${$('fCasa').value}`:'cualquier casa';
+  $('panelComparativa').classList.remove('hidden');
+  $('resumenComparativa').innerHTML=`Filtro aplicado a <strong>${datos.length}</strong> cartas guardadas: ${fp} · ${fs} · ${fc}.<br>Coincidencias encontradas: <strong>${rows.length}</strong>.`;
+  $('tablaComparativa').innerHTML=tabla(rows.map(r=>[`<button class="btn btn-dark" type="button" data-id="${r.id}">${r.nombre}</button>`,r.fecha||'—',r.planeta,`${degText(r.grado)} ${r.signo}`,r.casa||'—']),['Persona','Fecha','Planeta','Posición','Casa']);
+  $('tablaComparativa').querySelectorAll('[data-id]').forEach(b=>b.addEventListener('click',()=>cargar(Number(b.dataset.id))));
+  render();
+}
+function limpiarComparativaGlobal(){
+  ['fPlaneta','fSigno','fCasa'].forEach(id=>$(id).value='');
+  $('panelComparativa').classList.add('hidden');
+  $('resumenComparativa').textContent='Sin búsqueda activa.';
+  $('tablaComparativa').innerHTML='';
+  render();
+}
+function exportarComparativaCSV(){
+  const rows=coincidenciasGlobales();
+  if(!rows.length){alert('No hay resultados para exportar. Primero haz una búsqueda.');return;}
+  const csv=['Persona,Fecha,Planeta,Signo,Grado,Casa'].concat(rows.map(r=>[r.nombre,r.fecha,r.planeta,r.signo,degText(r.grado),r.casa].map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','))).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='astrodb_comparativa_global.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+function render(){
+  actualizarSelectorCartas();
+  const l=$('lista');l.innerHTML='';
+  let lista=datos;
+  if(!lista.length){l.innerHTML='<p class="tiny">No hay fichas guardadas.</p>';return;}
+  lista.slice().reverse().forEach(d=>{
+    const div=document.createElement('div');div.className='listItem '+(d.id===idActivo?'active':'');
+    div.innerHTML=(d.nombre||'Sin nombre')+(d.dia?`<br><span class="tiny">${d.dia}/${d.mes}/${d.anio}</span>`:'');div.onclick=()=>cargar(d.id);l.appendChild(div);
+  });
+}
+function fichaActualComoObjeto(forceNew=false){return {id:forceNew?Date.now():idActivo||Date.now(),nombre:$('nombre').value||'Sin nombre',dia:$('dia').value,mes:$('mes').value,anio:$('anio').value,hora:$('hora').value,ciudad:$('ciudad').value,lat:$('lat').value,lon:$('lon').value,tz:$('tz').value,planetas:window.cartaActual?.planetas||[],casas:window.cartaActual?.casas||[],interpretacion:($('interpretacionDirecta')?.value||'')};}
+function persistirDatos(){localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));actualizarSelectorCartas();render();}
+
+function actualizarSelectorAspectos(planetas){
+  const sel=$('filtroAspectosPlaneta');
+  if(!sel)return;
+  const actual=sel.value||'';
+  const nombres=(planetas||[]).map(p=>p.nombre).filter(Boolean);
+  sel.innerHTML='<option value="">Todos los planetas</option>'+nombres.map(n=>`<option value="${n}">${n}</option>`).join('');
+  if(nombres.includes(actual)) sel.value=actual;
+}
+
+function pintarTablaAspectos(){
+  const cont=$('tablaAspectos');
+  if(!cont)return;
+  const sel=$('filtroAspectosPlaneta');
+  const filtro=sel ? sel.value : '';
+  const todos=window.aspectosActuales||[];
+  const lista=filtro ? todos.filter(a=>a.p1===filtro || a.p2===filtro) : todos;
+  const resumen=filtro
+    ? `<p class="small"><strong>${filtro}</strong>: ${lista.length} aspecto(s) encontrado(s).</p>`
+    : `<p class="small">Mostrando ${lista.length} aspecto(s).</p>`;
+  cont.innerHTML=resumen+tabla(
+    lista.map(a=>[
+      `${a.p1} ${a.simbolo} ${a.p2}`,
+      a.nombre,
+      degText(a.separacion),
+      degText(a.orbe),
+      degText(a.orbeMax||0),
+      a.clave||''
+    ]),
+    ['Aspecto','Tipo','Separación','Orbe','Orbe máx.','Clave']
+  );
+}
+
+
+function guardar(){const f=fichaActualComoObjeto(false); if(idActivo && datos.some(x=>String(x.id)===String(idActivo)))datos=datos.map(x=>String(x.id)===String(idActivo)?f:x); else{datos.push(f);idActivo=f.id;} persistirDatos();alert(`Ficha guardada. Total de fichas: ${datos.length}.`);}
+function guardarComoNueva(){const f=fichaActualComoObjeto(true);datos.push(f);idActivo=f.id;persistirDatos();alert(`Guardada como nueva ficha. Total de fichas: ${datos.length}.`);}
+
+function cargar(id){const f=datos.find(x=>x.id===id); if(!f)return; idActivo=id; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(k=>$(k).value=f[k]||''); $('titulo').textContent=f.nombre||'Ficha'; setCarta(f.planetas||[],f.casas||[]); if($('interpretacionDirecta'))$('interpretacionDirecta').value=f.interpretacion||''; render();}
+function eliminar(){if(!idActivo||!confirm('¿Eliminar ficha?'))return; datos=datos.filter(x=>x.id!==idActivo);localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));idActivo=null;render();nueva();}
+let cityTimer=null; function buscarCiudad(q){clearTimeout(cityTimer); const sug=$('sugerencias'); if(!q||q.length<3){sug.classList.add('hidden');sug.innerHTML='';return;} cityTimer=setTimeout(async()=>{try{const url='https://geocoding-api.open-meteo.com/v1/search?count=8&language=es&format=json&name='+encodeURIComponent(q);const r=await fetch(url);const data=await r.json();const results=data.results||[];sug.innerHTML='';results.forEach(place=>{const d=document.createElement('div');const pais=place.country?`, ${place.country}`:'';const admin=place.admin1?` (${place.admin1})`:'';d.textContent=`${place.name}${admin}${pais} · ${place.latitude.toFixed(4)}, ${place.longitude.toFixed(4)} · ${place.timezone||''}`;d.onclick=()=>{$('ciudad').value=`${place.name}${admin}${pais}`;$('lat').value=place.latitude;$('lon').value=place.longitude;$('tz').value=place.timezone||'Europe/Madrid';sug.classList.add('hidden');};sug.appendChild(d);});sug.classList.toggle('hidden',!results.length);}catch(e){sug.innerHTML='<div>No se pudo buscar online. Escribe ciudad y zona horaria manualmente.</div>';sug.classList.remove('hidden');}},450);}
+function parseTexto(txt){txt=String(txt||'').replace(/\r/g,'\n').replace(/[’′]/g,"'").replace(/\s+/g,' '); const planetas=[]; const casas=[]; const names=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Jupiter','Saturno','Urano','Neptuno','Plutón','Pluton','Nodo N.','Nodo Norte','Quirón','Quiron']; const sign='(Aries|Tauro|G[eé]minis|Cancer|C[aá]ncer|Leo|Virgo|Libra|Escorpio|Sagitario|Capricornio|Acuario|Piscis|Ari|Tau|Gem|Can|Leo|Vir|Lib|Esc|Sag|Cap|Acu|Pis)'; names.forEach(n=>{const re=new RegExp(n.replace('.','\\.')+'\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i'); const m=txt.match(re); if(m){let nombre=n.replace('Jupiter','Júpiter').replace('Pluton','Plutón').replace('Nodo N.','Nodo Norte').replace('Quiron','Quirón'); planetas.push({nombre,grado:Number(m[1])+(Number(m[2]||0)/60),signo:signoNombre(m[3])});}}); const ac=txt.match(new RegExp('AC\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i')); if(ac)casas.push({casa:1,grado:Number(ac[1])+Number(ac[2]||0)/60,signo:signoNombre(ac[3])}); const mc=txt.match(new RegExp('MC\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i')); if(mc)casas.push({casa:10,grado:Number(mc[1])+Number(mc[2]||0)/60,signo:signoNombre(mc[3])}); for(let i=2;i<=12;i++){if(i===10)continue; const re=new RegExp('C'+i+'\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i'); const m=txt.match(re); if(m)casas.push({casa:i,grado:Number(m[1])+Number(m[2]||0)/60,signo:signoNombre(m[3])});} if(casas.length<12){const block=txt.match(/C2\s+C3\s+C4\s+C5\s+C6\s+C7\s+C8\s+C9\s+C11\s+C12\s+(.{20,250})/i); if(block){const re=new RegExp('(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'gi'); const seq=[2,3,4,5,6,7,8,9,11,12]; let k=0,m; while((m=re.exec(block[1]))&&k<seq.length){if(!casas.find(c=>c.casa===seq[k]))casas.push({casa:seq[k],grado:Number(m[1])+Number(m[2]||0)/60,signo:signoNombre(m[3])}); k++;}}} return {planetas,casas:casas.sort((a,b)=>a.casa-b.casa)};}
+async function leerArchivo(){const file=$('archivoCarta').files&&$('archivoCarta').files[0]; if(!file){$('estadoArchivo').innerHTML='<span class="bad">No hay ningún archivo seleccionado.</span>';return;} $('estadoArchivo').textContent='Leyendo: '+file.name+' ...'; textoLeido=''; try{ if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')){ if(!window.pdfjsLib){await loadPdfJs();} const buf=await file.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:buf}).promise; let text=''; for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p); const tc=await page.getTextContent(); text+='\n'+tc.items.map(i=>i.str).join(' ');} textoLeido=text; } else {textoLeido=await file.text();} $('textoImportacion').value=textoLeido.slice(0,5000); const parsed=parseTexto(textoLeido); $('estadoArchivo').innerHTML=`<span class="ok">Archivo leído.</span>\nEncontrados: ${parsed.planetas.length} planetas y ${parsed.casas.length} cúspides.\nPulsa “Importar datos exactos y dibujar”.`; $('btnImportarLeido').disabled=false; }catch(e){$('estadoArchivo').innerHTML='<span class="bad">No se pudo leer el archivo.</span>\n'+e.message+'\nPrueba a exportar/pegar el texto o súbeme aquí el PDF para convertirlo.';}}
+function loadPdfJs(){return new Promise((resolve,reject)=>{if(window.pdfjsLib)return resolve(); const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';resolve();}; s.onerror=()=>reject(new Error('No se pudo cargar PDF.js.')); document.head.appendChild(s);});}
+function importar(txt){const p=parseTexto(txt); if(p.planetas.length<8||p.casas.length<12){alert(`No he podido extraer suficientes datos. Detectados: ${p.planetas.length} planetas y ${p.casas.length} cúspides.`); return;} setCarta(p.planetas,p.casas); $('estadoArchivo').innerHTML=`<span class="ok">Importado correctamente.</span>\n${p.planetas.length} planetas y ${p.casas.length} casas.`;}
+let swissephMod=null;async function cargarSwissEphemeris(){if(swissephMod)return swissephMod;const urls=['https://cdn.jsdelivr.net/gh/prolaxu/swisseph-wasm@main/src/swisseph.js','https://cdn.jsdelivr.net/npm/swisseph-wasm@0.0.5/src/swisseph.js'];let lastErr=null;for(const url of urls){try{const mod=await import(url);const SwissEph=mod.default||mod.SwissEph||mod;const swe=new SwissEph();await swe.initSwissEph();swissephMod=swe;return swissephMod;}catch(e){lastErr=e;console.warn('Fallo Swiss',url,e);}}throw new Error('No se pudo cargar swisseph-wasm. '+(lastErr?lastErr.message:''));}
+async function cargarLuxon(){if(window.luxon)return window.luxon;await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js';s.onload=resolve;s.onerror=()=>reject(new Error('No se pudo cargar Luxon.'));document.head.appendChild(s);});return window.luxon;}
+function lonToSignDegree(L){
+  L=((Number(L)%360)+360)%360;
+  let i=Math.floor(L/30);
+  if(i<0||i>11||!SIGNOS[i]) i=0;
+  return {signo:SIGNOS[i][0],grado:L-i*30,longitude:L};
+}
+function normalizaPos(nombre,pos){
+  let L, speed;
+  if(pos==null){L=undefined;}
+  else if(typeof pos==='number'){L=pos;}
+  else if(Array.isArray(pos)||ArrayBuffer.isView(pos)){L=Number(pos[0]); speed=Number(pos[3]);}
+  else if(typeof pos==='object'){
+    L=pos.longitude??pos.lon??pos.lng??pos?.xx?.[0]??pos?.data?.[0]??pos?.result?.[0];
+    speed=pos.speedLongitude??pos.longitudeSpeed??pos.speed??pos.speedLon??pos.lonSpeed??pos?.xx?.[3]??pos?.data?.[3]??pos?.result?.[3]??pos?.values?.[3];
+    if(typeof L==='undefined'){const nums=Object.values(pos).filter(v=>typeof v==='number'&&isFinite(v)); L=nums[0];}
+  }
+  if(typeof L!=='number'||!isFinite(L))throw new Error('Swiss no devolvió longitud válida para '+nombre);
+  const sd=lonToSignDegree(L);
+  const out={nombre,signo:sd.signo,grado:Number(sd.grado.toFixed(6)),longitude:Number(sd.longitude.toFixed(8))};
+  if(Number.isFinite(Number(speed))){out.speed=Number(Number(speed).toFixed(8));out.retrograde=Number(speed)<0;}
+  return out;
+}
+function degNorm360(v){return ((Number(v)%360)+360)%360;}
+function angDist180(a,b){let d=Math.abs(degNorm360(a)-degNorm360(b))%360; return d>180?360-d:d;}
+function errorOposicionesCasas(arr){
+  if(!Array.isArray(arr)||arr.length<12)return 9999;
+  let err=0;
+  for(let i=0;i<6;i++){
+    const esperado=degNorm360(arr[i]+180);
+    err+=angDist180(esperado,arr[i+6]);
+  }
+  return err/6;
+}
+function elegirCuspidesValidas(raw){
+  const nums=Array.from(raw||[]).map(Number).filter(v=>isFinite(v)).map(degNorm360);
+  const candidatos=[];
+  if(nums.length>=12)candidatos.push(nums.slice(0,12));
+  if(nums.length>=13)candidatos.push(nums.slice(1,13));
+  if(nums.length>=24){
+    for(let i=0;i<=nums.length-12;i++)candidatos.push(nums.slice(i,i+12));
+  }
+  // Swiss clásico: cusp[0] vacío, cusp[1..12] reales. Si raw[0] es 0 y hay 13 datos, este candidato suele ganar.
+  let mejor=null, mejorErr=9999;
+  candidatos.forEach(c=>{
+    const e=errorOposicionesCasas(c);
+    if(e<mejorErr){mejorErr=e;mejor=c;}
+  });
+  if(!mejor || mejorErr>2){
+    console.warn('Candidatos de cúspides rechazados por oposición:', candidatos, 'mejorErr', mejorErr);
+    throw new Error('Las cúspides recibidas no cumplen oposición Placidus: C1/C7, C2/C8, C3/C9...');
+  }
+  return mejor;
+}
+function validarCasasPlacidus(casas){
+  const arr=[...casas].sort((a,b)=>a.casa-b.casa).map(c=>c.longitude ?? lon(c.signo,c.grado));
+  const err=errorOposicionesCasas(arr);
+  if(err>1.5){
+    throw new Error('Validación astrológica fallida: las casas opuestas no están a 180°. Error medio '+err.toFixed(2)+'°');
+  }
+  return casas;
+}
+function normalizaCasas(h){
+  let raw=null;
+  if(h){
+    if(Array.isArray(h)||ArrayBuffer.isView(h)) raw=Array.from(h);
+    else if(typeof h==='object'){
+      raw=h.cusp||h.cusps||h.house||h.houses||h.cuspsDegrees||h.houseCusps||h.data?.cusp||h.data?.cusps||h.result?.cusp||h.result?.cusps||null;
+      if(!raw){
+        const keys=Object.keys(h).filter(k=>/^\d+$/.test(k)).sort((a,b)=>Number(a)-Number(b));
+        if(keys.length>=12) raw=keys.map(k=>h[k]);
+      }
+    }
+  }
+  if(!raw) {
+    console.warn('Formato de casas Swiss no reconocido:', h);
+    throw new Error('Swiss no devolvió cúspides Placidus reconocibles.');
+  }
+  const arr=elegirCuspidesValidas(raw);
+  const casas=[];
+  for(let i=0;i<12;i++){
+    const sd=lonToSignDegree(arr[i]);
+    casas.push({casa:i+1,signo:sd.signo,grado:Number(sd.grado.toFixed(4)),longitude:sd.longitude});
+  }
+  return validarCasasPlacidus(casas);
+}
+
+function calcularCasasSwiss(swe,jd,lat,lonGeo){
+  const intentos=[];
+  const houseSystems=['P','p',80];
+  for(const hs of houseSystems){
+    if(typeof swe.houses==='function'){
+      intentos.push(()=>swe.houses(jd,lat,lonGeo,hs));
+      intentos.push(()=>swe.houses(jd,0,lat,lonGeo,hs));
+      intentos.push(()=>swe.houses(jd,(swe.SEFLG_MOSEPH||4),lat,lonGeo,hs));
+    }
+    if(typeof swe.swe_houses==='function'){
+      intentos.push(()=>swe.swe_houses(jd,lat,lonGeo,hs));
+      intentos.push(()=>swe.swe_houses(jd,0,lat,lonGeo,hs));
+      intentos.push(()=>swe.swe_houses(jd,(swe.SEFLG_MOSEPH||4),lat,lonGeo,hs));
+    }
+  }
+  let lastErr=null;
+  for(const fn of intentos){
+    try{
+      const res=fn();
+      const casas=normalizaCasas(res);
+      if(casas&&casas.length===12) return casas;
+    }catch(e){lastErr=e; console.warn('Intento casas Placidus fallido:', e.message);}
+  }
+  throw lastErr || new Error('No se pudieron calcular casas Placidus con Swiss.');
+}
+async function calcularDesdeDatos(){const btn=$('btnCalcularDatos');try{const day=Number($('dia').value),month=Number($('mes').value),year=Number($('anio').value);const time=$('hora').value;const lat=Number($('lat').value),lonGeo=Number($('lon').value);const tz=$('tz').value||'Europe/Madrid';if(!day||!month||!year||!time)throw new Error('Falta fecha u hora.');if(!isFinite(lat)||!isFinite(lonGeo))throw new Error('Faltan coordenadas. Selecciona ciudad.');btn.disabled=true;$('estadoCalculo').innerHTML='Cargando Swiss Ephemeris y calculando casas Placidus reales...';const [{DateTime},swe]=await Promise.all([cargarLuxon(),cargarSwissEphemeris()]);const [hh,mi]=time.split(':').map(Number);const local=DateTime.fromObject({year,month,day,hour:hh,minute:mi},{zone:tz});if(!local.isValid)throw new Error('Zona horaria no válida: '+tz);const utc=local.toUTC();const hourUT=utc.hour+utc.minute/60+utc.second/3600;const jd=swe.julday(utc.year,utc.month,utc.day,hourUT);const flags=(swe.SEFLG_SWIEPH||2)|(swe.SEFLG_SPEED||256);const mflags=(swe.SEFLG_MOSEPH||4)|(swe.SEFLG_SPEED||256);const bodies=[['Sol',swe.SE_SUN],['Luna',swe.SE_MOON],['Mercurio',swe.SE_MERCURY],['Venus',swe.SE_VENUS],['Marte',swe.SE_MARS],['Júpiter',swe.SE_JUPITER],['Saturno',swe.SE_SATURN],['Urano',swe.SE_URANUS],['Neptuno',swe.SE_NEPTUNE],['Plutón',swe.SE_PLUTO],['Nodo Norte',swe.SE_MEAN_NODE],['Quirón',swe.SE_CHIRON]].filter(x=>typeof x[1]==='number');const planetas=[];for(const [nombre,id] of bodies){let pos;try{pos=swe.calc_ut(jd,id,flags);}catch(e){pos=swe.calc_ut(jd,id,mflags);}try{planetas.push(normalizaPos(nombre,pos));}catch(posErr){console.warn('No se pudo normalizar planeta',nombre,pos,posErr);}}if(typeof swe.houses!=='function' && typeof swe.swe_houses!=='function')throw new Error('Swiss no expone houses/Placidus en este navegador.');
+    if(planetas.length<8)throw new Error('Swiss calculó pocas posiciones planetarias: '+planetas.length);
+    const casas=calcularCasasSwiss(swe,jd,lat,lonGeo);setCarta(planetas,casas);const retros=planetas.filter(esRetrogrado).map(p=>p.nombre);$('titulo').textContent=$('nombre').value||'Carta calculada';$('estadoCalculo').innerHTML=`<span class="ok">Cálculo realizado con Swiss Ephemeris.</span>
+UTC: ${utc.toISO()}
+ASC: ${casas[0].signo} ${degText(casas[0].grado)} · MC: ${casas[9].signo} ${degText(casas[9].grado)}
+Movimiento: ${retros.length?'Retrógrados: '+retros.join(', '):'sin planetas retrógrados detectados'}`;}catch(e){console.error(e);$('estadoCalculo').innerHTML='<span class="bad">No se pudo calcular.</span>\n'+e.message;alert('No se pudo calcular: '+e.message);}finally{btn.disabled=false;}}
+function initSelects(){const opt=(v,t=v)=>`<option value="${v}">${t}</option>`;$('fPlaneta').innerHTML=opt('','Cualquier planeta')+PLANETAS_BASE.map(p=>opt(p)).join('');$('fSigno').innerHTML=opt('','Cualquier signo')+SIGNOS.map(s=>opt(s[0])).join('');$('fCasa').innerHTML=opt('','Cualquier casa')+Array.from({length:12},(_,i)=>opt(i+1,`Casa ${i+1}`)).join('');}
+
+function activarTab(nombre){document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===nombre));document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+nombre));}
+function actualizarContadoresTabs(planetas=0,casas=0,aspectos=0,regentes=0){
+  if($('countPlanetas'))$('countPlanetas').textContent=planetas;
+  if($('countCasas'))$('countCasas').textContent=casas;
+  if($('countAspectos'))$('countAspectos').textContent=aspectos;
+  if($('countRegentes'))$('countRegentes').textContent=regentes;
+}
+
+function textoGradoCompleto(v){
+  const n=Number(v||0);
+  const g=Math.floor(n);
+  let m=Math.round((n-g)*60);
+  let gg=g;
+  if(m===60){gg+=1;m=0;}
+  return gg+"°"+String(m).padStart(2,"0")+"′";
+}
+
+function hayCartaActivaConDatos(){
+  return !!(window.cartaActual && Array.isArray(window.cartaActual.planetas) && window.cartaActual.planetas.length && Array.isArray(window.cartaActual.casas) && window.cartaActual.casas.length);
+}
+
+function mostrarPanelDatosCopiables(){
+  const card=$('cardDatosCopiables');
+  if(card) card.style.display = hayCartaActivaConDatos() ? 'block' : 'none';
+}
+
+function generarTextoCartaCopiable(){
+  if(!hayCartaActivaConDatos()){
+    alert('Primero calcula una carta o abre una ficha guardada.');
+    return '';
+  }
+
+  const carta=window.cartaActual;
+  const planetas=carta.planetas||[];
+  const casas=carta.casas||[];
+  const aspectos=typeof calcularAspectos==='function' ? calcularAspectos(planetas) : [];
+  const regentes=typeof calcularRegentes==='function' ? calcularRegentes(planetas,casas) : [];
+
+  const nombre=$('nombre')?.value||'Sin nombre';
+  const dia=$('dia')?.value||'';
+  const mes=$('mes')?.value||'';
+  const anio=$('anio')?.value||'';
+  const hora=$('hora')?.value||'';
+  const ciudad=$('ciudad')?.value||'';
+  const tz=$('tz')?.value||'';
+
+  let txt='';
+  txt+='DATOS DE CARTA NATAL\n';
+  txt+='Nombre: '+nombre+'\n';
+  txt+='Nacimiento: '+dia+'/'+mes+'/'+anio+' · '+hora+'\n';
+  txt+='Lugar: '+ciudad+'\n';
+  if(tz) txt+='Zona horaria: '+tz+'\n';
+  txt+='\n';
+
+  txt+='PLANETAS Y PUNTOS\n';
+  planetas.forEach(p=>{
+    txt+='- '+p.nombre+' — '+p.signo+' '+textoGradoCompleto(p.grado)+' — Casa '+(p.casa||'-')+'\n';
+  });
+
+  txt+='\nCÚSPIDES DE CASAS\n';
+  casas.slice().sort((a,b)=>Number(a.casa)-Number(b.casa)).forEach(c=>{
+    txt+='- Casa '+c.casa+' — '+c.signo+' '+textoGradoCompleto(c.grado)+'\n';
+  });
+
+  txt+='\nASPECTOS\n';
+  if(aspectos.length){
+    aspectos.forEach(a=>{
+      txt+='- '+a.p1+' '+(a.simbolo||'')+' '+a.p2+' — '+a.nombre+
+        ' — separación '+textoGradoCompleto(a.separacion)+
+        ' — orbe '+textoGradoCompleto(a.orbe)+
+        (a.orbeMax!==undefined?' / orbe máx. '+textoGradoCompleto(a.orbeMax):'')+
+        (a.clave?' — '+a.clave:'')+'\n';
+    });
+  }else{
+    txt+='- No se han calculado aspectos principales con la configuración actual.\n';
+  }
+
+  txt+='\nREGENTES DE CASAS\n';
+  if(regentes.length){
+    regentes.forEach(r=>{
+      const ubicaciones=(r.regentes||[]).map(x=>{
+        if(x.planeta){
+          return x.regente+' en '+x.planeta.signo+' '+textoGradoCompleto(x.planeta.grado)+' — Casa '+(x.planeta.casa||'-');
+        }
+        return x.regente+' no presente';
+      }).join(' / ');
+      txt+='- Casa '+r.casa+' en '+r.cuspide+' '+textoGradoCompleto(r.grado)+' → '+(ubicaciones||'Regente no disponible')+'\n';
+    });
+  }
+
+  const area=$('textoCartaCopiable');
+  if(area) area.value=txt.trim();
+  return txt.trim();
+}
+
+async function copiarTextoCartaCopiable(){
+  const txt=generarTextoCartaCopiable();
+  if(!txt) return;
+  try{
+    await navigator.clipboard.writeText(txt);
+    alert('Texto de la ficha copiado.');
+  }catch(e){
+    alert('No se pudo copiar automáticamente. Selecciona el texto y cópialo manualmente.');
+  }
+}
+
+
+
+
+// ============================================================
+// NATALCORE · CAPA 0 ESTRUCTURAL
+// Esquema neutral: AstroDB -> NatalCore -> motores especializados
+// ============================================================
+const NATALCORE_SCHEMA_VERSION='0.1-experimental';
+const ASTRODB_NATALCORE_VERSION='10.0-mandala-cosmograma-natalcore';
+const NATALCORE_REQUIRED_POINTS=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno','Urano','Neptuno','Plutón','Nodo Norte','Quirón'];
+const ZODIAC_META={
+  Aries:{element:'Fuego',modality:'Cardinal',polarity:'Positiva'},Tauro:{element:'Tierra',modality:'Fijo',polarity:'Negativa'},
+  'Géminis':{element:'Aire',modality:'Mutable',polarity:'Positiva'},'Cáncer':{element:'Agua',modality:'Cardinal',polarity:'Negativa'},
+  Leo:{element:'Fuego',modality:'Fijo',polarity:'Positiva'},Virgo:{element:'Tierra',modality:'Mutable',polarity:'Negativa'},
+  Libra:{element:'Aire',modality:'Cardinal',polarity:'Positiva'},Escorpio:{element:'Agua',modality:'Fijo',polarity:'Negativa'},
+  Sagitario:{element:'Fuego',modality:'Mutable',polarity:'Positiva'},Capricornio:{element:'Tierra',modality:'Cardinal',polarity:'Negativa'},
+  Acuario:{element:'Aire',modality:'Fijo',polarity:'Positiva'},Piscis:{element:'Agua',modality:'Mutable',polarity:'Negativa'}
+};
+const RULERSHIP_SYSTEM='híbrido-tradicional-moderno-v1';
+
+function splitDegree(value){
+  let x=Number(value)||0; let degree=Math.floor(x); let rem=(x-degree)*60; let minute=Math.floor(rem); let second=(rem-minute)*60;
+  if(second>=59.9995){second=0;minute+=1;} if(minute>=60){minute=0;degree+=1;}
+  return {degree,minute,second:Number(second.toFixed(3))};
+}
+function angleDistance(a,b){return angDist180(Number(a),Number(b));}
+function signedShortestDelta(a,b){let d=degNorm360(Number(a)-Number(b)); if(d>180)d-=360; return d;}
+function pointLongitude(p){return degNorm360(p?.longitude ?? lon(p?.signo,p?.grado));}
+function houseLongitude(c){return degNorm360(c?.longitude ?? lon(c?.signo,c?.grado));}
+function slugId(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_|_$/g,'').toLowerCase();}
+function stableAspectId(a,b,type){const pair=[slugId(a),slugId(b)].sort();return pair[0]+'__'+slugId(type)+'__'+pair[1];}
+function currentHouseCuspDistance(p,casas){const c=(casas||[]).find(x=>Number(x.casa)===Number(p.casa));return c?angleDistance(pointLongitude(p),houseLongitude(c)):null;}
+
+function construirAngulosNatalCore(casas){
+  const cs=[...(casas||[])].sort((a,b)=>Number(a.casa)-Number(b.casa));
+  const map={ASC:1,MC:10,DSC:7,IC:4}, out={};
+  Object.entries(map).forEach(([key,num])=>{
+    const c=cs.find(x=>Number(x.casa)===num); if(!c)return;
+    const d=splitDegree(c.grado); out[key]={sign:signoNombre(c.signo),degree:d.degree,minute:d.minute,second:d.second,longitude:Number(houseLongitude(c).toFixed(8))};
+  });
+  return out;
+}
+
+function construirDispositoresNatalCore(planetas){
+  const ps=planetas||[]; const byName=new Map(ps.map(p=>[p.nombre,p]));
+  function immediate(body){const p=byName.get(body);if(!p)return null;const rs=REG[signoNombre(p.signo)]||[];return rs[rs.length-1]||rs[0]||null;}
+  function chainFor(body){
+    const chain=[]; const seen=new Set(); let cur=body; let loop=false;
+    for(let i=0;i<24;i++){
+      const nxt=immediate(cur); if(!nxt||!byName.has(nxt)){return {chain,final_dispositor:nxt||cur,loop};}
+      chain.push(nxt); if(nxt===cur)return {chain,final_dispositor:cur,loop:false};
+      if(seen.has(nxt)){loop=true;return {chain,final_dispositor:null,loop};}
+      seen.add(cur); cur=nxt;
+    }
+    return {chain,final_dispositor:null,loop:true};
+  }
+  const rows=ps.map(p=>{const rs=REG[signoNombre(p.signo)]||[];const c=chainFor(p.nombre);return {body:p.nombre,sign:signoNombre(p.signo),sign_rulers:rs,immediate_dispositor:rs[rs.length-1]||rs[0]||null,final_dispositor:c.final_dispositor,chain:c.chain,closed_loop:c.loop};});
+  const mutual=[];
+  rows.forEach(r=>{const other=rows.find(x=>x.body===r.immediate_dispositor);if(other&&other.immediate_dispositor===r.body&&r.body<other.body)mutual.push([r.body,other.body]);});
+  return {system:RULERSHIP_SYSTEM,mutual_receptions:mutual,items:rows};
+}
+
+function aspectoAplicativoSeparativo(p1,p2,hit){
+  if(!hit||!Number.isFinite(Number(p1?.speed))||!Number.isFinite(Number(p2?.speed)))return null;
+  const now=Math.abs(degdiff(pointLongitude(p1),pointLongitude(p2))-hit.angulo);
+  const dt=1/1440; // 1 minuto de día: solo para determinar tendencia geométrica local
+  const future=Math.abs(degdiff(pointLongitude(p1)+Number(p1.speed)*dt,pointLongitude(p2)+Number(p2.speed)*dt)-hit.angulo);
+  if(Math.abs(future-now)<1e-10)return 'stationary_or_indeterminate';
+  return future<now?'applying':'separating';
+}
+
+function construirAspectosNatalCore(planetas){
+  const ps=(planetas||[]).filter(p=>p&&p.nombre&&p.nombre!=='Nodo Norte'); const out=[];
+  for(let i=0;i<ps.length;i++)for(let j=i+1;j<ps.length;j++){
+    const sep=degdiff(pointLongitude(ps[i]),pointLongitude(ps[j])); const hit=detectarAspectoPorSeparacion(sep,ps[i].nombre,ps[j].nombre); if(!hit)continue;
+    out.push({id:stableAspectId(ps[i].nombre,ps[j].nombre,hit.nombre),body_a:ps[i].nombre,body_b:ps[j].nombre,aspect_type:hit.nombre,exact_angle:hit.angulo,actual_angle:Number(sep.toFixed(8)),orb:Number(hit.orbeReal.toFixed(8)),detection_orb_max:Number(hit.orbeMax.toFixed(8)),applying_separating:aspectoAplicativoSeparativo(ps[i],ps[j],hit)});
+  }
+  return out;
+}
+
+function construirNatalCore(){
+  if(!hayCartaActivaConDatos())throw new Error('No hay una carta activa con planetas y casas.');
+  const planetas=(window.cartaActual.planetas||[]).map(p=>({...p,casa:p.casa||casaDe(p,window.cartaActual.casas||[])}));
+  const casas=[...(window.cartaActual.casas||[])].sort((a,b)=>Number(a.casa)-Number(b.casa));
+  const angles=construirAngulosNatalCore(casas); const angleList=Object.entries(angles).filter(([,v])=>v&&Number.isFinite(v.longitude));
+  const subjectId=idActivo!=null?'astrodb:'+String(idActivo):'astrodb:'+slugId(($('nombre')?.value||'sin_nombre')+'_'+($('anio')?.value||'')+'_'+($('mes')?.value||'')+'_'+($('dia')?.value||'')+'_'+($('hora')?.value||''));
+  const points=planetas.map(p=>{
+    const d=splitDegree(p.grado); const L=pointLongitude(p); const distances={}; angleList.forEach(([k,v])=>distances[k]=Number(angleDistance(L,v.longitude).toFixed(8)));
+    const nearest=Object.entries(distances).sort((a,b)=>a[1]-b[1])[0]||[null,null]; const zm=ZODIAC_META[signoNombre(p.signo)]||{};
+    return {id:slugId(p.nombre),name:p.nombre,longitude:Number(L.toFixed(8)),sign:signoNombre(p.signo),degree:d.degree,minute:d.minute,second:d.second,house:Number(p.casa)||null,retrograde:typeof p.retrograde==='boolean'?p.retrograde:(Number.isFinite(Number(p.speed))?Number(p.speed)<0:null),speed:Number.isFinite(Number(p.speed))?Number(p.speed):null,distance_house_cusp:currentHouseCuspDistance(p,casas),distance_angles:distances,nearest_angle:nearest[0],nearest_angle_distance:nearest[1],zodiac:{element:zm.element||null,modality:zm.modality||null,polarity:zm.polarity||null,rulers:REG[signoNombre(p.signo)]||[]}};
+  });
+  const houses=casas.map(c=>{const d=splitDegree(c.grado);return {house:Number(c.casa),cusp_longitude:Number(houseLongitude(c).toFixed(8)),sign:signoNombre(c.signo),degree:d.degree,minute:d.minute,second:d.second,house_system:'Placidus'};});
+  const aspects=construirAspectosNatalCore(planetas); const disp=construirDispositoresNatalCore(planetas);
+  const angularity=points.map(p=>({body:p.name,distance_ASC:p.distance_angles.ASC??null,distance_MC:p.distance_angles.MC??null,distance_DSC:p.distance_angles.DSC??null,distance_IC:p.distance_angles.IC??null,nearest_angle:p.nearest_angle,nearest_distance:p.nearest_angle_distance,angular_house:[1,4,7,10].includes(Number(p.house))}));
+  const core={
+    meta:{subject_id:subjectId,subject_name:$('nombre')?.value||'Sin nombre',natalcore_version:NATALCORE_SCHEMA_VERSION,astrodb_version:ASTRODB_NATALCORE_VERSION,zodiac_system:'Tropical occidental',house_system:'Placidus',rulership_system:RULERSHIP_SYSTEM,aspect_detection_profile:'ORBES_COSMOGRAMA_v10',aspect_set:CONFIG_ASPECTOS.map(a=>a.nombre),generated_at:new Date().toISOString(),source_birth_data:{date:[$('anio')?.value,$('mes')?.value,$('dia')?.value].filter(Boolean).join('-'),local_time:$('hora')?.value||null,place:$('ciudad')?.value||null,latitude:$('lat')?.value!==''?Number($('lat')?.value):null,longitude:$('lon')?.value!==''?Number($('lon')?.value):null,timezone:$('tz')?.value||null},neutrality:'structural_data_only'},
+    points,houses,angles,aspects,dispositors:disp.items,dispositorMetadata:{system:disp.system,mutual_receptions:disp.mutual_receptions},angularity,
+    zodiacMetadata:{system:'tropical',signs:ZODIAC_META},configurations:[],configurationMetadata:{status:'not_computed',reason:'Optional structural configurations are not computed.'},
+    detectionCriteria:{aspects:CONFIG_ASPECTOS.map(a=>({type:a.nombre,angle:a.angulo})),orbsByBody:ORBES_COSMOGRAMA},
+    validation:null
+  };
+  core.validation=validarNatalCore(core); return core;
+}
+
+function validarNatalCore(core){
+  const errors=[],warnings=[]; if(!core||typeof core!=='object')return {valid:false,errors:['Objeto NatalCore inexistente.'],warnings:[]};
+  const names=new Set((core.points||[]).map(p=>p.name)); NATALCORE_REQUIRED_POINTS.forEach(n=>{if(!names.has(n))errors.push('Falta punto obligatorio: '+n);});
+  (core.points||[]).forEach(p=>{if(!Number.isFinite(p.longitude)||p.longitude<0||p.longitude>=360)errors.push('Longitud inválida: '+p.name); const expected=degNorm360(signoIdx(p.sign)*30+p.degree+p.minute/60+p.second/3600);if(signoIdx(p.sign)<0||angleDistance(expected,p.longitude)>0.01)errors.push('Signo/grado incoherente con longitud: '+p.name);if(!Number.isInteger(p.house)||p.house<1||p.house>12)errors.push('Casa inválida: '+p.name);if(p.speed==null)warnings.push('Velocidad no disponible: '+p.name+'; aplicativo/separativo puede quedar no evaluable.');});
+  if((core.houses||[]).length!==12)errors.push('Deben existir exactamente 12 cúspides.'); const nums=new Set((core.houses||[]).map(h=>h.house)); for(let i=1;i<=12;i++)if(!nums.has(i))errors.push('Falta cúspide de Casa '+i+'.');
+  ['ASC','MC','DSC','IC'].forEach(a=>{if(!core.angles||!core.angles[a])errors.push('Falta ángulo '+a+'.');});
+  const ids=new Set(); (core.aspects||[]).forEach(a=>{if(!Number.isFinite(a.orb))errors.push('Orbe no numérico: '+a.id);if(ids.has(a.id))errors.push('Aspecto duplicado: '+a.id);ids.add(a.id);});
+  const dispNames=new Set((core.dispositors||[]).map(d=>d.body)); (core.points||[]).forEach(p=>{if(!dispNames.has(p.name))errors.push('Dispositor no resuelto para '+p.name);});
+  if(!core.meta?.astrodb_version)errors.push('Falta versión AstroDB.'); if(!core.meta?.zodiac_system)errors.push('Falta sistema zodiacal.'); if(!core.meta?.house_system)errors.push('Falta sistema de casas.'); if(!core.meta?.rulership_system)errors.push('Falta sistema de regencias.');
+  return {valid:errors.length===0,errors,warnings,checked_at:new Date().toISOString()};
+}
+
+function mostrarEstadoValidacionNatalCore(v){
+  const st=$('estadoNatalCore'); if(!st)return; const e=v?.errors||[],w=v?.warnings||[];
+  st.innerHTML=(v?.valid?'<span class="ok"><strong>NatalCore válido.</strong></span>':'<span class="bad"><strong>NatalCore NO válido.</strong></span>')+'<br>Errores: '+e.length+' · Avisos: '+w.length+(e.length?'<br>'+e.map(x=>'• '+x).join('<br>'):'')+(w.length?'<br>'+w.slice(0,8).map(x=>'△ '+x).join('<br>')+(w.length>8?'<br>… '+(w.length-8)+' avisos más.':''):'');
+}
+function validarNatalCoreActivo(){try{const core=construirNatalCore();mostrarEstadoValidacionNatalCore(core.validation);return core;}catch(e){const st=$('estadoNatalCore');if(st)st.innerHTML='<span class="bad">'+e.message+'</span>';return null;}}
+async function mostrarCopiarNatalCore(){
+  const core=validarNatalCoreActivo(); if(!core)return; const txt=JSON.stringify(core,null,2); const area=$('jsonNatalCoreTexto'); if(area){area.style.display='block';area.value=txt;area.focus();area.select();}
+  try{await navigator.clipboard.writeText(txt);}catch(e){};
+}
+function nombreArchivoNatalCore(){const n=slugId($('nombre')?.value||'sin_nombre');return 'natalcore_'+n+'_'+NATALCORE_SCHEMA_VERSION.replace(/[^a-zA-Z0-9.-]/g,'_')+'.json';}
+function descargarNatalCore(){const core=validarNatalCoreActivo();if(!core)return;const blob=new Blob([JSON.stringify(core,null,2)],{type:'application/json;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombreArchivoNatalCore();a.click();URL.revokeObjectURL(a.href);}
+
+
+
+function escHTML(v){
+  return String(v??'').replace(/[&<>\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[ch]||ch));
+}
+function fmtNum(v,d=4){return Number.isFinite(Number(v))?Number(v).toFixed(d):'—';}
+function fmtDMSobj(o){if(!o)return '—';return `${o.degree}° ${String(o.minute).padStart(2,'0')}′ ${fmtNum(o.second,2)}″`;}
+function tableHTML(headers, rows){
+  return `<table class="nc-table"><thead><tr>${headers.map(h=>`<th>${escHTML(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c==null?'—':c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function generarHTMLDocumentoNatalCore(core){
+  const m=core.meta||{};
+  const val=core.validation||{valid:false,errors:[],warnings:[]};
+  const birth=m.source_birth_data||{};
+  const metaRows=[
+    ['Sujeto',escHTML(m.subject_name||'—')],['ID del caso',escHTML(m.subject_id||'—')],['Versión NatalCore',escHTML(m.natalcore_version||'—')],['Versión AstroDB',escHTML(m.astrodb_version||'—')],
+    ['Sistema zodiacal',escHTML(m.zodiac_system||'—')],['Sistema de casas',escHTML(m.house_system||'—')],['Sistema de regencias',escHTML(m.rulership_system||'—')],['Perfil de aspectos',escHTML(m.aspect_detection_profile||'—')],
+    ['Nacimiento',escHTML([birth.date,birth.local_time].filter(Boolean).join(' · ')||'—')],['Lugar',escHTML(birth.place||'—')],['Zona horaria',escHTML(birth.timezone||'—')],['Generado',escHTML(m.generated_at||'—')]
+  ];
+  const pointRows=(core.points||[]).map(p=>[
+    escHTML(p.name),fmtNum(p.longitude,6),escHTML(p.sign),`${p.degree}° ${String(p.minute).padStart(2,'0')}′ ${fmtNum(p.second,2)}″`,escHTML(p.house),
+    p.retrograde===true?'R':(p.retrograde===false?'D':'—'),fmtNum(p.speed,6),fmtNum(p.distance_house_cusp,4),escHTML(p.nearest_angle||'—'),fmtNum(p.nearest_angle_distance,4),
+    escHTML(p.zodiac?.element||'—'),escHTML(p.zodiac?.modality||'—'),escHTML(p.zodiac?.polarity||'—')
+  ]);
+  const houseRows=(core.houses||[]).map(h=>[escHTML(h.house),fmtNum(h.cusp_longitude,6),escHTML(h.sign),`${h.degree}° ${String(h.minute).padStart(2,'0')}′ ${fmtNum(h.second,2)}″`,escHTML(h.house_system||'—')]);
+  const angleRows=Object.entries(core.angles||{}).map(([k,a])=>[escHTML(k),fmtNum(a.longitude,6),escHTML(a.sign),`${a.degree}° ${String(a.minute).padStart(2,'0')}′ ${fmtNum(a.second,2)}″`]);
+  const aspectRows=(core.aspects||[]).map(a=>[escHTML(a.id),escHTML(a.body_a),escHTML(a.body_b),escHTML(a.aspect_type),fmtNum(a.exact_angle,2),fmtNum(a.actual_angle,6),fmtNum(a.orb,6),fmtNum(a.detection_orb_max,4),escHTML(a.applying_separating||'no evaluable')]);
+  const dispRows=(core.dispositors||[]).map(d=>[escHTML(d.body),escHTML(d.sign),escHTML((d.sign_rulers||[]).join(' / ')),escHTML(d.immediate_dispositor||'—'),escHTML(d.final_dispositor||'—'),escHTML((d.chain||[]).join(' → ')||'—'),d.closed_loop?'Sí':'No']);
+  const angularRows=(core.angularity||[]).map(a=>[escHTML(a.body),fmtNum(a.distance_ASC,4),fmtNum(a.distance_MC,4),fmtNum(a.distance_DSC,4),fmtNum(a.distance_IC,4),escHTML(a.nearest_angle||'—'),fmtNum(a.nearest_distance,4),a.angular_house?'Sí':'No']);
+  const validationRows=[['Estado',val.valid?'VÁLIDO':'NO VÁLIDO'],['Errores',escHTML((val.errors||[]).join(' | ')||'Ninguno')],['Avisos',escHTML((val.warnings||[]).join(' | ')||'Ninguno')],['Comprobado',escHTML(val.checked_at||'—')]];
+  const configs=(core.configurations||[]).length?tableHTML(['Configuración'],core.configurations.map(c=>[escHTML(JSON.stringify(c))])):`<p>No se han calculado configuraciones estructurales opcionales.</p>`;
+  const mutual=core.dispositorMetadata?.mutual_receptions||[];
+  const criteria=(core.detectionCriteria?.aspects||[]).map(a=>[escHTML(a.type),fmtNum(a.angle,2)]);
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>NatalCore · ${escHTML(m.subject_name||'Sujeto')}</title><style>
+    @page{size:A4;margin:18mm} body{font-family:Arial,Helvetica,sans-serif;color:#222;font-size:10.5pt;line-height:1.35} h1{color:#8a6200;font-size:22pt;margin-bottom:3px} h2{color:#8a6200;border-bottom:2px solid #d8ad31;padding-bottom:4px;margin-top:24px;font-size:14pt} .sub{color:#666;margin-bottom:20px}.badge{display:inline-block;padding:5px 10px;border-radius:12px;background:#fff4cf;border:1px solid #d8ad31;font-weight:bold}.nc-table{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:8.5pt}.nc-table th{background:#f1dfaa;color:#5d4300;border:1px solid #cfc4a8;padding:5px;text-align:left}.nc-table td{border:1px solid #ddd;padding:5px;vertical-align:top}.nc-table tr:nth-child(even) td{background:#faf8f3}.note{background:#fffaf1;border-left:4px solid #d8ad31;padding:8px 10px;margin:10px 0}.small{font-size:8pt;color:#666}.pagebreak{page-break-before:always}
+  </style></head><body>
+  <h1>NatalCore · Capa 0 estructural</h1><div class="sub">AstroDB Pro v10.0 · representación natal neutral y trazable</div><div class="badge">Validación: ${val.valid?'VÁLIDO':'NO VÁLIDO'}</div>
+  <h2>1. Metadatos y trazabilidad</h2>${tableHTML(['Campo','Valor'],metaRows)}
+  <h2>2. Planetas y puntos</h2>${tableHTML(['Cuerpo','Longitud 0–360°','Signo','Grado','Casa','Mov.','Velocidad','Dist. cúspide','Ángulo cercano','Dist. ángulo','Elemento','Modalidad','Polaridad'],pointRows)}
+  <h2>3. Casas y cúspides</h2>${tableHTML(['Casa','Longitud cúspide','Signo','Grado','Sistema'],houseRows)}
+  <h2>4. Ángulos</h2>${tableHTML(['Ángulo','Longitud','Signo','Grado'],angleRows)}
+  <h2>5. Aspectos</h2>${tableHTML(['ID','Factor A','Factor B','Aspecto','Ángulo teórico','Ángulo real','Orbe','Orbe detección','Aplic./Sep.'],aspectRows)}
+  <h2>6. Regentes y dispositores</h2>${tableHTML(['Cuerpo','Signo','Regentes signo','Dispositor inmediato','Dispositor final','Cadena','Bucle'],dispRows)}
+  <div class="note"><strong>Recepciones mutuas:</strong> ${mutual.length?mutual.map(x=>escHTML(x.join(' ↔ '))).join(', '):'No detectadas.'}</div>
+  <h2>7. Angularidad geométrica</h2>${tableHTML(['Cuerpo','Dist. ASC','Dist. MC','Dist. DSC','Dist. IC','Ángulo cercano','Distancia','Casa angular'],angularRows)}
+  <h2>8. Criterios de detección de aspectos</h2>${tableHTML(['Aspecto','Ángulo teórico'],criteria)}<p class="small">Los orbes de detección pertenecen a AstroDB/NatalCore y no constituyen ponderaciones interpretativas de ningún motor.</p>
+  <h2>9. Configuraciones estructurales</h2>${configs}
+  <h2>10. Validación NatalCore</h2>${tableHTML(['Comprobación','Resultado'],validationRows)}
+  <div class="note"><strong>Neutralidad:</strong> este documento contiene únicamente geometría y metadatos estructurales. No contiene IP, IC, IF, puntuaciones PPC/LM, ponderaciones ni interpretación psicológica.</div>
+  </body></html>`;
+}
+function nombreArchivoDocumentoNatalCore(){const n=slugId($('nombre')?.value||'sin_nombre');return 'NatalCore_'+n+'_'+NATALCORE_SCHEMA_VERSION.replace(/[^a-zA-Z0-9.-]/g,'_')+'.docx';}
+function cargarJSZip(){
+  return new Promise((resolve,reject)=>{
+    if(window.JSZip)return resolve(window.JSZip);
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload=()=>window.JSZip?resolve(window.JSZip):reject(new Error('JSZip no quedó disponible.'));
+    s.onerror=()=>reject(new Error('No se pudo cargar el generador DOCX. Comprueba la conexión a Internet.'));
+    document.head.appendChild(s);
+  });
+}
+function xmlEsc(v){return String(v??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]||ch));}
+function wRun(text,bold=false,size=20,color=null){
+  const rPr=`<w:rPr>${bold?'<w:b/>':''}<w:sz w:val="${size}"/><w:szCs w:val="${size}"/>${color?`<w:color w:val="${color}"/>`:''}</w:rPr>`;
+  return `<w:r>${rPr}<w:t xml:space="preserve">${xmlEsc(text)}</w:t></w:r>`;
+}
+function wP(text,opt={}){
+  const jc=opt.align?`<w:jc w:val="${opt.align}"/>`:'';
+  const sp=opt.after!=null?`<w:spacing w:after="${opt.after}"/>`:'';
+  const keep=opt.keep?'<w:keepNext/>':'';
+  return `<w:p><w:pPr>${jc}${sp}${keep}</w:pPr>${wRun(text,!!opt.bold,opt.size||20,opt.color||null)}</w:p>`;
+}
+function wCell(content,opt={}){
+  const shade=opt.shade?`<w:shd w:val="clear" w:color="auto" w:fill="${opt.shade}"/>`:'';
+  const width=opt.width?`<w:tcW w:w="${opt.width}" w:type="dxa"/>`:'';
+  const tcPr=`<w:tcPr>${width}${shade}<w:vAlign w:val="center"/></w:tcPr>`;
+  return `<w:tc>${tcPr}${wP(String(content??'—'),{bold:!!opt.bold,size:opt.size||16,after:20})}</w:tc>`;
+}
+function wTable(headers,rows){
+  const borders='<w:tblBorders><w:top w:val="single" w:sz="4" w:color="D6CEC2"/><w:left w:val="single" w:sz="4" w:color="D6CEC2"/><w:bottom w:val="single" w:sz="4" w:color="D6CEC2"/><w:right w:val="single" w:sz="4" w:color="D6CEC2"/><w:insideH w:val="single" w:sz="3" w:color="E8E1D6"/><w:insideV w:val="single" w:sz="3" w:color="E8E1D6"/></w:tblBorders>';
+  const header=`<w:tr>${headers.map(h=>wCell(h,{bold:true,shade:'F1DFAA',size:15})).join('')}</w:tr>`;
+  const body=(rows||[]).map((r,i)=>`<w:tr>${r.map(c=>wCell(c,{shade:i%2?'FAF8F3':null,size:15})).join('')}</w:tr>`).join('');
+  return `<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblLayout w:type="autofit"/>${borders}</w:tblPr>${header}${body}</w:tbl>${wP('',{size:6,after:50})}`;
+}
+function datosTablasDocxNatalCore(core){
+  const m=core.meta||{}, b=m.source_birth_data||{}, val=core.validation||{};
+  const meta=[
+    ['Sujeto',m.subject_name||'—'],['ID del caso',m.subject_id||'—'],['Versión NatalCore',m.natalcore_version||'—'],['Versión AstroDB',m.astrodb_version||'—'],
+    ['Sistema zodiacal',m.zodiac_system||'—'],['Sistema de casas',m.house_system||'—'],['Sistema de regencias',m.rulership_system||'—'],['Perfil de aspectos',m.aspect_detection_profile||'—'],
+    ['Nacimiento',[b.date,b.local_time].filter(Boolean).join(' · ')||'—'],['Lugar',b.place||'—'],['Latitud',b.latitude??'—'],['Longitud',b.longitude??'—'],['Zona horaria',b.timezone||'—'],['Generado',m.generated_at||'—']
+  ];
+  const pointsPos=(core.points||[]).map(p=>[p.name,fmtNum(p.longitude,6),p.sign,`${p.degree}° ${String(p.minute).padStart(2,'0')}′ ${fmtNum(p.second,2)}″`,p.house,p.retrograde===true?'R':(p.retrograde===false?'D':'—'),fmtNum(p.speed,6)]);
+  const pointsGeo=(core.points||[]).map(p=>[p.name,fmtNum(p.distance_house_cusp,4),p.nearest_angle||'—',fmtNum(p.nearest_angle_distance,4),p.zodiac?.element||'—',p.zodiac?.modality||'—',p.zodiac?.polarity||'—',(p.zodiac?.rulers||[]).join(' / ')||'—']);
+  const houses=(core.houses||[]).map(h=>[h.house,fmtNum(h.cusp_longitude,6),h.sign,`${h.degree}° ${String(h.minute).padStart(2,'0')}′ ${fmtNum(h.second,2)}″`,h.house_system||'—']);
+  const angles=Object.entries(core.angles||{}).map(([k,a])=>[k,fmtNum(a.longitude,6),a.sign,`${a.degree}° ${String(a.minute).padStart(2,'0')}′ ${fmtNum(a.second,2)}″`]);
+  const aspects=(core.aspects||[]).map(a=>[a.body_a,a.body_b,a.aspect_type,fmtNum(a.exact_angle,2),fmtNum(a.actual_angle,6),fmtNum(a.orb,6),fmtNum(a.detection_orb_max,4),a.applying_separating||'no evaluable',a.id]);
+  const disp=(core.dispositors||[]).map(d=>[d.body,d.sign,(d.sign_rulers||[]).join(' / ')||'—',d.immediate_dispositor||'—',d.final_dispositor||'—',(d.chain||[]).join(' → ')||'—',d.closed_loop?'Sí':'No']);
+  const angular=(core.angularity||[]).map(a=>[a.body,fmtNum(a.distance_ASC,4),fmtNum(a.distance_MC,4),fmtNum(a.distance_DSC,4),fmtNum(a.distance_IC,4),a.nearest_angle||'—',fmtNum(a.nearest_distance,4),a.angular_house?'Sí':'No']);
+  const criteria=(core.detectionCriteria?.aspects||[]).map(a=>[a.type,fmtNum(a.angle,2)]);
+  const orbRows=[]; Object.entries(core.detectionCriteria?.orbsByBody||{}).forEach(([body,obj])=>Object.entries(obj||{}).forEach(([angle,orb])=>orbRows.push([body,angle,orb])));
+  const mutual=(core.dispositorMetadata?.mutual_receptions||[]).map(x=>[x.join(' ↔ ')]);
+  const configs=(core.configurations||[]).length?(core.configurations||[]).map(c=>[JSON.stringify(c)]):[['No calculadas.']];
+  const validation=[['Estado',val.valid?'VÁLIDO':'NO VÁLIDO'],['Errores',(val.errors||[]).join(' | ')||'Ninguno'],['Avisos',(val.warnings||[]).join(' | ')||'Ninguno'],['Comprobado',val.checked_at||'—']];
+  return {meta,pointsPos,pointsGeo,houses,angles,aspects,disp,angular,criteria,orbRows,mutual,configs,validation};
+}
+function generarDocumentXMLNatalCore(core){
+  const t=datosTablasDocxNatalCore(core), val=core.validation||{};
+  const section=[];
+  section.push(wP('NatalCore · Capa 0 estructural',{bold:true,size:36,color:'8A6200',after:80}));
+  section.push(wP('AstroDB Pro v10.0 · representación natal neutral y trazable',{size:19,color:'666666',after:120}));
+  section.push(wP('Validación: '+(val.valid?'VÁLIDO':'NO VÁLIDO'),{bold:true,size:22,color:val.valid?'16803A':'B91C1C',after:180}));
+  const add=(title,headers,rows)=>{section.push(wP(title,{bold:true,size:26,color:'8A6200',after:70,keep:true}));section.push(wTable(headers,rows));};
+  add('1. Metadatos y trazabilidad',['Campo','Valor'],t.meta);
+  add('2A. Planetas y puntos · posición',['Cuerpo','Longitud 0–360°','Signo','Grado','Casa','Movimiento','Velocidad'],t.pointsPos);
+  add('2B. Planetas y puntos · geometría y metadatos zodiacales',['Cuerpo','Dist. cúspide','Ángulo cercano','Dist. ángulo','Elemento','Modalidad','Polaridad','Regencia signo'],t.pointsGeo);
+  add('3. Casas y cúspides',['Casa','Longitud cúspide','Signo','Grado','Sistema'],t.houses);
+  add('4. Ángulos',['Ángulo','Longitud','Signo','Grado'],t.angles);
+  add('5. Aspectos',['Factor A','Factor B','Aspecto','Ángulo teórico','Ángulo real','Orbe','Orbe detección','Aplic./Sep.','ID'],t.aspects);
+  add('6. Regentes y dispositores',['Cuerpo','Signo','Regentes signo','Dispositor inmediato','Dispositor final','Cadena','Bucle'],t.disp);
+  add('6B. Recepciones mutuas',['Recepción'],t.mutual.length?t.mutual:[['No detectadas.']]);
+  add('7. Angularidad geométrica',['Cuerpo','Dist. ASC','Dist. MC','Dist. DSC','Dist. IC','Ángulo cercano','Distancia','Casa angular'],t.angular);
+  add('8A. Aspectos detectados',['Aspecto','Ángulo teórico'],t.criteria);
+  add('8B. Orbes de detección AstroDB',['Cuerpo','Ángulo','Orbe máximo'],t.orbRows);
+  section.push(wP('Los orbes de detección pertenecen a AstroDB/NatalCore y no constituyen ponderaciones interpretativas de ningún motor.',{size:16,color:'666666',after:120}));
+  add('9. Configuraciones estructurales',['Configuración'],t.configs);
+  add('10. Validación NatalCore',['Comprobación','Resultado'],t.validation);
+  section.push(wP('Neutralidad: este documento contiene únicamente geometría y metadatos estructurales. No contiene IP, IC, IF, puntuaciones PPC/LM, ponderaciones ni interpretación psicológica.',{bold:true,size:17,color:'5D4300',after:80}));
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+  <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <w:body>${section.join('')}<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="900" w:right="700" w:bottom="900" w:left="700" w:header="400" w:footer="400" w:gutter="0"/></w:sectPr></w:body>
+  </w:document>`;
+}
+async function crearBlobDocxNatalCore(core){
+  const JSZip=await cargarJSZip(); const zip=new JSZip();
+  zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`);
+  zip.folder('_rels').file('.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+  const word=zip.folder('word');
+  word.file('document.xml',generarDocumentXMLNatalCore(core));
+  word.file('styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr/></w:pPrDefault></w:docDefaults></w:styles>`);
+  word.folder('_rels').file('document.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`);
+  return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE'});
+}
+async function descargarDocumentoNatalCore(){
+  const core=validarNatalCoreActivo(); if(!core)return;
+  const prev=$('vistaPreviaNatalCoreDoc'); if(prev){prev.style.display='block';prev.innerHTML='<strong>Generando DOCX real…</strong><br><span class="small">Preparando el documento para Android / Chromebook.</span>';}
+  try{
+    const blob=await crearBlobDocxNatalCore(core);
+    const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=nombreArchivoDocumentoNatalCore(); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
+    if(prev){prev.innerHTML='<strong>Documento DOCX generado correctamente:</strong> '+escHTML(nombreArchivoDocumentoNatalCore())+'<br><span class="small">Archivo Word real compatible con Android, Chromebook, Microsoft Word y Google Docs.</span>';}
+  }catch(e){
+    if(prev){prev.innerHTML='<span class="bad"><strong>No se pudo generar el DOCX.</strong></span><br>'+escHTML(e.message)+'<br><span class="small">La vista previa sigue disponible y el JSON NatalCore no se ve afectado.</span>';}
+  }
+}
+function vistaPreviaDocumentoNatalCore(){
+  const core=validarNatalCoreActivo();if(!core)return;const prev=$('vistaPreviaNatalCoreDoc');if(!prev)return;
+  prev.style.display='block';prev.innerHTML=generarHTMLDocumentoNatalCore(core).replace(/<!DOCTYPE html>[\s\S]*?<body>/i,'').replace(/<\/body>[\s\S]*$/i,'');
+}
+
+function crearPayloadBaseJSON(){
+  if(typeof refrescarDatosDesdeLocal === 'function') refrescarDatosDesdeLocal();
+  const base = Array.isArray(datos) ? datos : [];
+  return {
+    app: 'AstroDB Pro',
+    version: '9.7',
+    exportedAt: new Date().toISOString(),
+    total: base.length,
+    fichas: base
+  };
+}
+
+function nombreArchivoAstroDB(){
+  return 'astrodb_fichas_' + new Date().toISOString().slice(0,10) + '.json';
+}
+
+async function guardarComoBaseJSON(){
+  try{
+    const payload = crearPayloadBaseJSON();
+    const contenido = JSON.stringify(payload,null,2);
+    const nombre = nombreArchivoAstroDB();
+
+    if(window.showSaveFilePicker){
+      const handle = await window.showSaveFilePicker({
+        suggestedName: nombre,
+        types: [{description:'Archivo JSON', accept:{'application/json':['.json']}}]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(contenido);
+      await writable.close();
+      const st=$('estadoImportExport');
+      if(st) st.textContent='Guardado con selector de ubicación. Fichas: '+payload.total+'.';
+      return;
+    }
+
+    // Fallback Android/iOS: no permiten elegir carpeta desde HTML local.
+    const area=$('jsonBDTexto');
+    if(area){
+      area.style.display='block';
+      area.value=contenido;
+      area.focus();
+      area.select();
+    }
+    const st=$('estadoImportExport');
+    if(st) st.textContent='Este navegador no permite “Guardar como…” desde una web local. Copia el JSON o usa Descargar JSON y luego muévelo a Drive.';
+    alert('Tu navegador no permite elegir carpeta desde esta página. Te muestro el JSON para copiarlo o puedes usar “Descargar JSON”.');
+  }catch(e){
+    if(e && e.name === 'AbortError') return;
+    alert('No se pudo guardar: '+e.message);
+  }
+}
+
+async function mostrarCopiarBaseJSON(){
+  try{
+    const payload=crearPayloadBaseJSON();
+    const contenido=JSON.stringify(payload,null,2);
+    const area=$('jsonBDTexto');
+    if(area){
+      area.style.display='block';
+      area.value=contenido;
+      area.focus();
+      area.select();
+    }
+    try{
+      await navigator.clipboard.writeText(contenido);
+      const st=$('estadoImportExport');
+      if(st) st.textContent='JSON mostrado y copiado al portapapeles. Fichas: '+payload.total+'.';
+    }catch(e){
+      const st=$('estadoImportExport');
+      if(st) st.textContent='JSON mostrado. Cópialo manualmente si el portapapeles no funciona.';
+    }
+  }catch(e){
+    alert('No se pudo generar el JSON: '+e.message);
+  }
+}
+
+function exportarBaseJSON(){
+  try{
+    const payload = crearPayloadBaseJSON();
+    const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nombreArchivoAstroDB();
+    a.click();
+    URL.revokeObjectURL(a.href);
+    const st = $('estadoImportExport');
+    if(st) st.textContent = 'Descargadas ' + payload.total + ' fichas. En Android suele guardarse en Descargas.';
+  }catch(e){
+    alert('No se pudo exportar: ' + e.message);
+  }
+}
+
+async function importarBaseJSON(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  try{
+    const txt = await file.text();
+    const data = JSON.parse(txt);
+    const nuevas = Array.isArray(data) ? data : (Array.isArray(data.fichas) ? data.fichas : []);
+    if(!nuevas.length){
+      alert('El archivo no contiene fichas válidas.');
+      return;
+    }
+
+    if(typeof refrescarDatosDesdeLocal === 'function') refrescarDatosDesdeLocal();
+    const actuales = Array.isArray(datos) ? datos : [];
+    const mapa = new Map();
+
+    function claveFichaImport(f){
+      return [f.nombre||'', f.dia||'', f.mes||'', f.anio||'', f.hora||'', f.ciudad||''].join('|').toLowerCase();
+    }
+
+    actuales.forEach(f=>{
+      if(f && typeof f === 'object') mapa.set(claveFichaImport(f), f);
+    });
+
+    let anadidas = 0;
+    nuevas.forEach(f=>{
+      if(!f || typeof f !== 'object') return;
+      const ficha = {...f, id: f.id || Date.now()+Math.random()};
+      const k = claveFichaImport(ficha);
+      if(!mapa.has(k)){
+        mapa.set(k, ficha);
+        anadidas++;
+      }else{
+        const previa = mapa.get(k);
+        const mejor = (Array.isArray(ficha.planetas)&&ficha.planetas.length) ? ficha : previa;
+        mapa.set(k, {...previa, ...mejor});
+      }
+    });
+
+    datos = Array.from(mapa.values());
+    if(typeof persistirDatos === 'function') persistirDatos();
+    else localStorage.setItem(typeof STORAGE_KEY !== 'undefined' ? STORAGE_KEY : 'astrodb_v51', JSON.stringify(datos));
+
+    if(typeof actualizarSelectorCartas === 'function') actualizarSelectorCartas();
+    if(typeof render === 'function') render();
+
+    const st = $('estadoImportExport');
+    if(st) st.textContent = 'Importadas/fusionadas ' + nuevas.length + ' fichas. Nuevas añadidas: ' + anadidas + '. Total: ' + datos.length + '.';
+    alert('Importación completada. Total de fichas: ' + datos.length);
+  }catch(e){
+    alert('No se pudo importar el JSON: ' + e.message);
+  }finally{
+    ev.target.value = '';
+  }
+}
+
+function bind(){
+  const on=(id,ev,fn)=>{const el=$(id); if(el)el.addEventListener(ev,fn);};
+  document.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>activarTab(b.dataset.tab)));
+  on('btnNueva','click',nueva);
+  on('btnGuardar','click',guardar);
+  on('btnGuardarNueva','click',guardarComoNueva);
+  on('btnImprimir','click',()=>window.print());
+  on('btnEliminar','click',eliminar);
+  on('nombre','input',e=>$('titulo').textContent=e.target.value||'Nueva consulta');
+  on('ciudad','input',e=>buscarCiudad(e.target.value));
+  on('btnCalcularDatos','click',calcularDesdeDatos);
+  on('btnFiltrar','click',aplicarComparativaGlobal);
+  on('btnLimpiarFiltro','click',limpiarComparativaGlobal);
+  on('btnExportarFiltro','click',exportarComparativaCSV);
+  on('btnAbrirSeleccion','click',()=>{const id=Number($('selectorCartas').value); if(id)cargar(id);});
+  on('selectorCartas','change',()=>{const id=Number($('selectorCartas').value); if(id)cargar(id);});
+  on('filtroAspectosPlaneta','change',pintarTablaAspectos);
+  on('filtroAspectosPlaneta','input',pintarTablaAspectos);
+  
+  
+
+  on('btnGenerarTextoCarta','click',descargarDocumentoNatalCore);
+  on('btnCopiarTextoCarta','click',vistaPreviaDocumentoNatalCore);
+
+  on('btnExportarBD','click',exportarBaseJSON);
+  on('inputImportarBD','change',importarBaseJSON);
+
+  on('btnGuardarComoBD','click',guardarComoBaseJSON);
+  on('btnMostrarJSONBD','click',mostrarCopiarBaseJSON);
+  on('btnValidarNatalCore','click',validarNatalCoreActivo);
+  on('btnMostrarNatalCore','click',mostrarCopiarNatalCore);
+  on('btnDescargarNatalCore','click',descargarNatalCore);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{mostrarPanelDatosCopiables();datos=cargarTodasLasFichasGuardadas();initSelects();bind();actualizarSelectorCartas();render();});
+})();
+</script>
+
+
+<div id="versionBanner" class="no-print" style="position:fixed;right:12px;bottom:12px;z-index:9999;background:#f4d03f;color:#111;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800">AstroDB v10.0 · NatalCore DOCX</div>
+</body>
+</html>
