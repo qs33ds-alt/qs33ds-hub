@@ -1,330 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#edf3f4">
 <title>QS33DS · Portal</title>
-
 <style>
-:root{
-  --bg:#eef3f5;
-  --ink:#183540;
-  --muted:#74858c;
-  --line:#d4e0e4;
-  --white:rgba(255,255,255,.82);
-
-  --blue:#5f8fa5;
-  --green:#6d9e91;
-  --violet:#8b88ad;
-  --amber:#bd9870;
-}
-
+:root{--ink:#102b43;--muted:#61778b;--line:rgba(27,66,91,.16);--paper:#f7f8f5;--gold:#a87328;--shadow:0 24px 60px rgba(18,48,68,.13)}
 *{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  min-height:100%;
-}
-
-body{
-  min-height:100vh;
-  font-family:IBM Plex Sans,Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
-  color:var(--ink);
-  background:
-    radial-gradient(circle at 15% 15%,rgba(95,143,165,.12),transparent 28%),
-    radial-gradient(circle at 85% 80%,rgba(109,158,145,.11),transparent 30%),
-    linear-gradient(135deg,#f6f9fa,#e8eef1);
-}
-
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  opacity:.32;
-  background-image:
-    linear-gradient(rgba(80,110,125,.07) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(80,110,125,.07) 1px,transparent 1px);
-  background-size:42px 42px;
-  mask-image:linear-gradient(to bottom,black,transparent 80%);
-}
-
-.shell{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  max-width:1100px;
-  margin:auto;
-  padding:56px 32px 38px;
-}
-
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:30px;
-  margin-bottom:52px;
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-
-.logo{
-  width:50px;
-  height:50px;
-  border:1px solid #a9bec7;
-  border-radius:50%;
-  position:relative;
-  display:grid;
-  place-items:center;
-  background:rgba(255,255,255,.55);
-  box-shadow:0 10px 30px rgba(36,65,76,.08);
-}
-
-.logo:before,
-.logo:after{
-  content:"";
-  position:absolute;
-  border-radius:50%;
-  border:1px solid rgba(77,129,149,.35);
-}
-
-.logo:before{width:31px;height:31px}
-.logo:after{width:13px;height:13px;background:#658fa1}
-
-.title small{
-  display:block;
-  font-size:10px;
-  letter-spacing:.24em;
-  text-transform:uppercase;
-  color:#81939a;
-  margin-bottom:5px;
-}
-
-.title h1{
-  margin:0;
-  font-family:Georgia,"Times New Roman",serif;
-  font-weight:500;
-  font-size:30px;
-  letter-spacing:.01em;
-}
-
-.status{
-  font-size:10px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:#71858d;
-  padding:8px 12px;
-  border:1px solid #cad9de;
-  border-radius:100px;
-  background:rgba(255,255,255,.55);
-}
-
-.intro{
-  max-width:610px;
-  margin-bottom:26px;
-}
-
-.intro h2{
-  font-family:Georgia,"Times New Roman",serif;
-  font-weight:400;
-  font-size:21px;
-  margin:0 0 7px;
-}
-
-.intro p{
-  color:var(--muted);
-  margin:0;
-  font-size:13px;
-  line-height:1.55;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:16px;
-}
-
-.card{
-  min-height:190px;
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:22px;
-  text-decoration:none;
-  color:inherit;
-  background:var(--white);
-  backdrop-filter:blur(16px);
-  box-shadow:0 14px 35px rgba(42,69,80,.07);
-  position:relative;
-  overflow:hidden;
-  transition:.18s ease;
-}
-
-.card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 19px 40px rgba(42,69,80,.12);
-}
-
-.card:after{
-  content:"";
-  position:absolute;
-  width:170px;
-  height:170px;
-  right:-75px;
-  bottom:-95px;
-  border-radius:50%;
-  border:1px solid currentColor;
-  opacity:.12;
-}
-
-.top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:28px;
-}
-
-.symbol{
-  width:46px;
-  height:46px;
-  border-radius:15px;
-  display:grid;
-  place-items:center;
-  font-family:Georgia,serif;
-  font-size:19px;
-  border:1px solid currentColor;
-  background:rgba(255,255,255,.48);
-}
-
-.arrow{
-  font-size:19px;
-  opacity:.45;
-}
-
-.code{
-  font-size:9px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  opacity:.72;
-}
-
-.card h3{
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:21px;
-  font-weight:500;
-  margin:5px 0 5px;
-}
-
-.card p{
-  margin:0;
-  font-size:11px;
-  color:#71838a;
-}
-
-.q33{color:var(--blue)}
-.cognitive{color:var(--green)}
-.agent{color:var(--violet)}
-.seed{color:var(--amber)}
-.astrodb{color:#667b93}
-.reader{color:#7b879f}
-
-.reader .symbol{
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:18px;
-  letter-spacing:-.08em;
-}
-
-footer{
-  margin-top:auto;
-  padding-top:44px;
-  font-size:9px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:#89999f;
-}
-
-@media(max-width:700px){
-  .shell{padding:30px 18px}
-  header{margin-bottom:36px}
-  .status{display:none}
-  .grid{grid-template-columns:1fr}
-  .card{min-height:160px}
-  .title h1{font-size:25px}
-}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+body{min-height:100vh;overflow-x:hidden;background:radial-gradient(circle at 50% -10%,#fff,transparent 38%),linear-gradient(135deg,#edf4f5,#f8f7f2 52%,#e8f0f2)}
+body:before,body:after{content:"";position:fixed;border:1px solid rgba(42,80,102,.09);border-radius:50%;pointer-events:none;z-index:-1}
+body:before{width:820px;height:820px;left:50%;top:-390px;transform:translateX(-50%)} body:after{width:1180px;height:520px;left:50%;top:120px;transform:translateX(-50%)}
+.shell{width:min(1400px,calc(100% - 64px));margin:auto;padding:42px 0 30px}
+header{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:18px}
+.brandmark{width:58px;height:58px;position:relative;border:1px solid #71899a;border-radius:50%;display:grid;place-items:center}
+.brandmark:before{content:"";width:34px;height:34px;border:1px solid #9aabaf;border-radius:50%;position:absolute}
+.brandmark:after{content:"";width:12px;height:12px;border-radius:50%;background:linear-gradient(145deg,#d5a64b,#93601d);box-shadow:0 0 22px rgba(184,133,47,.45)}
+.brand small,.status small,.eyebrow,.code,.kicker,.foot{letter-spacing:.3em;text-transform:uppercase}
+.brand small{display:block;font-size:9px;color:#6c8293;margin-bottom:5px}.brand strong{font:400 34px Georgia,serif}
+.status{text-align:right;font-size:10px;color:#5d7487;letter-spacing:.22em}.dot{display:inline-block;width:7px;height:7px;background:#1a9b83;border-radius:50%;margin-left:8px;box-shadow:0 0 12px rgba(26,155,131,.55)}
+.hero{text-align:center;padding:26px 0 46px}.hero .star{width:46px;height:46px;margin:0 auto 22px;border:1px solid rgba(167,115,40,.55);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:24px}
+.eyebrow{font-size:10px;color:#607689}h1{font:400 clamp(40px,5vw,64px)/1.05 Georgia,serif;margin:16px 0 8px}.hero p{color:#6d7f8e;letter-spacing:.2em;font-size:11px}.hero:after{content:"";display:block;width:82px;height:2px;background:#b78639;margin:26px auto 0}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{min-width:0;min-height:510px;background:rgba(248,248,245,.95);border:1px solid rgba(52,82,98,.10);border-radius:20px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.25s ease}
+.card:hover{transform:translateY(-7px);box-shadow:0 30px 72px rgba(18,48,68,.19)}
+.art{height:220px;position:relative;overflow:hidden;display:grid;place-items:center}.art:after{content:"";position:absolute;inset:auto 0 0;height:72px;background:linear-gradient(transparent,#f8f8f5)}
+.origin .art{background:radial-gradient(circle at 50% 58%,#fff7dc 0 8%,#c9a46a 9%,#6f7d78 32%,#38515b 60%,#263f4a)}
+.ennoia .art{background:radial-gradient(circle at 50% 52%,#f3d888 0 2%,#477b65 18%,#194e43 52%,#123c36)}
+.astro .art{background:radial-gradient(circle at 50% 54%,#294d65 0 11%,#102f49 12% 38%,#09243a 65%,#061b2e)}
+.reader .art{background:radial-gradient(circle at 50% 40%,#fffdf6,#d9d1bf 42%,#9aa6a8)}
+.art svg{width:88%;height:88%;position:relative;z-index:1;filter:drop-shadow(0 8px 16px rgba(0,0,0,.12))}
+.info{text-align:center;padding:0 24px 22px;display:flex;flex:1;flex-direction:column;align-items:center}
+.badge{width:44px;height:44px;margin-top:-23px;border-radius:50%;background:#f7f8f5;border:1px solid #8ea0a8;display:grid;place-items:center;z-index:3;font-family:Georgia,serif}
+.code{font-size:9px;color:#657a8a;margin-top:18px}.card h2{font:400 31px/1.05 Georgia,serif;margin:9px 0 8px}.kicker{font-size:10px;color:#3e5669}.rule{width:52px;height:1px;background:#ad7a30;margin:18px auto}
+.desc{font-size:14px;line-height:1.55;color:#52697a;min-height:44px;margin:0 auto 20px}
+.open{margin-top:auto;width:100%;height:54px;border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px 0 24px;font-size:10px;letter-spacing:.27em;text-transform:uppercase}
+.open span:last-child{width:32px;height:32px;border:1px solid rgba(255,255,255,.75);border-radius:50%;display:grid;place-items:center;font-size:16px;letter-spacing:0}
+.origin .open{background:linear-gradient(100deg,#174b69,#245e78)}.ennoia .open{background:linear-gradient(100deg,#174b42,#367563)}.astro .open{background:linear-gradient(100deg,#113d5d,#194c6d)}.reader .open{background:linear-gradient(100deg,#a86f24,#8d5c22)}
+footer{display:flex;align-items:center;justify-content:space-between;margin-top:44px;color:#687c8b}.foot{font-size:8px}.centerline{display:flex;align-items:center;gap:18px;flex:1;justify-content:center}.centerline:before,.centerline:after{content:"";height:1px;max-width:300px;flex:1;background:var(--line)}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.shell{width:calc(100% - 28px);padding-top:24px}.status{display:none}.brand strong{font-size:28px}.hero{padding:34px 0}.grid{grid-template-columns:1fr}.card{min-height:490px}.art{height:210px}.centerline{display:none}}
 </style>
 </head>
-
-<body>
-
-<div class="shell">
-
-<header>
-  <div class="brand">
-    <div class="logo"></div>
-    <div class="title">
-      <small>Digital environment</small>
-      <h1>QS33DS</h1>
-    </div>
-  </div>
-
-  <div class="status">System · Online</div>
-</header>
-
-<section class="intro">
-  <h2>Entorno de aplicaciones</h2>
-  <p>Acceso central a las herramientas y sistemas QS33DS.</p>
-</section>
-
-<main>
-  <a class="card q33" href="./origin/">
-    <div class="top">
-      <div class="symbol">◉</div>
-      <div class="arrow">↗</div>
-    </div>
-    <div class="code">QS33DS · 01</div>
-    <h3>ORIGIN</h3>
-    <p>Atlas Origen · Publisher canónico</p>
-  </a>
-
-  <a class="card cognitive" href="./ennoia/">
-    <div class="top">
-      <div class="symbol">◇</div>
-      <div class="arrow">↗</div>
-    </div>
-    <div class="code">QS33DS · 02</div>
-    <h3>ENNOIA</h3>
-    <p>Atlas cognitivo · Publisher canónico</p>
-  </a>
-
-  <a class="card astrodb" href="./astrodb/">
-    <div class="top">
-      <div class="symbol">✦</div>
-      <div class="arrow">↗</div>
-    </div>
-    <div class="code">QS33DS · 03</div>
-    <h3>AstroDB Pro</h3>
-    <p>Cálculo natal · NatalCore</p>
-  </a>
-
-  <a class="card reader" href="./atlas-reader.html">
-    <div class="top">
-      <div class="symbol">▤</div>
-      <div class="arrow">↗</div>
-    </div>
-    <div class="code">QS33DS · 04</div>
-    <h3>Atlas Reader</h3>
-    <p>Lector de Atlas · ORIGIN + ENNOIA</p>
-  </a>
+<body><div class="shell">
+<header><div class="brand"><div class="brandmark"></div><div><small>Digital environment</small><strong>QS33DS</strong></div></div><div class="status">SYSTEM · ONLINE <span class="dot"></span><br><small>QS33DS · PORTAL v2.0</small></div></header>
+<section class="hero"><div class="star">✦</div><div class="eyebrow">Cielo · conocimiento · herramientas</div><h1>Entorno de aplicaciones</h1><p>Acceso central a las herramientas y sistemas QS33DS.</p></section>
+<main class="grid">
+<a class="card origin" href="./origin/"><div class="art"><svg viewBox="0 0 300 220" fill="none"><g stroke="#f5dda6" opacity=".9"><circle cx="150" cy="104" r="28"/><circle cx="150" cy="104" r="55"/><circle cx="150" cy="104" r="82"/><path d="M150 7V201M54 104h192M84 171L150 70l66 101M106 171l44-67 44 67"/></g><circle cx="150" cy="104" r="8" fill="#f5d276"/><path d="M38 188l61-61 30 28 24-24 31 28 24-21 54 50" fill="#263e47" opacity=".8"/></svg></div><div class="info"><div class="badge">●</div><div class="code">QS33DS · 01</div><h2>ORIGIN</h2><div class="kicker">Atlas Origen</div><div class="rule"></div><p class="desc">Publisher canónico del Atlas.<br>Estructura, diseño y composición.</p><div class="open"><span>Abrir Origin</span><span>→</span></div></div></a>
+<a class="card ennoia" href="./ennoia/"><div class="art"><svg viewBox="0 0 300 220" fill="none"><g stroke="#e9d88e" opacity=".9"><circle cx="150" cy="105" r="66"/><circle cx="150" cy="65" r="40"/><circle cx="150" cy="145" r="40"/><circle cx="115" cy="85" r="40"/><circle cx="185" cy="85" r="40"/><circle cx="115" cy="125" r="40"/><circle cx="185" cy="125" r="40"/></g><circle cx="150" cy="105" r="6" fill="#f0d67c"/></svg></div><div class="info"><div class="badge">◆</div><div class="code">QS33DS · 02</div><h2>ENNOIA</h2><div class="kicker">Atlas Cognitivo</div><div class="rule"></div><p class="desc">Publisher 2 · Cognitivo.<br>Arquitectura canónica ENNOIA.</p><div class="open"><span>Abrir Ennoia</span><span>→</span></div></div></a>
+<a class="card astro" href="./astrodb/"><div class="art"><svg viewBox="0 0 300 220" fill="none"><g stroke="#d8b56b" opacity=".9"><circle cx="150" cy="106" r="28"/><circle cx="150" cy="106" r="53"/><circle cx="150" cy="106" r="79"/><ellipse cx="150" cy="106" rx="105" ry="52"/><path d="M150 14v184M58 106h184"/></g><circle cx="150" cy="106" r="22" fill="#254b64"/><path d="M150 84a22 22 0 0 1 0 44a30 30 0 0 0 0-44Z" fill="#d7aa52"/></svg></div><div class="info"><div class="badge">✦</div><div class="code">QS33DS · 03</div><h2>AstroDB Pro</h2><div class="kicker">Cálculo natal</div><div class="rule"></div><p class="desc">Sistema profesional de astrología.<br>NatalCore · v10.1.</p><div class="open"><span>Abrir AstroDB</span><span>→</span></div></div></a>
+<a class="card reader" href="./atlas-reader.html"><div class="art"><svg viewBox="0 0 300 220" fill="none"><g stroke="#9a7740" stroke-width="1.2"><path d="M53 62c34-12 65-8 97 10v106c-32-18-63-22-97-10V62Z" fill="#f8f4e9"/><path d="M247 62c-34-12-65-8-97 10v106c32-18 63-22 97-10V62Z" fill="#f8f4e9"/><path d="M150 72v106"/></g><g stroke="#b4a88e"><path d="M72 87h57M72 101h57M72 115h45M171 87h57M171 101h57M171 115h45"/></g><circle cx="150" cy="52" r="28" stroke="#c4a05b"/><path d="M150 35l5 12 12 5-12 5-5 12-5-12-12-5 12-5 5-12Z" fill="#b68439"/></svg></div><div class="info"><div class="badge">✦</div><div class="code">QS33DS · 04</div><h2>Atlas Reader</h2><div class="kicker">Lector de Atlas</div><div class="rule"></div><p class="desc">Lectura y consulta de Atlas.<br>ORIGIN + ENNOIA.</p><div class="open"><span>Abrir Reader</span><span>→</span></div></div></a>
 </main>
-
-<footer>
-  QS33DS · Digital Architecture
-</footer>
-
-</div>
-
-</body>
-</html>
+<footer><div class="foot">QS33DS · Digital architecture</div><div class="centerline"><div class="foot">Explorar · integrar · proyectar</div></div><div class="foot">Modular · consistente · evolutivo</div></footer>
+</div></body></html>
