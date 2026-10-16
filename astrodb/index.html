@@ -19,6 +19,37 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
 .home{max-width:560px;margin:12vh auto;text-align:center;box-shadow:none}.homeMark{font-size:42px;margin-bottom:8px}.home h2{margin:5px 0}.quickRow{display:flex;gap:6px}.quickRow>*{flex:1}.sectionTitle{margin:0 0 8px;font-size:16px}.mutedBox{background:#fafafa;border:1px solid #eee;border-radius:9px;padding:10px}
 @media(max-width:900px){body{display:block}.sidebar{width:100%;max-height:none;position:static;border-right:0;border-bottom:1px solid var(--line)}.grid2,.grid3,.grid12{grid-template-columns:1fr}.main{padding:12px}.savedList{max-height:160px}}
 @media print{.sidebar,.no-print{display:none!important}.main{padding:0}.card{border:0;box-shadow:none}}
+
+/* Psychological Futurist · visual layer v0.1 (feature branch only) */
+:root{color-scheme:dark;--accent:#63d8e9;--accent-soft:rgba(82,195,222,.13);--bg:#080f20;--panel:#101c30;--line:#2a3d55;--text:#eaf3fb;--muted:#a6b7ca;--ok:#73e2bd;--bad:#ff8797;--shadow:0 12px 38px rgba(0,0,0,.25)}
+html,body{background:var(--bg);color:var(--text)}
+body{background:radial-gradient(ellipse at 72% 0%,rgba(83,84,173,.13),transparent 46%),radial-gradient(ellipse at 15% 85%,rgba(25,130,157,.09),transparent 50%),var(--bg)}
+.sidebar{background:rgba(9,18,34,.96);border-color:var(--line);width:274px}
+.main{padding:24px}
+.brand,.editorTop h2{color:#d9f9ff}
+.brand{letter-spacing:.11em}
+.card,.sideDetails{background:rgba(16,28,48,.94);border:1px solid var(--line);box-shadow:var(--shadow)}
+.sideCard h3,.sideDetails>summary,.table th{color:#c1e7ef}
+.sideDetails>summary:focus-visible,.btn:focus-visible,.tabbtn:focus-visible,.listItem:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.detailsBody{border-color:var(--line)}
+.btn,.btn-dark,.tabbtn,input,select,textarea{background:#14243a;color:var(--text);border-color:#35516b}
+.btn:hover,.btn-dark:hover,.tabbtn:hover{background:#1b3650}
+.btn-gold{background:#277c94;color:#f3fcff;border-color:#419cb3}
+.btn-gold:hover{background:#329bb4}
+.btn-red{background:#3a1f31;color:#ffd5db;border-color:#824359}
+.btn-red:hover{background:#52283c}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:2px solid rgba(99,216,233,.25)}
+input::placeholder,textarea::placeholder{color:#a7b8c9}
+.listItem,.suggestions,.mutedBox,.status{background:#122238;color:var(--text);border-color:var(--line)}
+.listItem:hover,.listItem.active,.suggestions div:hover,.tabbtn.active{background:#1a4054;border-color:#47849b;color:#e5fbff}
+.savedList,.table th,.table td,.tabbar,.suggestions div{border-color:var(--line)}
+.tabCounter{background:#25445c;color:#eaf3fb}
+.tabbtn.active .tabCounter{background:#39738c}
+#astroWheel{background:#fff;box-shadow:0 0 0 1px rgba(113,213,234,.16),0 12px 45px rgba(0,0,0,.22)}
+@media(max-width:900px){.sidebar{width:100%;max-height:none}.main{padding:12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{html,body{background:white!important;color:black!important}.main{background:white!important}.card{background:white!important;color:black!important;box-shadow:none!important}.table th,.table td{color:black!important}}
+
 </style>
 </head>
 <body>
