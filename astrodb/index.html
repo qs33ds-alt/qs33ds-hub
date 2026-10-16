@@ -1039,40 +1039,36 @@ async function guardarFichaSupabase(ficha){
   }
 }
 
-async function sincronizarFichaActivaSupabase(){
+async function sincronizarFichaActivaSupabase(ficha){
   if(!astrodbSupabase || !astrodbUser) return false;
-
   try{
-    const ficha =
-      typeof fichaActualComoObjeto === 'function'
-        ? fichaActualComoObjeto(false)
-        : null;
-
-    if(!ficha) return false;
-
     return await guardarFichaSupabase(ficha);
-
   }catch(error){
     console.error('[AstroDB] Error preparando sincronización:',error);
     return false;
   }
 }
-
-
-function guardar(){const f=fichaActualComoObjeto(false); if(idActivo && datos.some(x=>String(x.id)===String(idActivo)))datos=datos.map(x=>String(x.id)===String(idActivo)?f:x); else{datos.push(f);idActivo=f.id;} persistirDatos();
-sincronizarFichaActivaSupabase().then(ok=>{
+function informarGuardadoRemoto(ok,etiqueta){
   console.info(ok
-    ? '[AstroDB] Guardado local + nube completado.'
-    : '[AstroDB] Guardado local completado; nube no disponible.');
-});
-alert(`Ficha guardada localmente. Total de fichas: ${datos.length}. La sincronización con Supabase se comprueba por separado; Drive aún no está conectado.`);}
-function guardarComoNueva(){const f=fichaActualComoObjeto(true);datos.push(f);idActivo=f.id;persistirDatos();
-sincronizarFichaActivaSupabase().then(ok=>{
-  console.info(ok
-    ? '[AstroDB] Nueva ficha sincronizada con la nube.'
-    : '[AstroDB] Nueva ficha guardada localmente; nube no disponible.');
-});
-alert(`Guardada como nueva ficha. Total de fichas: ${datos.length}.`);}
+    ? '[AstroDB] '+etiqueta+' sincronizada con Supabase.'
+    : '[AstroDB] '+etiqueta+' guardada localmente; Supabase no confirmado.');
+  const estado=$('estadoGuardadoAstroDB');
+  if(estado) estado.textContent=ok?'Supabase: guardado confirmado':'Supabase: no confirmado';
+}
+function guardar(){
+  const f=fichaActualComoObjeto(false);
+  if(idActivo && datos.some(x=>String(x.id)===String(idActivo))) datos=datos.map(x=>String(x.id)===String(idActivo)?f:x);
+  else {datos.push(f);idActivo=f.id;}
+  persistirDatos();
+  sincronizarFichaActivaSupabase(f).then(ok=>informarGuardadoRemoto(ok,'Ficha'));
+  alert('Ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
+}
+function guardarComoNueva(){
+  const f=fichaActualComoObjeto(true);
+  datos.push(f);idActivo=f.id;persistirDatos();
+  sincronizarFichaActivaSupabase(f).then(ok=>informarGuardadoRemoto(ok,'Nueva ficha'));
+  alert('Nueva ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
+}
 
 function cargar(id){const f=datos.find(x=>x.id===id); if(!f)return; idActivo=id; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(k=>$(k).value=f[k]||''); $('titulo').textContent=f.nombre||'Ficha'; setCarta(f.planetas||[],f.casas||[],f.ephemeris||null); if($('interpretacionDirecta'))$('interpretacionDirecta').value=f.interpretacion||''; render();}
 function eliminar(){if(!idActivo||!confirm('¿Eliminar ficha?'))return; datos=datos.filter(x=>x.id!==idActivo);localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));idActivo=null;render();nueva();}
