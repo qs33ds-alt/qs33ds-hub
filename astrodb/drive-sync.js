@@ -121,11 +121,11 @@
     // A readable label never determines identity; the stable chart ID does.
     filenameLabel(chart){
       const raw=String(chart?.nombre??chart?.name??'').normalize('NFC').trim();
-      const safe=raw.replace(/[\\/<>:"|?*\\x00-\\x1f\\x7f]/g,' ').replace(/\\s+/g,' ').replace(/^\\.+|\\.+$/g,'').trim().slice(0,90);
+      const safe=raw.replace(/[\/<>:"|?*\x00-\x1f\x7f]/g,' ').replace(/\s+/g,' ').replace(/^\.+|\.+$/g,'').trim().slice(0,90);
       return safe||'Sin nombre';
     }
     fileBase(prefix,chart){
-      const id=String(chart.id).replace(/[^\\w.-]/g,'_');
+      const id=String(chart.id).replace(/[^\w.-]/g,'_');
       return prefix+'_'+this.filenameLabel(chart)+'_'+id+'.json';
     }
     async save(bundle){
