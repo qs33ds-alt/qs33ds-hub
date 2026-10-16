@@ -933,6 +933,7 @@ function pintarTablaAspectos(){
 
 async function guardarFichaSupabase(ficha){
   if(!astrodbSupabase || !astrodbUser || !ficha) return false;
+  if(ficha.id==null) { console.error('[AstroDB] Falta identificador estable de ficha.'); return false; }
 
   try{
     const nombre =
@@ -968,16 +969,16 @@ async function guardarFichaSupabase(ficha){
           : null,
 
       timezone:
-        ficha.tz || null,
+        ficha.tz || ficha.ephemeris?.timezone || null,
 
       input_data: ficha,
       chart_data: {planetas:ficha.planetas||[],casas:ficha.casas||[]},
 
       natalcore:
         (typeof construirNatalCore === 'function' &&
-         window.cartaActual &&
-         Array.isArray(window.cartaActual.planetas) &&
-         window.cartaActual.planetas.length)
+         String(ficha.id)===String(idActivo) &&
+         Array.isArray(ficha.planetas) && ficha.planetas.length &&
+         Array.isArray(ficha.casas) && ficha.casas.length)
           ? construirNatalCore()
           : {},
 
