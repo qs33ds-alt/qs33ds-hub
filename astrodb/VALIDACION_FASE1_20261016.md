@@ -43,3 +43,33 @@ Auditoría agregada: 5 registros existentes, ninguno sin ID en `input_data.id` o
 La cola solo protege una instancia de la página. Sigue pendiente una clave única por usuario/ficha y guardado atómico para concurrencia entre pestañas y dispositivos. Plan: revisar compatibilidad de los dos campos históricos de ID, añadir una columna derivada estable con restricción única, detenerse ante ambigüedades sin borrar filas y adoptar upsert con esa restricción. No se ha desplegado ese cambio.
 
 Se intentó obtener Chromium Headless Shell como alternativa al navegador completo; la descarga también devolvió un archivo inválido. Las pruebas visuales siguen bloqueadas. No se ha implementado OAuth ni probado subida real a Drive; permanece exportación manual. Sin fusión ni publicación.
+
+## Tercera intervención de integración
+
+Se implementa `drive-sync.js` con OAuth de Google Identity Services y alcance `drive.file`. No se ha encontrado ningún cliente OAuth del proyecto. El token vive en memoria; la aplicación identifica la cuenta con Drive `about`, gestiona caducidad/revocación y crea una carpeta propia de copias automáticas conservando las carpetas históricas. Se documenta la activación en `ACTIVAR_GOOGLE_DRIVE.md`.
+
+El cliente reserva IDs con `generateIds` y guarda la reserva antes de crear un archivo, busca por identidad en appProperties y actualiza por ID. Ante una respuesta perdida reutiliza la reserva; ante conflicto verifica propiedad/identidad antes de actualizar. Ficha, NatalCore y registro se escriben con resultados independientes; el éxito exige leer de vuelta el JSON y compararlo. La entrada se copia antes de esperar y las colas cancelan trabajo de sesiones anteriores. Web Locks coordina las pestañas del mismo origen. La primera creación simultánea en dispositivos distintos sigue sin garantía transaccional para Drive; no se considera validada.
+
+Se integra el autoguardado al abrir/calcular una carta y al cambiar nombre/interpretación, con estados separados de local/Supabase/Drive y botón de reintento. Los datos de nacimiento cambiados invalidan posiciones anteriores; el cálculo asíncrono se descarta si cambian los datos o la ficha. Se conservan velocidades y movimientos desconocidos como null en JSON y como raya en la tabla, incluidas banderas antiguas de retrogradación.
+
+### Base de datos real
+
+Tras auditar 5 registros existentes sin IDs vacíos, ambiguos ni duplicados, se aplica la migración aditiva `astrodb_chart_identity_unique`: columna generada `chart_local_id` compatible con `input_data.id` y `input_data.astrodb_local_id`, restricción única `(user_id,chart_local_id)` y check de ID presente. SQL exacto en `schema/astrodb_chart_identity_unique.sql`. No se borran ni combinan filas; RLS y políticas existentes se mantienen. La aplicación adopta upsert con la clave única.
+
+Se prueba primero la expresión y upsert en una tabla temporal con rollback. Después se simula el rol `authenticated` y su claim de propietario en una transacción de la base real: dos upserts de la ficha sintética producen una fila actualizada; un insert con otro user_id es rechazado por RLS. La transacción se revierte y una consulta posterior confirma 5 filas y cero filas de prueba. Esta verificación SQL no sustituye un login real desde el navegador ni una prueba simultánea de dos clientes.
+
+El asesor de seguridad no detecta problemas nuevos de tablas/RLS; mantiene un aviso previo de protección de contraseñas filtradas desactivada. No se cambia la configuración Auth como parte de esta integración.
+
+### Navegador y pruebas
+
+Se obtiene Chrome Headless Shell 155.0.8059.84 desde la distribución oficial. El Chrome completo no arrancó por las restricciones de sockets de este entorno; Headless Shell sí ejecuta las pruebas. La navegación se realiza desde archivo local y se bloquea explícitamente el tráfico externo para comprobar el modo desconectado sin usar cuentas reales.
+
+`node --test astrodb/tests/*.test.cjs`: 24 pruebas de ejecución y 14 comprobaciones estáticas pasan.
+
+`CHROME_EXECUTABLE_PATH=<headless-shell> node astrodb/tests/browser-flow.cjs`: pasan los flujos a 1440×1000 y 390×844. Incluyen abrir por UUID, autoguardado local, duplicar con ID nuevo, volver a abrir, descargar y leer el paquete JSON, subject_id coherente, speed null, retrógrado, estados independientes con Drive simulado y Supabase desconectado, invalidación de posiciones al editar nacimiento, ausencia de errores de ejecución y ausencia de desbordamiento horizontal. Se inspeccionan las capturas de la carta completa en ambos tamaños. Se corrige el banner fijo que cubría contenido móvil y el estado de Supabase que quedaba comprobando tras fallo de carga.
+
+### Estado de entrega
+
+La rama sigue sin fusionar y la web pública no se actualiza. Falta introducir el cliente OAuth, autorizar la cuenta y probar una escritura y lectura real desde AstroDB a Drive en un origen web autorizado. No se afirma que Drive esté conectado. El guardado desde dos dispositivos que crean simultáneamente archivos Drive por primera vez requiere la solución distribuida descrita arriba. La versión visible queda unificada en 10.1.
+
+Revisión final: el cliente de aplicación bloquea las copias automáticas si NatalCore no supera su validación estructural. El fixture del navegador incluye los 12 puntos obligatorios, valida NatalCore y comprueba la exportación. Las salidas formateadas representan valores numéricos desconocidos con una raya en lugar de convertir null en cero.

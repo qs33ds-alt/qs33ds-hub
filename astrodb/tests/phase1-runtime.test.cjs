@@ -77,27 +77,63 @@ test('UUID selectors retain strings and loading also resolves legacy numeric IDs
 });
 test('loading another chart invalidates pending visual confirmation',()=>{
  const element={textContent:''};
- const c=vm.createContext({console,$:()=>element});
+ const c=vm.createContext({console,clearTimeout,setTimeout,astrodbDrive:null,revisionDatosCartaAstroDB:0,$:()=>element});
  const start=html.indexOf('let ultimaSolicitudGuardadoAstroDB=');
- vm.runInContext(html.slice(start,html.indexOf('function guardar(){',start)),c);
+ vm.runInContext(html.slice(start,html.indexOf('function guardarFichaCompletaAstroDB(',start)),c);
  c.invalidarEstadoGuardadoAstroDB();
  c.informarGuardadoRemoto(true,'Anterior',0);
  assert.ok(element.textContent.includes('pendiente de confirmar'));
  c.informarGuardadoRemoto(true,'Actual',1);
  assert.ok(element.textContent.includes('confirmado'));
 });
-test('Supabase writer aborts if account changes during lookup',async()=>{
- let resolveLookup;let writes=0;
- const client={from(){return {select(){return this},eq(){return this},contains(){return this},limit(){return this},maybeSingle(){return new Promise(resolve=>resolveLookup=resolve)},insert(){writes++;return this},update(){writes++;return this}}}};
+test('Supabase uses atomic upsert with the user/chart conflict key and isolated snapshot',async()=>{
+ let sent,options;
+ const client={from(){return {upsert(payload,config){sent=payload;options=config;return this;},select(){return this;},async single(){return {data:{id:'remote'},error:null};}}}};
  const c=vm.createContext({console,astrodbSupabase:client,astrodbUser:{id:'user-a'}});
  const start=html.indexOf('async function guardarFichaSupabase(');
  vm.runInContext(html.slice(start,html.indexOf('function capturarFichaParaSincronizacion(',start)),c);
- const pending=c.guardarFichaSupabase({id:'a',nombre:'Persona'});
- c.astrodbUser={id:'user-b'};resolveLookup({data:null,error:null});
- assert.equal(await pending,false);assert.equal(writes,0);
+ const snapshot={meta:{subject_id:'astrodb:a'}};
+ assert.equal(await c.guardarFichaSupabase({id:'a',nombre:'Persona',natalcoreSnapshot:snapshot}),true);
+ assert.equal(options.onConflict,'user_id,chart_local_id');assert.equal(sent.user_id,'user-a');
+ assert.equal(sent.natalcore,snapshot);assert.equal(sent.input_data.natalcoreSnapshot,undefined);
 });
 test('all inline application scripts parse',()=>{
  let count=0;
  for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)){if(match[1].trim()){new vm.Script(match[1]);count++;}}
  assert.ok(count>0);
+});
+function saveContext({supabaseResult=false,driveResult=false,localFailure=false}={}){
+ const elements={estadoGuardadoAstroDB:{textContent:''}};let writes=0,cloudCalls=0,driveCalls=0;
+ const c=vm.createContext({console,Promise,setTimeout,clearTimeout,revisionDatosCartaAstroDB:0,datos:[],idActivo:null,astrodbUser:{id:'u'},$:id=>elements[id],
+  fichaActualComoObjeto:()=>({id:'uuid-1',nombre:'Ficha'}),persistirDatos(){if(localFailure)throw Error('quota');writes++;},capturarFichaParaSincronizacion:f=>({...f}),
+  sincronizarFichaActivaSupabase:()=>{cloudCalls++;return Promise.resolve(supabaseResult);},sincronizarFichaDriveAstroDB:()=>{driveCalls++;return Promise.resolve(driveResult);}
+ });
+ const start=html.indexOf('let ultimaSolicitudGuardadoAstroDB=');
+ vm.runInContext(html.slice(start,html.indexOf('let astrodbDrive=null;',start)),c);
+ vm.runInContext("let astrodbDrive={state:()=>({connected:true})};",c);
+ return {c,elements,counts:()=>({writes,cloudCalls,driveCalls})};
+}
+test('saving starts both destinations independently and local persistence survives either failure',async()=>{
+ for(const supabaseResult of [true,false])for(const driveResult of [true,false]){
+  const f=saveContext({supabaseResult,driveResult});await f.c.guardarFichaCompletaAstroDB();
+  assert.deepEqual(f.counts(),{writes:1,cloudCalls:1,driveCalls:1});assert.equal(f.c.datos.length,1);assert.equal(f.c.idActivo,'uuid-1');
+  assert.ok(f.elements.estadoGuardadoAstroDB.textContent.includes('Local: guardado'));
+ }
+});
+test('local quota failure restores the prior collection and never claims remote success',async()=>{
+ const f=saveContext({localFailure:true});assert.equal(await f.c.guardarFichaCompletaAstroDB(),false);
+ assert.deepEqual(f.counts(),{writes:0,cloudCalls:0,driveCalls:0});assert.equal(f.c.datos.length,0);
+ assert.ok(f.elements.estadoGuardadoAstroDB.textContent.includes('Local: error'));
+});
+test('movement labels preserve unknowns and recognize legacy retrograde flags',()=>{
+ const c=vm.createContext({});const start=html.indexOf('function velocidadPlaneta(');
+ vm.runInContext(html.slice(start,html.indexOf('const PLANETAS_BASE',start)),c);
+ for(const value of [{},{speed:null},{speed:''}])assert.equal(c.movimientoRetrogrado(value),null);
+ assert.equal(c.movimientoRetrogrado({retrogrado:true}),true);assert.equal(c.movimientoRetrogrado({speed:0}),false);
+ assert.equal(c.movimientoRetrogrado({longitudeSpeed:-0.5}),true);assert.equal(c.velocidadPlaneta({longitudeSpeed:-0.5}),-0.5);
+});
+
+test('formatted exports do not display unknown numbers as zero',()=>{
+ const c=vm.createContext({});vm.runInContext(functions('fmtNum','fmtDMSobj'),c);
+ assert.equal(c.fmtNum(null),'—');assert.equal(c.fmtNum(''),'—');assert.equal(c.fmtNum(0),'0.0000');
 });

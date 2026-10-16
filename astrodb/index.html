@@ -8,13 +8,13 @@
 :root{--accent:#a97912;--accent-soft:#f8f0dc;--bg:#f5f5f3;--panel:#fff;--line:#deded9;--text:#232323;--muted:#737373;--ok:#16803a;--bad:#b91c1c;--shadow:0 4px 16px rgba(0,0,0,.05)}
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif;min-height:100vh;display:flex;background:var(--bg)}
 .sidebar{width:250px;background:#fafafa;border-right:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:10px;overflow:auto;max-height:100vh;position:sticky;top:0}.main{flex:1;padding:20px;min-width:0;overflow:auto}.brand{font-weight:800;font-size:13px;letter-spacing:.07em;color:#6e5318;padding:3px 2px 8px}.brand span{font-weight:500;color:var(--muted);letter-spacing:0}
-.btn{border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;font-weight:700;background:#fff;color:var(--text);box-shadow:none}.btn:hover{background:#f3f3ef}.btn-gold{background:var(--accent);border-color:var(--accent);color:#fff}.btn-gold:hover{background:#8d650d}.btn-dark{background:#fff}.btn-red{background:#fff;color:#a51d1d;border-color:#e5bcbc}.btn-red:hover{background:#fff2f2}.btn-block{width:100%}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}.sideCard{padding:10px;margin:0}.sideCard h3{font-size:12px;margin:0 0 7px;color:#66501d}.sideCard p{margin:6px 0}.sideDetails{border:1px solid var(--line);border-radius:10px;background:#fff}.sideDetails>summary{cursor:pointer;padding:10px 11px;font-size:12px;font-weight:800;color:#555;list-style:none}.sideDetails>summary::-webkit-details-marker{display:none}.sideDetails>summary:after{content:'＋';float:right;font-weight:500;color:var(--muted)}.sideDetails[open]>summary:after{content:'−'}.detailsBody{padding:0 10px 10px;border-top:1px solid #eee}
+.btn{border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;font-weight:700;background:#fff;color:var(--text);box-shadow:none}.btn:disabled{opacity:.5;cursor:default}.btn:hover{background:#f3f3ef}.btn-gold{background:var(--accent);border-color:var(--accent);color:#fff}.btn-gold:hover{background:#8d650d}.btn-dark{background:#fff}.btn-red{background:#fff;color:#a51d1d;border-color:#e5bcbc}.btn-red:hover{background:#fff2f2}.btn-block{width:100%}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}.sideCard{padding:10px;margin:0}.sideCard h3{font-size:12px;margin:0 0 7px;color:#66501d}.sideCard p{margin:6px 0}.sideDetails{border:1px solid var(--line);border-radius:10px;background:#fff}.sideDetails>summary{cursor:pointer;padding:10px 11px;font-size:12px;font-weight:800;color:#555;list-style:none}.sideDetails>summary::-webkit-details-marker{display:none}.sideDetails>summary:after{content:'+';float:right;font-weight:500;color:var(--muted)}.sideDetails[open]>summary:after{content:'−'}.detailsBody{padding:0 10px 10px;border-top:1px solid #eee}
 .grid{display:grid;gap:14px}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid12{grid-template-columns:minmax(280px,4fr) minmax(420px,6fr)}
 label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:800;display:block;margin-top:9px}input,select,textarea{width:100%;background:#fff;color:#222;border:1px solid #d6d6d1;border-radius:8px;padding:9px;margin-top:4px}input:focus,select:focus,textarea:focus{outline:2px solid rgba(169,121,18,.14);border-color:var(--accent)}textarea{min-height:120px;resize:vertical}.relative{position:relative}.hidden{display:none!important}.small{font-size:12px;color:var(--muted)}.tiny{font-size:10px;color:var(--muted)}
 .suggestions{position:absolute;background:#fff;border:1px solid var(--line);border-radius:8px;z-index:20;max-height:220px;overflow:auto;width:100%;box-shadow:0 10px 24px rgba(0,0,0,.12)}.suggestions div{padding:9px;font-size:12px;border-bottom:1px solid #eee;cursor:pointer}.suggestions div:hover{background:var(--accent-soft)}
 .listItem{padding:8px 9px;border-radius:8px;background:#fff;border:1px solid transparent;cursor:pointer;font-size:12px}.listItem:hover,.listItem.active{background:var(--accent-soft);border-color:#ead9ad;font-weight:700}.savedList{max-height:220px;overflow:auto;border-top:1px solid #eee;margin-top:8px;padding-top:7px}
-#astroWheel{width:100%;max-width:620px;height:auto;display:block;margin:auto;background:#fff;border-radius:50%}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{border-bottom:1px solid #ecece8;padding:7px;text-align:left;vertical-align:top}.table th{color:#705718;font-size:11px}.status{font-size:11px;padding:9px;border-radius:8px;background:#fafafa;border:1px solid var(--line);white-space:pre-wrap}.ok{color:var(--ok)}.bad{color:var(--bad)}
+#astroWheel{width:100%;max-width:620px;height:auto;display:block;margin:auto;background:#fff;border-radius:50%}.table{width:100%;border-collapse:collapse;font-size:12px}.table th,.table td{border-bottom:1px solid #ecece8;padding:7px;text-align:left;vertical-align:top}.table th{color:#705718;font-size:11px}.status{overflow-wrap:anywhere;font-size:11px;padding:9px;border-radius:8px;background:#fafafa;border:1px solid var(--line);white-space:pre-wrap}.ok{color:var(--ok)}.bad{color:var(--bad)}
 .toolbar{display:flex;gap:7px;flex-wrap:wrap}.editorTop{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.editorTop h2{margin:0;color:#6e5318;font-size:20px}.tabbar{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:9px;margin-bottom:12px}.tabbtn{background:#fff;color:#444;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:700;font-size:11px}.tabbtn.active{background:var(--accent-soft);color:#5f4813;border-color:#dec991}.tabpane{display:none}.tabpane.active{display:block}.compactCard{padding:0;overflow:hidden}.compactCardHeader{padding:13px 13px 0}.compactCardBody{padding:0 13px 13px}.tabCounter{display:inline-block;min-width:18px;text-align:center;background:#eee;border-radius:99px;padding:1px 5px;font-size:9px;margin-left:4px}.tabbtn.active .tabCounter{background:#e0cf9e}
 .home{max-width:560px;margin:12vh auto;text-align:center;box-shadow:none}.homeMark{font-size:42px;margin-bottom:8px}.home h2{margin:5px 0}.quickRow{display:flex;gap:6px}.quickRow>*{flex:1}.sectionTitle{margin:0 0 8px;font-size:16px}.mutedBox{background:#fafafa;border:1px solid #eee;border-radius:9px;padding:10px}
 @media(max-width:900px){body{display:block}.sidebar{width:100%;max-height:none;position:static;border-right:0;border-bottom:1px solid var(--line)}.grid2,.grid3,.grid12{grid-template-columns:1fr}.main{padding:12px}.savedList{max-height:160px}}
@@ -22,36 +22,10 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
 </style>
 </head>
 <body>
-<div id="astrodbAuthPanel" style="
-position:fixed;
-top:12px;
-right:14px;
-z-index:9999;
-display:flex;
-align-items:center;
-gap:8px;
-padding:7px 10px;
-background:#fff;
-border:1px solid #ddd;
-border-radius:8px;
-font:12px system-ui,sans-serif;
-box-shadow:0 2px 8px rgba(0,0,0,.06);
-">
-  <span id="astrodbAuthEstado">Comprobando sesión…</span>
-  <button id="astrodbBtnLogin" type="button"
-    
-    style="padding:5px 9px;cursor:pointer;">
-    Entrar
-  </button>
-  <button id="astrodbBtnLogout" type="button"
-    
-    style="padding:5px 9px;cursor:pointer;display:none;">
-    Cerrar sesión
-  </button>
-</div>
+
 
 <aside class="sidebar no-print">
-  <div class="brand">ASTRODB PRO <span>v10.0</span></div>
+  <div class="brand">ASTRODB PRO <span>v10.1</span></div>
   <button id="btnNueva" class="btn btn-gold btn-block">Nueva ficha</button>
 
   <div class="sideCard card">
@@ -71,6 +45,19 @@ box-shadow:0 2px 8px rgba(0,0,0,.06);
       <div class="quickRow" style="margin-top:6px"><button id="btnLimpiarFiltro" class="btn btn-dark">Limpiar</button><button id="btnExportarFiltro" class="btn btn-dark">CSV</button></div>
     </div>
   </details>
+
+  <details class="sideDetails" id="astrodbCopiasPanel" open><summary>Copias automáticas</summary><div class="detailsBody">
+    <p class="tiny">Al calcular, abrir o guardar una carta se actualizan sus copias. Drive necesita conexión en cada sesión.</p>
+    <p id="astrodbDriveConexion" class="small" role="status">Drive sin conectar</p>
+    <div class="toolbar"><button id="astrodbDriveConectar" type="button" class="btn btn-gold">Conectar Google Drive</button><button id="astrodbDriveDesconectar" type="button" class="btn" disabled>Desconectar</button></div>
+    <p class="tiny">Crea «Código Semilla · AstroDB automático» en tu Drive con la ficha, NatalCore y un registro de verificación. Conserva tus carpetas anteriores.</p>
+    <p id="estadoGuardadoAstroDB" class="status" role="status" aria-live="polite"></p>
+    <p id="astrodbDriveDetalle" class="tiny"></p>
+    <a id="astrodbDriveCarpeta" target="_blank" rel="noopener noreferrer" hidden>Ver carpeta de copias</a>
+    <button id="astrodbReintentarCopias" type="button" class="btn btn-block">Guardar y reintentar copias</button>
+    <div id="astrodbCopiasAcciones" style="margin-top:6px"></div>
+    <details style="margin-top:10px"><summary>Ajustes de conexión</summary><label for="astrodbGoogleClientId">Identificador OAuth web de Google</label><input id="astrodbGoogleClientId" type="text" autocomplete="off" placeholder="…apps.googleusercontent.com"><p class="tiny">Identificador público configurado para esta web. No introduzcas contraseñas ni claves secretas.</p></details>
+  </div></details>
 
   <details class="sideDetails">
     <summary>Base de datos</summary>
@@ -97,6 +84,32 @@ box-shadow:0 2px 8px rgba(0,0,0,.06);
 </aside>
 
 <main class="main">
+<div id="astrodbAuthPanel" style="
+position:relative;
+margin-bottom:12px;
+z-index:9999;
+display:flex;
+align-items:center;
+gap:8px;
+padding:7px 10px;
+background:#fff;
+border:1px solid #ddd;
+border-radius:8px;
+font:12px system-ui,sans-serif;
+box-shadow:0 2px 8px rgba(0,0,0,.06);
+">
+  <span id="astrodbAuthEstado">Comprobando sesión…</span>
+  <button id="astrodbBtnLogin" type="button"
+
+    style="padding:5px 9px;cursor:pointer;">
+    Entrar
+  </button>
+  <button id="astrodbBtnLogout" type="button"
+
+    style="padding:5px 9px;cursor:pointer;display:none;">
+    Cerrar sesión
+  </button>
+</div>
   <section id="inicio" class="card home">
     <div class="homeMark">◎</div>
     <h2>AstroDB Pro</h2>
@@ -176,7 +189,9 @@ box-shadow:0 2px 8px rgba(0,0,0,.06);
       </div>
     </div>
   </section>
+<p id="versionBanner" class="small no-print">AstroDB v10.1 · Copias de cartas</p>
 </main>
+<script src="drive-sync.js"></script>
 <script>
 
 function norm360(v){ return ((v % 360) + 360) % 360; }
@@ -229,13 +244,23 @@ const GLIFO_VISUAL={
   'Júpiter':{size:34,dy:-5}, Saturno:{size:33,dy:-5}, Urano:{size:32,dy:-5}, Neptuno:{size:34,dy:-5}, 'Plutón':{size:31,dy:-5},
   'Nodo Norte':{size:34,dy:-5}, 'Nodo N.':{size:34,dy:-5}, 'Quirón':{size:32,dy:-5}
 };
-function esRetrogrado(p){
-  if(!p)return false;
-  if(p.retrograde===true || p.retro===true || p.retrogrado===true || p.rx===true)return true;
-  if(typeof p.movimiento==='string' && /^(r|rx|retro|retrogrado|retrógrado)$/i.test(p.movimiento.trim()))return true;
-  const sp=Number(p.speed ?? p.longitudeSpeed ?? p.speedLongitude);
-  return Number.isFinite(sp) && sp < 0;
+function velocidadPlaneta(p){
+  const valor=p?.speed??p?.longitudeSpeed??p?.speedLongitude;
+  return valor==null||valor===''||!Number.isFinite(Number(valor))?null:Number(valor);
 }
+function movimientoRetrogrado(p){
+  if(!p)return null;
+  for(const key of ['retrograde','retro','retrogrado','rx'])if(p[key]===true)return true;
+  if(typeof p.movimiento==='string'){
+    if(/^(r|rx|retro|retrogrado|retrógrado)$/i.test(p.movimiento.trim()))return true;
+    if(/^(d|directo)$/i.test(p.movimiento.trim()))return false;
+  }
+  const velocidad=velocidadPlaneta(p);
+  if(velocidad!==null)return velocidad<0;
+  for(const key of ['retrograde','retro','retrogrado','rx'])if(p[key]===false)return false;
+  return null;
+}
+function esRetrogrado(p){return movimientoRetrogrado(p)===true;}
 const PLANETAS_BASE=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno','Urano','Neptuno','Plutón','Nodo Norte','Quirón'];
 const REG={Aries:['Marte'],Tauro:['Venus'],'Géminis':['Mercurio'],'Cáncer':['Luna'],Leo:['Sol'],Virgo:['Mercurio'],Libra:['Venus'],Escorpio:['Marte','Plutón'],Sagitario:['Júpiter'],Capricornio:['Saturno'],Acuario:['Saturno','Urano'],Piscis:['Júpiter','Neptuno']};
 const STORAGE_KEY='astrodb_v51';
@@ -254,6 +279,7 @@ function cargarTodasLasFichasGuardadas(){
   localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));
   return arr;
 }
+let revisionDatosCartaAstroDB=0;
 let datos=cargarTodasLasFichasGuardadas(); let idActivo=null; let textoLeido=''; window.cartaActual={planetas:[],casas:[]}; window.astrodbEphemerisMeta=null;
 const $=id=>document.getElementById(id);
 function norm(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
@@ -270,6 +296,7 @@ function nueva(){invalidarEstadoGuardadoAstroDB();idActivo=null; showEditor(); [
 function setCarta(planetas,casas,ephemerisMeta=null){window.cartaActual={planetas:planetas||[],casas:casas||[]}; window.astrodbEphemerisMeta=ephemerisMeta||null; if(planetas&&casas&&planetas.length&&casas.length){planetas.forEach(p=>p.casa=casaDe(p,casas)); dibujar(planetas,casas); tablas(planetas,casas); const retroCount=planetas.filter(esRetrogrado).length; $('infoCarta').textContent=`Carta cargada: ${planetas.length} planetas · ${casas.length} casas · ${retroCount} retrógrado${retroCount===1?'':'s'}.`;} else {clearCanvas(); tablas([],[]); $('infoCarta').textContent='Calcula una carta para dibujar el mandala.';}
   mostrarPanelDatosCopiables();
   const area=$('textoCartaCopiable'); if(area && !hayCartaActivaConDatos()) area.value='';
+  programarAutoguardadoAstroDB();
 }
 function clearCanvas(){const c=$('astroWheel'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
 function dibujar(planetas,casas){
@@ -616,7 +643,7 @@ function tablas(planetas,casas){
   $('tablaPlanetas').innerHTML=tabla(
     planetas.map(p=>{
       const retro=esRetrogrado(p);
-      return [p.nombre,`${degText(p.grado)} ${p.signo}`,p.casa||'',retro?'<strong style="color:#c22d68">R</strong>':'D'];
+      return [p.nombre,`${degText(p.grado)} ${p.signo}`,p.casa||'',retro?'<strong style="color:#c22d68">R</strong>':(movimientoRetrogrado(p)===false?'D':'—')];
     }),
     ['Planeta','Posición','Casa','Mov.']
   );
@@ -644,7 +671,7 @@ function refrescarDatosDesdeLocal(){
 }
 function actualizarSelectorCartas(){
   const sel=$('selectorCartas'); if(!sel)return;
-  const current=sel.value;
+  const current=idActivo==null?sel.value:String(idActivo);
   const ordenadas=datos.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
   sel.innerHTML='<option value="">Selecciona una ficha... ('+ordenadas.length+')</option>'+ordenadas.map(d=>`<option value="${d.id}">${d.nombre||'Sin nombre'}${d.dia?` · ${d.dia}/${d.mes}/${d.anio}`:''}</option>`).join('');
   if([...sel.options].some(o=>o.value===current))sel.value=current;
@@ -794,8 +821,9 @@ async function iniciarSupabaseAstroDB(){
       await new Promise((resolve,reject)=>{
         const sc=document.createElement('script');
         sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-        sc.onload=resolve;
-        sc.onerror=()=>reject(new Error('No se pudo cargar Supabase JS'));
+        const timer=setTimeout(()=>{sc.remove();reject(new Error('Supabase no respondió'));},15000);
+        sc.onload=()=>{clearTimeout(timer);resolve();};
+        sc.onerror=()=>{clearTimeout(timer);sc.remove();reject(new Error('No se pudo cargar Supabase JS'));};
         document.head.appendChild(sc);
       });
     }
@@ -820,6 +848,8 @@ async function iniciarSupabaseAstroDB(){
     console.warn('[AstroDB] Supabase no disponible. Se mantiene almacenamiento local.',err);
     astrodbSupabase=null;
     astrodbUser=null;
+    actualizarEstadoAuthAstroDB();
+    const estado=document.getElementById('astrodbAuthEstado');if(estado)estado.textContent='Supabase sin conexión';
     return false;
   }
 }
@@ -924,34 +954,10 @@ async function guardarFichaSupabase(ficha){
       updated_at: new Date().toISOString()
     };
 
-    const {data:existente,error:errorBusqueda} =
-      await cliente
-        .from('astrodb_charts')
-        .select('id')
-        .eq('user_id',usuarioId)
-        .contains('input_data',{id:ficha.id})
-        .limit(1)
-        .maybeSingle();
-
-    if(errorBusqueda) throw errorBusqueda;
-
     if(astrodbUser?.id!==usuarioId || astrodbSupabase!==cliente) return false;
-    let resultado;
-
-    if(existente?.id){
-      resultado = await cliente
-        .from('astrodb_charts')
-        .update(payload)
-        .eq('id',existente.id)
-        .select('id')
-        .single();
-    }else{
-      resultado = await cliente
-        .from('astrodb_charts')
-        .insert(payload)
-        .select('id')
-        .single();
-    }
+    const resultado=await cliente.from('astrodb_charts')
+      .upsert(payload,{onConflict:'user_id,chart_local_id'})
+      .select('id').single();
 
     if(resultado.error) throw resultado.error;
 
@@ -971,7 +977,7 @@ async function guardarFichaSupabase(ficha){
 
 function capturarFichaParaSincronizacion(ficha){
   const copia=JSON.parse(JSON.stringify(ficha));
-  if(String(ficha.id)===String(idActivo) &&
+  if((idActivo==null || String(ficha.id)===String(idActivo)) &&
      Array.isArray(ficha.planetas)&&ficha.planetas.length &&
      Array.isArray(ficha.casas)&&ficha.casas.length){
     try {
@@ -1050,75 +1056,137 @@ function prepararCopiaCodigoSemilla(){
     return;
   }
   descargarJSONCodigoSemilla(paquete,'codigo_semilla_'+basename+'.json');
-  alert('Se ha descargado Código Semilla con NatalCore incluido. Súbelo a «02 · Exportaciones AstroDB». Para guardar NatalCore por separado utiliza «Descargar NatalCore» y la carpeta «01 · NatalCore JSON». La subida a Drive todavía es manual.');
+  alert('Se ha descargado Código Semilla con NatalCore incluido. Súbelo a «02 · Exportaciones AstroDB». Para guardar NatalCore por separado utiliza «Descargar NatalCore» y la carpeta «01 · NatalCore JSON». Esta descarga es una copia manual adicional. Las copias automáticas se comprueban en el panel de conexión.');
 }
 let ultimaSolicitudGuardadoAstroDB=0;
-function invalidarEstadoGuardadoAstroDB(){
-  ++ultimaSolicitudGuardadoAstroDB;
+let temporizadorAutoguardadoAstroDB=null;
+let estadoSincronizacionAstroDB={local:'disponible',supabase:'pendiente',drive:'sin conectar'};
+function pintarEstadoGuardadoAstroDB(){
   const estado=$('estadoGuardadoAstroDB');
-  if(estado)estado.textContent='Local: ficha abierta · Supabase: pendiente de confirmar · Drive: exportación manual';
+  if(estado)estado.textContent='Local: '+estadoSincronizacionAstroDB.local+' · Supabase: '+estadoSincronizacionAstroDB.supabase+' · Drive: '+estadoSincronizacionAstroDB.drive;
+}
+function invalidarEstadoGuardadoAstroDB(){
+  clearTimeout(temporizadorAutoguardadoAstroDB);
+  ++ultimaSolicitudGuardadoAstroDB;
+  ++revisionDatosCartaAstroDB;
+  estadoSincronizacionAstroDB={local:'ficha abierta',supabase:'pendiente de confirmar',drive:astrodbDrive?.state().connected?'pendiente':'sin conectar'};
+  pintarEstadoGuardadoAstroDB();
+}
+function programarAutoguardadoAstroDB(){
+  clearTimeout(temporizadorAutoguardadoAstroDB);
+  if(!hayCartaActivaConDatos())return;
+  const solicitud=ultimaSolicitudGuardadoAstroDB;
+  temporizadorAutoguardadoAstroDB=setTimeout(()=>{if(solicitud===ultimaSolicitudGuardadoAstroDB&&hayCartaActivaConDatos())guardarFichaCompletaAstroDB(false);},700);
 }
 function informarGuardadoRemoto(ok,etiqueta,solicitud){
-  console.info(ok
-    ? '[AstroDB] '+etiqueta+' sincronizada con Supabase.'
-    : '[AstroDB] '+etiqueta+' guardada localmente; Supabase no confirmado.');
   if(solicitud!==ultimaSolicitudGuardadoAstroDB)return;
-  const estado=$('estadoGuardadoAstroDB');
-  if(estado) estado.textContent='Local: guardado · Supabase: '+(ok?'confirmado':'no confirmado')+' · Drive: exportación manual';
+  estadoSincronizacionAstroDB.supabase=ok?'confirmado':'no confirmado; reintentar';
+  pintarEstadoGuardadoAstroDB();
 }
-function guardar(){
-  const f=fichaActualComoObjeto(false);
-  if(idActivo && datos.some(x=>String(x.id)===String(idActivo))) datos=datos.map(x=>String(x.id)===String(idActivo)?f:x);
-  else {datos.push(f);idActivo=f.id;}
-  persistirDatos();
+function guardarFichaCompletaAstroDB(forceNew=false){
+  clearTimeout(temporizadorAutoguardadoAstroDB);
+  const f=fichaActualComoObjeto(forceNew);
+  let snapshot;
+  try{
+    const posicion=datos.findIndex(x=>String(x.id)===String(f.id));
+    const anteriores=datos;
+    const activoAnterior=idActivo;
+    datos=posicion<0?[...datos,f]:datos.map((x,i)=>i===posicion?f:x);
+    idActivo=f.id;
+    try{persistirDatos();}catch(error){datos=anteriores;idActivo=activoAnterior;throw error;}
+    snapshot=capturarFichaParaSincronizacion(f);
+  }catch(error){estadoSincronizacionAstroDB.local='error; no se ha confirmado el guardado';pintarEstadoGuardadoAstroDB();return Promise.resolve(false);}
   const solicitud=++ultimaSolicitudGuardadoAstroDB;
-  const estado=$('estadoGuardadoAstroDB');
-  if(estado) estado.textContent='Local: guardado · Supabase: sincronizando… · Drive: exportación manual';
-  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f))
-    .then(ok=>informarGuardadoRemoto(ok,'Ficha',solicitud))
-    .catch(error=>{console.error('[AstroDB] Error de sincronización:',error);informarGuardadoRemoto(false,'Ficha',solicitud);});
-  alert('Ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
+  const conexionDrive=astrodbDrive?.state();
+  estadoSincronizacionAstroDB={local:'guardado',supabase:astrodbUser?'sincronizando…':'sin sesión',drive:conexionDrive?.connected?'sincronizando…':(conexionDrive?.expired?'sesión caducada; reconectar':'sin conectar; copia pendiente')};
+  pintarEstadoGuardadoAstroDB();
+  // Independent destinations: neither waits for the other to start.
+  const supabase=sincronizarFichaActivaSupabase(snapshot).then(ok=>{informarGuardadoRemoto(ok,'Ficha',solicitud);return ok;}).catch(()=>{informarGuardadoRemoto(false,'Ficha',solicitud);return false;});
+  const drive=sincronizarFichaDriveAstroDB(snapshot,solicitud);
+  return Promise.allSettled([supabase,drive]);
+}
+function guardar(){return guardarFichaCompletaAstroDB(false);}
+function guardarComoNueva(){return guardarFichaCompletaAstroDB(true);}
+let astrodbDrive=null;
+async function sincronizarFichaDriveAstroDB(ficha,solicitud){
+  if(!astrodbDrive?.state().connected)return false;
+  try{
+    const core=ficha.natalcoreSnapshot;
+    if(!core)throw new Error('Calcula la carta completa para crear NatalCore y la copia de Drive.');
+    if(core.validation?.valid!==true)throw new Error('NatalCore pendiente de validar: '+(core.validation?.errors||['carta incompleta']).join('; '));
+    const {natalcoreSnapshot,...chart}=ficha;
+    const bundle=prepararPaqueteCodigoSemilla(chart,core);
+    if(!comprobarPaqueteCodigoSemilla(bundle))throw new Error('La identidad de la ficha y NatalCore no coincide.');
+    const resultado=await astrodbDrive.save(bundle);
+    if(solicitud===ultimaSolicitudGuardadoAstroDB){
+      estadoSincronizacionAstroDB.drive=resultado.ok?'3 copias verificadas':'copia parcial; reintentar';
+      const link=$('astrodbDriveCarpeta');
+      if(link){link.href='https://drive.google.com/drive/folders/'+resultado.root;link.hidden=false;}
+      const detalle=$('astrodbDriveDetalle');
+      if(detalle)detalle.textContent=Object.entries(resultado.outcomes).map(([kind,value])=>({chart:'Ficha',natalcore:'NatalCore',log:'Registro'}[kind])+': '+(value.state==='success'?'verificado':value.message)).join(' · ');
+      pintarEstadoGuardadoAstroDB();
+    }
+    return resultado.ok;
+  }catch(error){
+    if(solicitud===ultimaSolicitudGuardadoAstroDB){estadoSincronizacionAstroDB.drive=error.message;pintarEstadoGuardadoAstroDB();}
+    return false;
+  }
+}
+let cargaGoogleAstroDB=null;
+function cargarGoogleAstroDB(){
+  if(window.google?.accounts?.oauth2)return Promise.resolve();
+  if(cargaGoogleAstroDB)return cargaGoogleAstroDB;
+  cargaGoogleAstroDB=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    const timer=setTimeout(()=>{script.remove();reject(new Error('Google no respondió. Comprueba Internet y reintenta.'));},15000);
+    script.src='https://accounts.google.com/gsi/client';script.async=true;
+    script.onload=()=>{clearTimeout(timer);resolve();};
+    script.onerror=()=>{clearTimeout(timer);script.remove();reject(new Error('No se pudo cargar la conexión de Google.'));};
+    document.head.appendChild(script);
+  }).catch(error=>{cargaGoogleAstroDB=null;throw error;});
+  return cargaGoogleAstroDB;
+}
+function iniciarDriveAstroDB(){
+  if(window.matchMedia('(max-width:900px)').matches)$('astrodbCopiasPanel').open=false;
+  const estado=$('astrodbDriveConexion');
+  if(!window.AstroDBDrive){if(estado)estado.textContent='No se pudo cargar Drive. El guardado local sigue disponible.';return;}
+  astrodbDrive=new AstroDBDrive.Client({onState:event=>{
+    if(estado)estado.textContent=event.state==='connected'?'Conectado a '+(event.email||'Google Drive'):'Drive sin conectar';
+    $('astrodbDriveDesconectar').disabled=event.state!=='connected';
+  }});
+  const input=$('astrodbGoogleClientId');
+  input.value=window.ASTRODB_GOOGLE_CLIENT_ID||localStorage.getItem('astrodb.google.client_id')||'';
+  if(estado)estado.textContent=input.value?'Pulsa Conectar Google Drive para autorizar tu cuenta.':'Falta configurar el acceso de Google en Ajustes de conexión.';
+  // Preload while the page is idle so the actual authorization starts directly from a click.
+  if(input.value)cargarGoogleAstroDB().catch(error=>{if(estado)estado.textContent=error.message;});
+  $('astrodbDriveConectar').onclick=async()=>{
+    try{
+      const clientId=input.value.trim();
+      if(!/^[-\w.]+\.apps\.googleusercontent\.com$/.test(clientId))throw new Error('Introduce el identificador OAuth web de Google en Ajustes de conexión.');
+      localStorage.setItem('astrodb.google.client_id',clientId);
+      if(!window.google?.accounts?.oauth2){await cargarGoogleAstroDB();estado.textContent='Google preparado. Pulsa Conectar Google Drive otra vez para abrir la autorización.';return;}
+      $('astrodbDriveConectar').disabled=true;
+      await astrodbDrive.connect(clientId);
+      if(hayCartaActivaConDatos())guardarFichaCompletaAstroDB(false);
+    }catch(error){estado.textContent=error.message;}
+    finally{$('astrodbDriveConectar').disabled=false;}
+  };
+  $('astrodbDriveDesconectar').onclick=()=>{astrodbDrive.disconnect();++ultimaSolicitudGuardadoAstroDB;estadoSincronizacionAstroDB.drive='desconectado';pintarEstadoGuardadoAstroDB();$('astrodbDriveCarpeta').hidden=true;$('astrodbDriveDetalle').textContent='';};
+  $('astrodbReintentarCopias').onclick=()=>guardarFichaCompletaAstroDB(false);
 }
 function mostrarAccesoCodigoSemilla(){
   if(document.getElementById('botonCodigoSemilla'))return;
-  const b=document.createElement('button');
-  b.id='botonCodigoSemilla';b.type='button';
-  b.textContent='Exportar Código Semilla (JSON)';
-  b.title='Descarga independiente para guardar en Drive. No realiza subida automática.';
-  b.onclick=prepararCopiaCodigoSemilla;
-  const link=document.createElement('a');
-  link.href=ASTRODB_CODIGO_SEMILLA_DRIVE.exportaciones;
-  link.target='_blank';link.rel='noopener noreferrer';
-  link.textContent='Abrir Código Semilla en Drive';
-  link.style.marginLeft='0.6rem';
-  const reference=[...document.querySelectorAll('button')].find(x=>/guardar/i.test(x.textContent||''));
-  if(reference?.parentNode){
-    reference.parentNode.insertBefore(b,reference.nextSibling);
-    b.insertAdjacentElement('afterend',link);
-    const status=document.createElement('div');
-    status.id='estadoGuardadoAstroDB';
-    status.setAttribute('role','status');
-    status.setAttribute('aria-live','polite');
-    status.textContent='Local: disponible · Supabase: pendiente · Drive: exportación manual';
-    link.insertAdjacentElement('afterend',status);
-  }
+  const container=$('astrodbCopiasAcciones');if(!container)return;
+  const b=document.createElement('button');b.id='botonCodigoSemilla';b.type='button';b.className='btn btn-block';
+  b.textContent='Descargar Código Semilla (JSON)';b.title='Copia manual adicional de la ficha y NatalCore.';
+  b.onclick=prepararCopiaCodigoSemilla;container.appendChild(b);
+  pintarEstadoGuardadoAstroDB();iniciarDriveAstroDB();
 }
 document.addEventListener('DOMContentLoaded',mostrarAccesoCodigoSemilla);
-function guardarComoNueva(){
-  const f=fichaActualComoObjeto(true);
-  datos.push(f);idActivo=f.id;persistirDatos();
-  const solicitud=++ultimaSolicitudGuardadoAstroDB;
-  const estado=$('estadoGuardadoAstroDB');
-  if(estado) estado.textContent='Local: guardado · Supabase: sincronizando… · Drive: exportación manual';
-  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f))
-    .then(ok=>informarGuardadoRemoto(ok,'Nueva ficha',solicitud))
-    .catch(error=>{console.error('[AstroDB] Error de sincronización:',error);informarGuardadoRemoto(false,'Nueva ficha',solicitud);});
-  alert('Nueva ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
-}
 
 function cargar(id){const f=datos.find(x=>String(x.id)===String(id)); if(!f)return; invalidarEstadoGuardadoAstroDB(); idActivo=f.id; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(k=>$(k).value=f[k]??''); $('titulo').textContent=f.nombre||'Ficha'; setCarta(f.planetas||[],f.casas||[],f.ephemeris||null); if($('interpretacionDirecta'))$('interpretacionDirecta').value=f.interpretacion||''; render();}
 function eliminar(){if(!idActivo||!confirm('¿Eliminar ficha?'))return; datos=datos.filter(x=>x.id!==idActivo);localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));idActivo=null;render();nueva();}
-let cityTimer=null; function buscarCiudad(q){clearTimeout(cityTimer); const sug=$('sugerencias'); if(!q||q.length<3){sug.classList.add('hidden');sug.innerHTML='';return;} cityTimer=setTimeout(async()=>{try{const url='https://geocoding-api.open-meteo.com/v1/search?count=8&language=es&format=json&name='+encodeURIComponent(q);const r=await fetch(url);const data=await r.json();const results=data.results||[];sug.innerHTML='';results.forEach(place=>{const d=document.createElement('div');const pais=place.country?`, ${place.country}`:'';const admin=place.admin1?` (${place.admin1})`:'';d.textContent=`${place.name}${admin}${pais} · ${place.latitude.toFixed(4)}, ${place.longitude.toFixed(4)} · ${place.timezone||''}`;d.onclick=()=>{$('ciudad').value=`${place.name}${admin}${pais}`;$('lat').value=place.latitude;$('lon').value=place.longitude;$('tz').value=place.timezone||'Europe/Madrid';sug.classList.add('hidden');};sug.appendChild(d);});sug.classList.toggle('hidden',!results.length);}catch(e){sug.innerHTML='<div>No se pudo buscar online. Escribe ciudad y zona horaria manualmente.</div>';sug.classList.remove('hidden');}},450);}
+let cityTimer=null; function buscarCiudad(q){clearTimeout(cityTimer); const sug=$('sugerencias'); if(!q||q.length<3){sug.classList.add('hidden');sug.innerHTML='';return;} cityTimer=setTimeout(async()=>{try{const url='https://geocoding-api.open-meteo.com/v1/search?count=8&language=es&format=json&name='+encodeURIComponent(q);const r=await fetch(url);const data=await r.json();const results=data.results||[];sug.innerHTML='';results.forEach(place=>{const d=document.createElement('div');const pais=place.country?`, ${place.country}`:'';const admin=place.admin1?` (${place.admin1})`:'';d.textContent=`${place.name}${admin}${pais} · ${place.latitude.toFixed(4)}, ${place.longitude.toFixed(4)} · ${place.timezone||''}`;d.onclick=()=>{invalidarEstadoGuardadoAstroDB();setCarta(null,null);$('ciudad').value=`${place.name}${admin}${pais}`;$('lat').value=place.latitude;$('lon').value=place.longitude;$('tz').value=place.timezone||'Europe/Madrid';sug.classList.add('hidden');};sug.appendChild(d);});sug.classList.toggle('hidden',!results.length);}catch(e){sug.innerHTML='<div>No se pudo buscar online. Escribe ciudad y zona horaria manualmente.</div>';sug.classList.remove('hidden');}},450);}
 function parseTexto(txt){txt=String(txt||'').replace(/\r/g,'\n').replace(/[’′]/g,"'").replace(/\s+/g,' '); const planetas=[]; const casas=[]; const names=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Jupiter','Saturno','Urano','Neptuno','Plutón','Pluton','Nodo N.','Nodo Norte','Quirón','Quiron']; const sign='(Aries|Tauro|G[eé]minis|Cancer|C[aá]ncer|Leo|Virgo|Libra|Escorpio|Sagitario|Capricornio|Acuario|Piscis|Ari|Tau|Gem|Can|Leo|Vir|Lib|Esc|Sag|Cap|Acu|Pis)'; names.forEach(n=>{const re=new RegExp(n.replace('.','\\.')+'\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i'); const m=txt.match(re); if(m){let nombre=n.replace('Jupiter','Júpiter').replace('Pluton','Plutón').replace('Nodo N.','Nodo Norte').replace('Quiron','Quirón'); planetas.push({nombre,grado:Number(m[1])+(Number(m[2]||0)/60),signo:signoNombre(m[3])});}}); const ac=txt.match(new RegExp('AC\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i')); if(ac)casas.push({casa:1,grado:Number(ac[1])+Number(ac[2]||0)/60,signo:signoNombre(ac[3])}); const mc=txt.match(new RegExp('MC\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i')); if(mc)casas.push({casa:10,grado:Number(mc[1])+Number(mc[2]||0)/60,signo:signoNombre(mc[3])}); for(let i=2;i<=12;i++){if(i===10)continue; const re=new RegExp('C'+i+'\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i'); const m=txt.match(re); if(m)casas.push({casa:i,grado:Number(m[1])+Number(m[2]||0)/60,signo:signoNombre(m[3])});} if(casas.length<12){const block=txt.match(/C2\s+C3\s+C4\s+C5\s+C6\s+C7\s+C8\s+C9\s+C11\s+C12\s+(.{20,250})/i); if(block){const re=new RegExp('(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'gi'); const seq=[2,3,4,5,6,7,8,9,11,12]; let k=0,m; while((m=re.exec(block[1]))&&k<seq.length){if(!casas.find(c=>c.casa===seq[k]))casas.push({casa:seq[k],grado:Number(m[1])+Number(m[2]||0)/60,signo:signoNombre(m[3])}); k++;}}} return {planetas,casas:casas.sort((a,b)=>a.casa-b.casa)};}
 async function leerArchivo(){const file=$('archivoCarta').files&&$('archivoCarta').files[0]; if(!file){$('estadoArchivo').innerHTML='<span class="bad">No hay ningún archivo seleccionado.</span>';return;} $('estadoArchivo').textContent='Leyendo: '+file.name+' ...'; textoLeido=''; try{ if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')){ if(!window.pdfjsLib){await loadPdfJs();} const buf=await file.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:buf}).promise; let text=''; for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p); const tc=await page.getTextContent(); text+='\n'+tc.items.map(i=>i.str).join(' ');} textoLeido=text; } else {textoLeido=await file.text();} $('textoImportacion').value=textoLeido.slice(0,5000); const parsed=parseTexto(textoLeido); $('estadoArchivo').innerHTML=`<span class="ok">Archivo leído.</span>\nEncontrados: ${parsed.planetas.length} planetas y ${parsed.casas.length} cúspides.\nPulsa “Importar datos exactos y dibujar”.`; $('btnImportarLeido').disabled=false; }catch(e){$('estadoArchivo').innerHTML='<span class="bad">No se pudo leer el archivo.</span>\n'+e.message+'\nPrueba a exportar/pegar el texto o súbeme aquí el PDF para convertirlo.';}}
 function loadPdfJs(){return new Promise((resolve,reject)=>{if(window.pdfjsLib)return resolve(); const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';resolve();}; s.onerror=()=>reject(new Error('No se pudo cargar PDF.js.')); document.head.appendChild(s);});}
@@ -1236,7 +1304,7 @@ function calcularCasasSwiss(swe,jd,lat,lonGeo){
   }
   throw lastErr || new Error('No se pudieron calcular casas Placidus con Swiss.');
 }
-async function calcularDesdeDatos(){const btn=$('btnCalcularDatos');try{const day=Number($('dia').value),month=Number($('mes').value),year=Number($('anio').value);const time=$('hora').value;const lat=Number($('lat').value),lonGeo=Number($('lon').value);const tz=$('tz').value||'Europe/Madrid';if(!day||!month||!year||!time)throw new Error('Falta fecha u hora.');if(!isFinite(lat)||!isFinite(lonGeo))throw new Error('Faltan coordenadas. Selecciona ciudad.');btn.disabled=true;$('estadoCalculo').innerHTML='Cargando Swiss Ephemeris y calculando casas Placidus reales...';const [{DateTime},swe]=await Promise.all([cargarLuxon(),cargarSwissEphemeris()]);const [hh,mi]=time.split(':').map(Number);const local=DateTime.fromObject({year,month,day,hour:hh,minute:mi},{zone:tz});if(!local.isValid)throw new Error('Zona horaria no válida: '+tz);const utc=local.toUTC();const hourUT=utc.hour+utc.minute/60+utc.second/3600;const jd=swe.julday(utc.year,utc.month,utc.day,hourUT);const flags=(swe.SEFLG_SWIEPH||2)|(swe.SEFLG_SPEED||256);const mflags=(swe.SEFLG_MOSEPH||4)|(swe.SEFLG_SPEED||256);const bodies=[['Sol',swe.SE_SUN],['Luna',swe.SE_MOON],['Mercurio',swe.SE_MERCURY],['Venus',swe.SE_VENUS],['Marte',swe.SE_MARS],['Júpiter',swe.SE_JUPITER],['Saturno',swe.SE_SATURN],['Urano',swe.SE_URANUS],['Neptuno',swe.SE_NEPTUNE],['Plutón',swe.SE_PLUTO],['Nodo Norte',swe.SE_MEAN_NODE],['Quirón',swe.SE_CHIRON]].filter(x=>typeof x[1]==='number');const planetas=[];for(const [nombre,id] of bodies){let pos;try{pos=swe.calc_ut(jd,id,flags);}catch(e){pos=swe.calc_ut(jd,id,mflags);}try{planetas.push(normalizaPos(nombre,pos));}catch(posErr){console.warn('No se pudo normalizar planeta',nombre,pos,posErr);}}if(typeof swe.houses!=='function' && typeof swe.swe_houses!=='function')throw new Error('Swiss no expone houses/Placidus en este navegador.');
+async function calcularDesdeDatos(){const btn=$('btnCalcularDatos');const revision=revisionDatosCartaAstroDB;try{const day=Number($('dia').value),month=Number($('mes').value),year=Number($('anio').value);const time=$('hora').value;const lat=Number($('lat').value),lonGeo=Number($('lon').value);const tz=$('tz').value||'Europe/Madrid';if(!day||!month||!year||!time)throw new Error('Falta fecha u hora.');if($('lat').value.trim()===''||$('lon').value.trim()===''||!isFinite(lat)||!isFinite(lonGeo))throw new Error('Faltan coordenadas. Selecciona ciudad.');btn.disabled=true;$('estadoCalculo').innerHTML='Cargando Swiss Ephemeris y calculando casas Placidus reales...';const [{DateTime},swe]=await Promise.all([cargarLuxon(),cargarSwissEphemeris()]);const [hh,mi]=time.split(':').map(Number);const local=DateTime.fromObject({year,month,day,hour:hh,minute:mi},{zone:tz});if(!local.isValid)throw new Error('Zona horaria no válida: '+tz);const utc=local.toUTC();const hourUT=utc.hour+utc.minute/60+utc.second/3600;const jd=swe.julday(utc.year,utc.month,utc.day,hourUT);const flags=(swe.SEFLG_SWIEPH||2)|(swe.SEFLG_SPEED||256);const mflags=(swe.SEFLG_MOSEPH||4)|(swe.SEFLG_SPEED||256);const bodies=[['Sol',swe.SE_SUN],['Luna',swe.SE_MOON],['Mercurio',swe.SE_MERCURY],['Venus',swe.SE_VENUS],['Marte',swe.SE_MARS],['Júpiter',swe.SE_JUPITER],['Saturno',swe.SE_SATURN],['Urano',swe.SE_URANUS],['Neptuno',swe.SE_NEPTUNE],['Plutón',swe.SE_PLUTO],['Nodo Norte',swe.SE_MEAN_NODE],['Quirón',swe.SE_CHIRON]].filter(x=>typeof x[1]==='number');const planetas=[];for(const [nombre,id] of bodies){let pos;try{pos=swe.calc_ut(jd,id,flags);}catch(e){pos=swe.calc_ut(jd,id,mflags);}try{planetas.push(normalizaPos(nombre,pos));}catch(posErr){console.warn('No se pudo normalizar planeta',nombre,pos,posErr);}}if(typeof swe.houses!=='function' && typeof swe.swe_houses!=='function')throw new Error('Swiss no expone houses/Placidus en este navegador.');
     if(planetas.length<8)throw new Error('Swiss calculó pocas posiciones planetarias: '+planetas.length);
     const casas=calcularCasasSwiss(swe,jd,lat,lonGeo);
     const ephemerisMeta={
@@ -1253,6 +1321,7 @@ async function calcularDesdeDatos(){const btn=$('btnCalcularDatos');try{const da
       house_system:'Placidus',
       flags:{primary:flags,fallback:mflags,speed:true}
     };
+    if(revision!==revisionDatosCartaAstroDB)throw new Error('Los datos o la ficha cambiaron durante el cálculo. Vuelve a calcular.');
     setCarta(planetas,casas,ephemerisMeta);const retros=planetas.filter(esRetrogrado).map(p=>p.nombre);$('titulo').textContent=$('nombre').value||'Carta calculada';$('estadoCalculo').innerHTML=`<span class="ok">Cálculo realizado con Swiss Ephemeris.</span>
 Zona horaria: ${tz} (${local.toFormat('ZZ')})
 UTC: ${utc.toISO()}
@@ -1486,7 +1555,7 @@ function construirNatalCore(){
   const points=planetas.map(p=>{
     const d=splitDegree(p.grado); const L=pointLongitude(p); const distances={}; angleList.forEach(([k,v])=>distances[k]=Number(angleDistance(L,v.longitude).toFixed(8)));
     const nearest=Object.entries(distances).sort((a,b)=>a[1]-b[1])[0]||[null,null]; const zm=ZODIAC_META[signoNombre(p.signo)]||{};
-    return {id:slugId(p.nombre),name:p.nombre,longitude:Number(L.toFixed(8)),sign:signoNombre(p.signo),degree:d.degree,minute:d.minute,second:d.second,house:Number(p.casa)||null,retrograde:typeof p.retrograde==='boolean'?p.retrograde:(p.speed!=null&&p.speed!==''&&Number.isFinite(Number(p.speed))?Number(p.speed)<0:null),speed:p.speed!=null&&p.speed!==''&&Number.isFinite(Number(p.speed))?Number(p.speed):null,distance_house_cusp:currentHouseCuspDistance(p,casas),distance_angles:distances,nearest_angle:nearest[0],nearest_angle_distance:nearest[1],zodiac:{element:zm.element||null,modality:zm.modality||null,polarity:zm.polarity||null,rulers:REG[signoNombre(p.signo)]||[]}};
+    return {id:slugId(p.nombre),name:p.nombre,longitude:Number(L.toFixed(8)),sign:signoNombre(p.signo),degree:d.degree,minute:d.minute,second:d.second,house:Number(p.casa)||null,retrograde:movimientoRetrogrado(p),speed:velocidadPlaneta(p),distance_house_cusp:currentHouseCuspDistance(p,casas),distance_angles:distances,nearest_angle:nearest[0],nearest_angle_distance:nearest[1],zodiac:{element:zm.element||null,modality:zm.modality||null,polarity:zm.polarity||null,rulers:REG[signoNombre(p.signo)]||[]}};
   });
   const houses=casas.map(c=>{const d=splitDegree(c.grado);return {house:Number(c.casa),cusp_longitude:Number(houseLongitude(c).toFixed(8)),sign:signoNombre(c.signo),degree:d.degree,minute:d.minute,second:d.second,house_system:'Placidus'};});
   const aspects=construirAspectosNatalCore(planetas); const disp=construirDispositoresNatalCore(planetas); const ephemeris=construirEfemeridesNatalCore(points);
@@ -1530,7 +1599,7 @@ function descargarNatalCore(){const core=validarNatalCoreActivo();if(!core)retur
 function escHTML(v){
   return String(v??'').replace(/[&<>\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[ch]||ch));
 }
-function fmtNum(v,d=4){return Number.isFinite(Number(v))?Number(v).toFixed(d):'—';}
+function fmtNum(v,d=4){return v==null||v===''||!Number.isFinite(Number(v))?'—':Number(v).toFixed(d);}
 function fmtDMSobj(o){if(!o)return '—';return `${o.degree}° ${String(o.minute).padStart(2,'0')}′ ${fmtNum(o.second,2)}″`;}
 function tableHTML(headers, rows){
   return `<table class="nc-table"><thead><tr>${headers.map(h=>`<th>${escHTML(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c==null?'—':c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
@@ -1855,8 +1924,8 @@ function bind(){
   on('selectorCartas','change',()=>{const id=$('selectorCartas').value; if(id!=='')cargar(id);});
   on('filtroAspectosPlaneta','change',pintarTablaAspectos);
   on('filtroAspectosPlaneta','input',pintarTablaAspectos);
-  
-  
+
+
 
   on('btnGenerarTextoCarta','click',descargarDocumentoNatalCore);
   on('btnCopiarTextoCarta','click',vistaPreviaDocumentoNatalCore);
@@ -1876,6 +1945,10 @@ document.addEventListener('DOMContentLoaded',async()=>{
   datos=cargarTodasLasFichasGuardadas();
   initSelects();
   bind();
+  ['dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(id=>$(id)?.addEventListener('input',()=>{
+    invalidarEstadoGuardadoAstroDB();setCarta(null,null);$('infoCarta').textContent='Datos modificados. Calcula la carta para actualizar las copias.';
+  }));
+  ['nombre','interpretacionDirecta'].forEach(id=>$(id)?.addEventListener('input',()=>{invalidarEstadoGuardadoAstroDB();programarAutoguardadoAstroDB();}));
   actualizarSelectorCartas();
   render();
   await iniciarSupabaseAstroDB();
@@ -1904,6 +1977,6 @@ if (logoutBtn) {
 </script>
 
 
-<div id="versionBanner" class="no-print" style="position:fixed;right:12px;bottom:12px;z-index:9999;background:#f4d03f;color:#111;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800">AstroDB v10.0 · NatalCore DOCX</div>
+
 </body>
 </html>
