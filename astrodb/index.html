@@ -1466,7 +1466,7 @@ function construirNatalCore(){
   const aspects=construirAspectosNatalCore(planetas); const disp=construirDispositoresNatalCore(planetas); const ephemeris=construirEfemeridesNatalCore(points);
   const angularity=points.map(p=>({body:p.name,distance_ASC:p.distance_angles.ASC??null,distance_MC:p.distance_angles.MC??null,distance_DSC:p.distance_angles.DSC??null,distance_IC:p.distance_angles.IC??null,nearest_angle:p.nearest_angle,nearest_distance:p.nearest_angle_distance,angular_house:[1,4,7,10].includes(Number(p.house))}));
   const core={
-    meta:{subject_id:subjectId,subject_name:$('nombre')?.value||'Sin nombre',natalcore_version:NATALCORE_SCHEMA_VERSION,astrodb_version:ASTRODB_NATALCORE_VERSION,zodiac_system:'Tropical occidental',house_system:'Placidus',rulership_system:RULERSHIP_SYSTEM,aspect_detection_profile:'ORBES_COSMOGRAMA_v10',aspect_set:CONFIG_ASPECTOS.map(a=>a.nombre),generated_at:new Date().toISOString(),source_birth_data:{date:[$('anio')?.value,$('mes')?.value,$('dia')?.value].filter(Boolean).join('-'),local_time:$('hora')?.value||null,place:$('ciudad')?.value||null,latitude:$('lat')?.value!==''?Number($('lat')?.value):null,longitude:$('lon')?.value!==''?Number($('lon')?.value):null,timezone:$('tz')?.value||null},neutrality:'structural_data_only'},
+    meta:{subject_id:subjectId,subject_name:$('nombre')?.value||'Sin nombre',natalcore_version:NATALCORE_SCHEMA_VERSION,astrodb_version:ASTRODB_NATALCORE_VERSION,zodiac_system:'Tropical occidental',house_system:'Placidus',rulership_system:RULERSHIP_SYSTEM,aspect_detection_profile:'ORBES_COSMOGRAMA_v10',aspect_set:CONFIG_ASPECTOS.map(a=>a.nombre),generated_at:new Date().toISOString(),source_birth_data:{date:[$('anio')?.value,$('mes')?.value,$('dia')?.value].filter(Boolean).join('-'),local_time:$('hora')?.value||null,place:$('ciudad')?.value||null,latitude:$('lat')?.value!==''?Number($('lat')?.value):null,longitude:$('lon')?.value!==''?Number($('lon')?.value):null,timezone:($('tz')?.value||window.astrodbEphemerisMeta?.timezone||window.astrodbEphemerisMeta?.time_zone||null)},neutrality:'structural_data_only'},
     points,houses,angles,aspects,ephemeris,dispositors:disp.items,dispositorMetadata:{system:disp.system,mutual_receptions:disp.mutual_receptions},angularity,
     zodiacMetadata:{system:'tropical',signs:ZODIAC_META},configurations:[],configurationMetadata:{status:'not_computed',reason:'Optional structural configurations are not computed.'},
     detectionCriteria:{aspects:CONFIG_ASPECTOS.map(a=>({type:a.nombre,angle:a.angulo})),orbsByBody:ORBES_COSMOGRAMA},
@@ -1668,7 +1668,7 @@ function crearPayloadBaseJSON(){
   const base = Array.isArray(datos) ? datos : [];
   return {
     app: 'AstroDB Pro',
-    version: '9.7',
+    version: '10.1',
     exportedAt: new Date().toISOString(),
     total: base.length,
     fichas: base
