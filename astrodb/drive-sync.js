@@ -145,12 +145,12 @@
           const nc=snapshot.natalcore;
           const automatic={...snapshot,storage_destination:'google_drive_oauth'};
           const writes=await Promise.allSettled([
-            this.upsert('chart','astrodb_'+snapshot.chart_id.replace(/[^\w.-]/g,'_')+'.json',automatic,folders.charts,s),
-            this.upsert('natalcore','natalcore_'+snapshot.chart_id.replace(/[^\w.-]/g,'_')+'.json',nc,folders.natalcore,s)
+            this.upsert('chart',this.fileBase('AstroDB',snapshot.chart),automatic,folders.charts,s),
+            this.upsert('natalcore',this.fileBase('NatalCore',snapshot.chart),nc,folders.natalcore,s)
           ]);
           ['chart','natalcore'].forEach((kind,i)=>{const r=writes[i];outcomes[kind]=r.status==='fulfilled'?{state:'success',id:r.value}:{state:'error',message:r.reason.message};});
           const log={format:'qs33ds.astrodb.sync.v1',chart_id:snapshot.chart_id,at:new Date(this.clock()).toISOString(),destinations:outcomes};
-          try{outcomes.log={state:'success',id:await this.upsert('log','sincronizacion_'+snapshot.chart_id.replace(/[^\w.-]/g,'_')+'.json',log,folders.logs,s)};}
+          try{outcomes.log={state:'success',id:await this.upsert('log',this.fileBase('Sincronizacion',snapshot.chart),log,folders.logs,s)};}
           catch(error){outcomes.log={state:'error',message:error.message};}
           return {ok:Object.values(outcomes).every(r=>r.state==='success'),root,outcomes};
         };
