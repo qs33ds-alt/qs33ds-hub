@@ -975,13 +975,7 @@ async function guardarFichaSupabase(ficha){
       input_data: ficha,
       chart_data: {planetas:ficha.planetas||[],casas:ficha.casas||[]},
 
-      natalcore:
-        (typeof construirNatalCore === 'function' &&
-         String(ficha.id)===String(idActivo) &&
-         Array.isArray(ficha.planetas) && ficha.planetas.length &&
-         Array.isArray(ficha.casas) && ficha.casas.length)
-          ? construirNatalCore()
-          : {},
+      natalcore: ficha.natalcoreSnapshot || {},
 
       astrodb_version:
         typeof ASTRODB_NATALCORE_VERSION !== 'undefined'
@@ -1040,6 +1034,19 @@ async function guardarFichaSupabase(ficha){
   }
 }
 
+function capturarFichaParaSincronizacion(ficha){
+  const copia=JSON.parse(JSON.stringify(ficha));
+  if(String(ficha.id)===String(idActivo) &&
+     Array.isArray(ficha.planetas)&&ficha.planetas.length &&
+     Array.isArray(ficha.casas)&&ficha.casas.length){
+    try {
+      const core=construirNatalCore();
+      core.subject_id='astrodb:'+String(ficha.id);
+      copia.natalcoreSnapshot=core;
+    } catch(error){console.warn('[AstroDB] NatalCore no disponible en esta captura:',error);}
+  }
+  return copia;
+}
 async function sincronizarFichaActivaSupabase(ficha){
   if(!astrodbSupabase || !astrodbUser) return false;
   try{
@@ -1097,7 +1104,7 @@ function guardar(){
   if(idActivo && datos.some(x=>String(x.id)===String(idActivo))) datos=datos.map(x=>String(x.id)===String(idActivo)?f:x);
   else {datos.push(f);idActivo=f.id;}
   persistirDatos();
-  sincronizarFichaActivaSupabase(f).then(ok=>informarGuardadoRemoto(ok,'Ficha'));
+  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f)).then(ok=>informarGuardadoRemoto(ok,'Ficha'));
   alert('Ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
 }
 function mostrarAccesoCodigoSemilla(){
@@ -1128,7 +1135,7 @@ document.addEventListener('DOMContentLoaded',mostrarAccesoCodigoSemilla);
 function guardarComoNueva(){
   const f=fichaActualComoObjeto(true);
   datos.push(f);idActivo=f.id;persistirDatos();
-  sincronizarFichaActivaSupabase(f).then(ok=>informarGuardadoRemoto(ok,'Nueva ficha'));
+  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f)).then(ok=>informarGuardadoRemoto(ok,'Nueva ficha'));
   alert('Nueva ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
 }
 
@@ -1465,7 +1472,7 @@ function construirAspectosNatalCore(planetas){
 
 function construirEfemeridesNatalCore(points){
   const e=window.astrodbEphemerisMeta||{};
-  const finite=v=>Number.isFinite(Number(v))?Number(v):null;
+  const finite=v=>v==null||v===''?null:(Number.isFinite(Number(v))?Number(v):null);
   return {
     status:Object.keys(e).length?'available':'legacy_or_imported_metadata_unavailable',
     engine:e.engine||null,
