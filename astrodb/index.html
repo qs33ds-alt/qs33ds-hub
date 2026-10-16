@@ -1048,6 +1048,19 @@ async function sincronizarFichaActivaSupabase(ficha){
     return false;
   }
 }
+const ASTRODB_CODIGO_SEMILLA_DRIVE={
+  natalcore:'https://drive.google.com/drive/folders/1EaSNz24SJGifOLYjJiYiHgfuxPlyzrsp',
+  exportaciones:'https://drive.google.com/drive/folders/1YpEhREFIDxwwR9bwZq316QwO5LJtBXy5',
+  registros:'https://drive.google.com/drive/folders/1DFk_kQotJcdFpR9OrWtL9FEyhLX8ES5x'
+};
+function descargarJSONCodigoSemilla(payload,filename){
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;link.download=filename;
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
 function prepararCopiaCodigoSemilla(){
   const ficha=fichaActualComoObjeto(false);
   if(!Array.isArray(ficha.planetas)||!ficha.planetas.length||!Array.isArray(ficha.casas)||!ficha.casas.length){
@@ -1056,22 +1069,21 @@ function prepararCopiaCodigoSemilla(){
   }
   let natalcore;
   try { natalcore=construirNatalCore(); }
-  catch(error){ alert('No se pudo preparar NatalCore: '+error.message);return; }
+  catch(error){alert('No se pudo preparar NatalCore: '+error.message);return;}
+  const stamp=new Date().toISOString();
+  const id=String(ficha.id);
+  const basename=slugId(ficha.nombre||'sin_nombre')+'_'+id;
   const paquete={
     format:'qs33ds.astrodb.codigo-semilla.v1',
-    exported_at:new Date().toISOString(),
+    exported_at:stamp,
     storage_destination:'google_drive_manual_import',
-    chart_id:String(ficha.id),
+    chart_id:id,
     chart:ficha,
     natalcore
   };
-  const blob=new Blob([JSON.stringify(paquete,null,2)],{type:'application/json;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement('a');
-  link.href=url;
-  link.download='codigo_semilla_'+slugId(ficha.nombre||'sin_nombre')+'_'+String(ficha.id)+'.json';
-  document.body.appendChild(link);link.click();link.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  descargarJSONCodigoSemilla(paquete,'codigo_semilla_'+basename+'.json');
+  descargarJSONCodigoSemilla(natalcore,'natalcore_'+basename+'.json');
+  alert('Se han preparado dos archivos JSON independientes. Sube el archivo natalcore_ a «01 · NatalCore JSON» y codigo_semilla_ a «02 · Exportaciones AstroDB». La subida a Drive todavía es manual.');
 }
 function informarGuardadoRemoto(ok,etiqueta){
   console.info(ok
@@ -1095,6 +1107,13 @@ function mostrarAccesoCodigoSemilla(){
   b.textContent='Exportar Código Semilla (JSON)';
   b.title='Descarga independiente para guardar en Drive. No realiza subida automática.';
   b.onclick=prepararCopiaCodigoSemilla;
+  const link=document.createElement('a');
+  link.href=ASTRODB_CODIGO_SEMILLA_DRIVE.exportaciones;
+  link.target='_blank';link.rel='noopener noreferrer';
+  link.textContent='Abrir Código Semilla en Drive';
+  link.style.marginLeft='0.6rem';
+  b.insertAdjacentElement('afterend',link);
+
   const reference=[...document.querySelectorAll('button')].find(x=>/guardar/i.test(x.textContent||''));
   if(reference?.parentNode)reference.parentNode.insertBefore(b,reference.nextSibling);
 }
