@@ -1082,15 +1082,14 @@ function prepararCopiaCodigoSemilla(){
     natalcore
   };
   descargarJSONCodigoSemilla(paquete,'codigo_semilla_'+basename+'.json');
-  descargarJSONCodigoSemilla(natalcore,'natalcore_'+basename+'.json');
-  alert('Se han preparado dos archivos JSON independientes. Sube el archivo natalcore_ a «01 · NatalCore JSON» y codigo_semilla_ a «02 · Exportaciones AstroDB». La subida a Drive todavía es manual.');
+  alert('Se ha descargado Código Semilla con NatalCore incluido. Súbelo a «02 · Exportaciones AstroDB». Para guardar NatalCore por separado utiliza «Descargar NatalCore» y la carpeta «01 · NatalCore JSON». La subida a Drive todavía es manual.');
 }
 function informarGuardadoRemoto(ok,etiqueta){
   console.info(ok
     ? '[AstroDB] '+etiqueta+' sincronizada con Supabase.'
     : '[AstroDB] '+etiqueta+' guardada localmente; Supabase no confirmado.');
   const estado=$('estadoGuardadoAstroDB');
-  if(estado) estado.textContent=ok?'Supabase: guardado confirmado':'Supabase: no confirmado';
+  if(estado) estado.textContent='Local: guardado · Supabase: '+(ok?'confirmado':'no confirmado')+' · Drive: exportación manual';
 }
 function guardar(){
   const f=fichaActualComoObjeto(false);
@@ -1112,10 +1111,17 @@ function mostrarAccesoCodigoSemilla(){
   link.target='_blank';link.rel='noopener noreferrer';
   link.textContent='Abrir Código Semilla en Drive';
   link.style.marginLeft='0.6rem';
-  b.insertAdjacentElement('afterend',link);
-
   const reference=[...document.querySelectorAll('button')].find(x=>/guardar/i.test(x.textContent||''));
-  if(reference?.parentNode)reference.parentNode.insertBefore(b,reference.nextSibling);
+  if(reference?.parentNode){
+    reference.parentNode.insertBefore(b,reference.nextSibling);
+    b.insertAdjacentElement('afterend',link);
+    const status=document.createElement('div');
+    status.id='estadoGuardadoAstroDB';
+    status.setAttribute('role','status');
+    status.setAttribute('aria-live','polite');
+    status.textContent='Local: disponible · Supabase: pendiente · Drive: exportación manual';
+    link.insertAdjacentElement('afterend',status);
+  }
 }
 document.addEventListener('DOMContentLoaded',mostrarAccesoCodigoSemilla);
 function guardarComoNueva(){
