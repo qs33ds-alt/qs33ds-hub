@@ -77,3 +77,13 @@ Revisión final: el cliente de aplicación bloquea las copias automáticas si Na
 ## Configuración del cliente OAuth
 
 El propietario aporta el identificador público del cliente OAuth del proyecto Google AstroDB y se integra en index.html mediante ASTRODB_GOOGLE_CLIENT_ID. La integración no acredita el consentimiento de la cuenta ni la configuración efectiva de los orígenes en Google Cloud. Falta una prueba real desde un origen web autorizado. La web pública sigue sin actualizarse.
+
+## Copia de validación publicada con autorización del propietario
+
+Se autoriza expresamente la publicación de una copia separada. Commit de main `3f1f94297742bac240890b34e42d4314e664ea58`: solo añade `astrodb-validacion/index.html` y `astrodb-validacion/drive-sync.js`; `astrodb/index.html` y el resto de la web no cambian. El despliegue GitHub Pages run 38930047877 termina en success.
+
+URL verificada: https://qs33ds-alt.github.io/qs33ds-hub/astrodb-validacion/ . HTML y módulo JS devuelven HTTP 200 y sus hashes coinciden con las fuentes probadas. La copia usa `astrodb_validation_v51` y no importa las claves locales de la aplicación habitual. Está etiquetada como PRUEBAS y propone usar una ficha ficticia.
+
+Antes de publicar se repiten los flujos de navegador locales de la copia exacta a 1440 y 390 píxeles y se inspeccionan ambas capturas. Un intento adicional de navegar a la URL pública con Headless Shell falla con ERR_EMPTY_RESPONSE en este entorno; por tanto no se acredita una ejecución de navegador contra el sitio remoto. La verificación remota realizada es HTTP y comparación de bytes, además del despliegue correcto de Pages.
+
+Sigue pendiente consentimiento OAuth de la cuenta, subida/lectura real de Drive y validación de los destinos autenticados desde el navegador del propietario. La PR de la aplicación habitual sigue en borrador, sin fusionar.
