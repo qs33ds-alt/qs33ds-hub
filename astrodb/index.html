@@ -891,25 +891,7 @@ function fichaARegistroSupabase(ficha){
   };
 }
 
-async function guardarFichaSupabase(ficha){
-  if(!astrodbSupabase || !astrodbUser) return null;
-
-  const registro=fichaARegistroSupabase(ficha);
-  registro.user_id=astrodbUser.id;
-
-  const {data,error}=await astrodbSupabase
-    .from('astrodb_charts')
-    .insert(registro)
-    .select('id')
-    .single();
-
-  if(error) throw error;
-
-  return data;
-}
-
-
-function actualizarSelectorAspectos(planetas){
+async function actualizarSelectorAspectos(planetas){
   const sel=$('filtroAspectosPlaneta');
   if(!sel)return;
   const actual=sel.value||'';
@@ -989,6 +971,7 @@ async function guardarFichaSupabase(ficha){
         ficha.tz || null,
 
       input_data: ficha,
+      chart_data: {planetas:ficha.planetas||[],casas:ficha.casas||[]},
 
       natalcore:
         (typeof construirNatalCore === 'function' &&
@@ -1016,7 +999,7 @@ async function guardarFichaSupabase(ficha){
         .from('astrodb_charts')
         .select('id')
         .eq('user_id',astrodbUser.id)
-        .eq('name',nombre)
+        .contains('input_data',{id:ficha.id})
         .limit(1)
         .maybeSingle();
 
@@ -1081,7 +1064,7 @@ sincronizarFichaActivaSupabase().then(ok=>{
     ? '[AstroDB] Guardado local + nube completado.'
     : '[AstroDB] Guardado local completado; nube no disponible.');
 });
-alert(`Ficha guardada. Total de fichas: ${datos.length}.`);}
+alert(`Ficha guardada localmente. Total de fichas: ${datos.length}. La sincronización con Supabase se comprueba por separado; Drive aún no está conectado.`);}
 function guardarComoNueva(){const f=fichaActualComoObjeto(true);datos.push(f);idActivo=f.id;persistirDatos();
 sincronizarFichaActivaSupabase().then(ok=>{
   console.info(ok
