@@ -1069,6 +1069,27 @@ function descargarJSONCodigoSemilla(payload,filename){
   document.body.appendChild(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),30000);
 }
+function prepararPaqueteCodigoSemilla(ficha,natalcore){
+  if(!ficha||ficha.id==null||!Array.isArray(ficha.planetas)||!ficha.planetas.length||
+     !Array.isArray(ficha.casas)||!ficha.casas.length||!natalcore||!natalcore.meta)
+    throw new Error('Es necesaria una ficha identificada y una carta completa con NatalCore.');
+  return {
+    format:'qs33ds.astrodb.codigo-semilla.v1',
+    exported_at:new Date().toISOString(),
+    storage_destination:'google_drive_manual_import',
+    chart_id:String(ficha.id),
+    chart:ficha,
+    natalcore
+  };
+}
+function comprobarPaqueteCodigoSemilla(paquete){
+  return !!(paquete&&paquete.format==='qs33ds.astrodb.codigo-semilla.v1'&&
+    paquete.chart&&paquete.natalcore?.meta&&
+    String(paquete.chart.id)===paquete.chart_id&&
+    paquete.natalcore.meta.subject_id==='astrodb:'+paquete.chart_id&&
+    Array.isArray(paquete.chart.planetas)&&paquete.chart.planetas.length&&
+    Array.isArray(paquete.chart.casas)&&paquete.chart.casas.length);
+}
 function prepararCopiaCodigoSemilla(){
   const ficha=fichaActualComoObjeto(false);
   if(!Array.isArray(ficha.planetas)||!ficha.planetas.length||!Array.isArray(ficha.casas)||!ficha.casas.length){
@@ -1078,17 +1099,14 @@ function prepararCopiaCodigoSemilla(){
   let natalcore;
   try { natalcore=construirNatalCore(); }
   catch(error){alert('No se pudo preparar NatalCore: '+error.message);return;}
-  const stamp=new Date().toISOString();
   const id=String(ficha.id);
   const basename=slugId(ficha.nombre||'sin_nombre')+'_'+id;
-  const paquete={
-    format:'qs33ds.astrodb.codigo-semilla.v1',
-    exported_at:stamp,
-    storage_destination:'google_drive_manual_import',
-    chart_id:id,
-    chart:ficha,
-    natalcore
-  };
+  if(natalcore.meta) natalcore.meta.subject_id='astrodb:'+id;
+  const paquete=prepararPaqueteCodigoSemilla(ficha,natalcore);
+  if(!comprobarPaqueteCodigoSemilla(paquete)){
+    alert('El paquete Código Semilla no supera la validación de integridad y no se descargará.');
+    return;
+  }
   descargarJSONCodigoSemilla(paquete,'codigo_semilla_'+basename+'.json');
   alert('Se ha descargado Código Semilla con NatalCore incluido. Súbelo a «02 · Exportaciones AstroDB». Para guardar NatalCore por separado utiliza «Descargar NatalCore» y la carpeta «01 · NatalCore JSON». La subida a Drive todavía es manual.');
 }
