@@ -317,10 +317,10 @@ function movimientoRetrogrado(p){
 function esRetrogrado(p){return movimientoRetrogrado(p)===true;}
 const PLANETAS_BASE=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno','Urano','Neptuno','Plutón','Nodo Norte','Quirón'];
 const REG={Aries:['Marte'],Tauro:['Venus'],'Géminis':['Mercurio'],'Cáncer':['Luna'],Leo:['Sol'],Virgo:['Mercurio'],Libra:['Venus'],Escorpio:['Marte','Plutón'],Sagitario:['Júpiter'],Capricornio:['Saturno'],Acuario:['Saturno','Urano'],Piscis:['Júpiter','Neptuno']};
-const STORAGE_KEY='astrodb_v51';
+const STORAGE_KEY='astrodb_validation_v51';
 function leerJSONLocal(key){try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){return []}}
 function cargarTodasLasFichasGuardadas(){
-  const keys=['astrodb_v51','astrodb_v45','astrodb_v42_estable','astro_data_chromebook_v3','astro_data_chromebook_v4'];
+  const keys=['astrodb_validation_v51'];
   const mapa=new Map();
   keys.forEach(key=>leerJSONLocal(key).forEach((f,index)=>{
     if(!f||typeof f!=='object')return;
