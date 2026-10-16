@@ -2,6 +2,8 @@
 
 La rama incorpora el cliente OAuth y el guardado de tres archivos por ficha: ficha AstroDB con NatalCore, NatalCore separado y registro del último intento. Los tres se actualizan conservando su ID. El cliente vuelve a descargar el contenido y lo compara antes de confirmar el guardado.
 
+El identificador público facilitado por el propietario ya está integrado en `index.html`. Falta verificar en Google Cloud los orígenes autorizados, añadir la cuenta de uso a los usuarios de prueba si procede y completar la autorización desde un origen web autorizado. No se ha comprobado una subida real.
+
 ## Configuración necesaria del propietario
 
 1. En Google Cloud Console, seleccionar o crear el proyecto de AstroDB y habilitar Google Drive API.

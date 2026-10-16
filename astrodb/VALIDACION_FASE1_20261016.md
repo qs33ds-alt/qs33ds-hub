@@ -73,3 +73,7 @@ Se obtiene Chrome Headless Shell 155.0.8059.84 desde la distribución oficial. E
 La rama sigue sin fusionar y la web pública no se actualiza. Falta introducir el cliente OAuth, autorizar la cuenta y probar una escritura y lectura real desde AstroDB a Drive en un origen web autorizado. No se afirma que Drive esté conectado. El guardado desde dos dispositivos que crean simultáneamente archivos Drive por primera vez requiere la solución distribuida descrita arriba. La versión visible queda unificada en 10.1.
 
 Revisión final: el cliente de aplicación bloquea las copias automáticas si NatalCore no supera su validación estructural. El fixture del navegador incluye los 12 puntos obligatorios, valida NatalCore y comprueba la exportación. Las salidas formateadas representan valores numéricos desconocidos con una raya en lugar de convertir null en cero.
+
+## Configuración del cliente OAuth
+
+El propietario aporta el identificador público del cliente OAuth del proyecto Google AstroDB y se integra en index.html mediante ASTRODB_GOOGLE_CLIENT_ID. La integración no acredita el consentimiento de la cuenta ni la configuración efectiva de los orígenes en Google Cloud. Falta una prueba real desde un origen web autorizado. La web pública sigue sin actualizarse.
