@@ -91,7 +91,7 @@
       const storageKey='astrodb.drive.id.'+key;
       const mimeType=content===null?FOLDER:'application/json';
       let id=this.storage.getItem(storageKey);let exists=false;
-      if(id){try{await this.inspect(id,key,parent,mimeType,s);exists=true;}catch(error){if(error.status!==404)throw error;}}
+      if(id){try{await this.inspect(id,key,parent,mimeType,s);exists=true;}catch(error){if(error.status!==404)throw error;id=null;}}
       if(!id){
         id=await this.find(key,parent,s);
         if(id){await this.inspect(id,key,parent,mimeType,s);exists=true;}
@@ -113,10 +113,20 @@
         return this.request(base+(create?'':'/'+encodeURIComponent(id))+'?'+new URLSearchParams({...(text===null?{}:{uploadType:'multipart'}),fields:'id'}),{method:create?'POST':'PATCH',headers,body},s);
       };
       if(!exists){try{await write(true);}catch(error){if(error.status!==409)throw error;await this.inspect(id,key,parent,mimeType,s);exists=true;}}
-      if(exists&&text!==null)await write(false);
+      if(exists)await write(false);
       await this.inspect(id,key,parent,mimeType,s);
       if(text!==null){const read=await(await this.request(API+'/'+encodeURIComponent(id)+'?alt=media',{},s)).text();if(read!==text)throw new DriveError('La copia de Drive no coincide con el contenido enviado.');}
       return id;
+    }
+    // A readable label never determines identity; the stable chart ID does.
+    filenameLabel(chart){
+      const raw=String(chart?.nombre??chart?.name??'').normalize('NFC').trim();
+      const safe=raw.replace(/[\/<>:"|?*\x00-\x1f\x7f]/g,' ').replace(/\s+/g,' ').replace(/^\.+|\.+$/g,'').trim().slice(0,90);
+      return safe||'Sin nombre';
+    }
+    fileBase(prefix,chart){
+      const id=String(chart.id).replace(/[^\w.-]/g,'_');
+      return prefix+'_'+this.filenameLabel(chart)+'_'+id+'.json';
     }
     async save(bundle){
       if(!bundle||bundle.format!=='qs33ds.astrodb.codigo-semilla.v1'||bundle.chart_id!==String(bundle.chart?.id)||bundle.natalcore?.meta?.subject_id!=='astrodb:'+bundle.chart_id)throw new DriveError('La ficha y NatalCore no tienen la misma identidad.');
@@ -135,12 +145,12 @@
           const nc=snapshot.natalcore;
           const automatic={...snapshot,storage_destination:'google_drive_oauth'};
           const writes=await Promise.allSettled([
-            this.upsert('chart','astrodb_'+snapshot.chart_id.replace(/[^\w.-]/g,'_')+'.json',automatic,folders.charts,s),
-            this.upsert('natalcore','natalcore_'+snapshot.chart_id.replace(/[^\w.-]/g,'_')+'.json',nc,folders.natalcore,s)
+            this.upsert('chart',this.fileBase('AstroDB',snapshot.chart),automatic,folders.charts,s),
+            this.upsert('natalcore',this.fileBase('NatalCore',snapshot.chart),nc,folders.natalcore,s)
           ]);
           ['chart','natalcore'].forEach((kind,i)=>{const r=writes[i];outcomes[kind]=r.status==='fulfilled'?{state:'success',id:r.value}:{state:'error',message:r.reason.message};});
           const log={format:'qs33ds.astrodb.sync.v1',chart_id:snapshot.chart_id,at:new Date(this.clock()).toISOString(),destinations:outcomes};
-          try{outcomes.log={state:'success',id:await this.upsert('log','sincronizacion_'+snapshot.chart_id.replace(/[^\w.-]/g,'_')+'.json',log,folders.logs,s)};}
+          try{outcomes.log={state:'success',id:await this.upsert('log',this.fileBase('Sincronizacion',snapshot.chart),log,folders.logs,s)};}
           catch(error){outcomes.log={state:'error',message:error.message};}
           return {ok:Object.values(outcomes).every(r=>r.state==='success'),root,outcomes};
         };
