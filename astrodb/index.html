@@ -972,7 +972,7 @@ async function guardarFichaSupabase(ficha){
       timezone:
         ficha.tz || ficha.ephemeris?.timezone || null,
 
-      input_data: ficha,
+      input_data: Object.fromEntries(Object.entries(ficha).filter(([key])=>key!=='natalcoreSnapshot')),
       chart_data: {planetas:ficha.planetas||[],casas:ficha.casas||[]},
 
       natalcore: ficha.natalcoreSnapshot || {},
@@ -1041,7 +1041,7 @@ function capturarFichaParaSincronizacion(ficha){
      Array.isArray(ficha.casas)&&ficha.casas.length){
     try {
       const core=construirNatalCore();
-      core.subject_id='astrodb:'+String(ficha.id);
+      if(core.meta) core.meta.subject_id='astrodb:'+String(ficha.id);
       copia.natalcoreSnapshot=core;
     } catch(error){console.warn('[AstroDB] NatalCore no disponible en esta captura:',error);}
   }
