@@ -113,7 +113,7 @@
         return this.request(base+(create?'':'/'+encodeURIComponent(id))+'?'+new URLSearchParams({...(text===null?{}:{uploadType:'multipart'}),fields:'id'}),{method:create?'POST':'PATCH',headers,body},s);
       };
       if(!exists){try{await write(true);}catch(error){if(error.status!==409)throw error;await this.inspect(id,key,parent,mimeType,s);exists=true;}}
-      if(exists&&text!==null)await write(false);
+      if(exists)await write(false);
       await this.inspect(id,key,parent,mimeType,s);
       if(text!==null){const read=await(await this.request(API+'/'+encodeURIComponent(id)+'?alt=media',{},s)).text();if(read!==text)throw new DriveError('La copia de Drive no coincide con el contenido enviado.');}
       return id;
