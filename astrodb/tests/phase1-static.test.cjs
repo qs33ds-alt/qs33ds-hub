@@ -15,6 +15,8 @@ const checks=[
   ['request ordering protection',html.includes('solicitud!==ultimaSolicitudGuardadoAstroDB')],
   ['manual Drive correctly labelled',html.includes('Drive: exportación manual')],
   ['JSON export',html.includes('descargarJSONCodigoSemilla(paquete,')],
+  ['bundle validator',html.includes('function comprobarPaqueteCodigoSemilla(paquete)')],
+  ['bundle identity check',html.includes("paquete.natalcore.meta.subject_id==='astrodb:'+paquete.chart_id")],
   ['Drive export folder',html.includes('1YpEhREFIDxwwR9bwZq316QwO5LJtBXy5')],
   ['balanced script tags',(html.match(/<script\b/g)||[]).length===(html.match(/<\/script>/g)||[]).length]
 ];
