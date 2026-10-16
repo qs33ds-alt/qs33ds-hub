@@ -118,6 +118,16 @@
       if(text!==null){const read=await(await this.request(API+'/'+encodeURIComponent(id)+'?alt=media',{},s)).text();if(read!==text)throw new DriveError('La copia de Drive no coincide con el contenido enviado.');}
       return id;
     }
+    // A readable label never determines identity; the stable chart ID does.
+    filenameLabel(chart){
+      const raw=String(chart?.nombre??chart?.name??'').normalize('NFC').trim();
+      const safe=raw.replace(/[\\/<>:"|?*\\x00-\\x1f\\x7f]/g,' ').replace(/\\s+/g,' ').replace(/^\\.+|\\.+$/g,'').trim().slice(0,90);
+      return safe||'Sin nombre';
+    }
+    fileBase(prefix,chart){
+      const id=String(chart.id).replace(/[^\\w.-]/g,'_');
+      return prefix+'_'+this.filenameLabel(chart)+'_'+id+'.json';
+    }
     async save(bundle){
       if(!bundle||bundle.format!=='qs33ds.astrodb.codigo-semilla.v1'||bundle.chart_id!==String(bundle.chart?.id)||bundle.natalcore?.meta?.subject_id!=='astrodb:'+bundle.chart_id)throw new DriveError('La ficha y NatalCore no tienen la misma identidad.');
       const snapshot=JSON.parse(JSON.stringify(bundle));const s=this.session;this.assertSession(s);
