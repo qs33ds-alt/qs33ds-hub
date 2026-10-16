@@ -1092,10 +1092,12 @@ function prepararCopiaCodigoSemilla(){
   descargarJSONCodigoSemilla(paquete,'codigo_semilla_'+basename+'.json');
   alert('Se ha descargado Código Semilla con NatalCore incluido. Súbelo a «02 · Exportaciones AstroDB». Para guardar NatalCore por separado utiliza «Descargar NatalCore» y la carpeta «01 · NatalCore JSON». La subida a Drive todavía es manual.');
 }
-function informarGuardadoRemoto(ok,etiqueta){
+let ultimaSolicitudGuardadoAstroDB=0;
+function informarGuardadoRemoto(ok,etiqueta,solicitud){
   console.info(ok
     ? '[AstroDB] '+etiqueta+' sincronizada con Supabase.'
     : '[AstroDB] '+etiqueta+' guardada localmente; Supabase no confirmado.');
+  if(solicitud!==ultimaSolicitudGuardadoAstroDB)return;
   const estado=$('estadoGuardadoAstroDB');
   if(estado) estado.textContent='Local: guardado · Supabase: '+(ok?'confirmado':'no confirmado')+' · Drive: exportación manual';
 }
@@ -1104,7 +1106,12 @@ function guardar(){
   if(idActivo && datos.some(x=>String(x.id)===String(idActivo))) datos=datos.map(x=>String(x.id)===String(idActivo)?f:x);
   else {datos.push(f);idActivo=f.id;}
   persistirDatos();
-  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f)).then(ok=>informarGuardadoRemoto(ok,'Ficha'));
+  const solicitud=++ultimaSolicitudGuardadoAstroDB;
+  const estado=$('estadoGuardadoAstroDB');
+  if(estado) estado.textContent='Local: guardado · Supabase: sincronizando… · Drive: exportación manual';
+  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f))
+    .then(ok=>informarGuardadoRemoto(ok,'Ficha',solicitud))
+    .catch(error=>{console.error('[AstroDB] Error de sincronización:',error);informarGuardadoRemoto(false,'Ficha',solicitud);});
   alert('Ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
 }
 function mostrarAccesoCodigoSemilla(){
@@ -1135,7 +1142,12 @@ document.addEventListener('DOMContentLoaded',mostrarAccesoCodigoSemilla);
 function guardarComoNueva(){
   const f=fichaActualComoObjeto(true);
   datos.push(f);idActivo=f.id;persistirDatos();
-  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f)).then(ok=>informarGuardadoRemoto(ok,'Nueva ficha'));
+  const solicitud=++ultimaSolicitudGuardadoAstroDB;
+  const estado=$('estadoGuardadoAstroDB');
+  if(estado) estado.textContent='Local: guardado · Supabase: sincronizando… · Drive: exportación manual';
+  sincronizarFichaActivaSupabase(capturarFichaParaSincronizacion(f))
+    .then(ok=>informarGuardadoRemoto(ok,'Nueva ficha',solicitud))
+    .catch(error=>{console.error('[AstroDB] Error de sincronización:',error);informarGuardadoRemoto(false,'Nueva ficha',solicitud);});
   alert('Nueva ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
 }
 
