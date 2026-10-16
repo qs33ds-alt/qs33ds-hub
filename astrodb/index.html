@@ -699,7 +699,8 @@ function render(){
     div.innerHTML=(d.nombre||'Sin nombre')+(d.dia?`<br><span class="tiny">${d.dia}/${d.mes}/${d.anio}</span>`:'');div.onclick=()=>cargar(d.id);l.appendChild(div);
   });
 }
-function fichaActualComoObjeto(forceNew=false){return {id:forceNew?Date.now():idActivo||Date.now(),nombre:$('nombre').value||'Sin nombre',dia:$('dia').value,mes:$('mes').value,anio:$('anio').value,hora:$('hora').value,ciudad:$('ciudad').value,lat:$('lat').value,lon:$('lon').value,tz:$('tz').value,planetas:window.cartaActual?.planetas||[],casas:window.cartaActual?.casas||[],ephemeris:window.astrodbEphemerisMeta||null,interpretacion:($('interpretacionDirecta')?.value||'')};}
+function nuevoIdFicha(){return (globalThis.crypto&&typeof globalThis.crypto.randomUUID==='function')?globalThis.crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2,12);}
+function fichaActualComoObjeto(forceNew=false){return {id:forceNew?nuevoIdFicha():idActivo||nuevoIdFicha(),nombre:$('nombre').value||'Sin nombre',dia:$('dia').value,mes:$('mes').value,anio:$('anio').value,hora:$('hora').value,ciudad:$('ciudad').value,lat:$('lat').value,lon:$('lon').value,tz:$('tz').value,planetas:window.cartaActual?.planetas||[],casas:window.cartaActual?.casas||[],ephemeris:window.astrodbEphemerisMeta||null,interpretacion:($('interpretacionDirecta')?.value||'')};}
 function persistirDatos(){localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));actualizarSelectorCartas();render();}
 
 
