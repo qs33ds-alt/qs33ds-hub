@@ -102,3 +102,26 @@ test('unsafe characters are removed from visible names without changing chart id
  const f=fixture();const name=f.client.fileBase('NatalCore',{id:'uuid-1',nombre:'  Ana / María : test?  '});
  assert.equal(name,'NatalCore_Ana María test_uuid-1.json');
 });
+
+test('an existing Drive copy is reused after local ID cache is cleared',async()=>{
+ const f=fixture();const first=await f.client.save(bundle('a'));
+ f.storageMap.clear();
+ const second=await f.client.save(bundle('a'));
+ assert.equal(second.ok,true);assert.equal(f.files.size,7);
+ assert.deepEqual(first.outcomes,second.outcomes);
+});
+test('a stale local Drive ID is recovered without overwriting a different chart',async()=>{
+ const f=fixture();const first=await f.client.save(bundle('a'));
+ const entry=[...f.storageMap.entries()].find(([key,id])=>id===first.outcomes.chart.id);
+ assert.ok(entry);
+ f.storageMap.set(entry[0],'nonexistent-drive-id');
+ const second=await f.client.save(bundle('a'));
+ assert.equal(second.ok,true);assert.equal(second.outcomes.chart.id,first.outcomes.chart.id);
+ assert.equal(f.files.size,7);
+});
+test('existing folders retain their Drive IDs after repeated saves',async()=>{
+ const f=fixture();await f.client.save(bundle('a'));
+ const folders=[...f.files.values()].filter(x=>x.mimeType==='application/vnd.google-apps.folder').map(x=>x.id).sort();
+ await f.client.save(bundle('b'));
+ assert.deepEqual([...f.files.values()].filter(x=>x.mimeType==='application/vnd.google-apps.folder').map(x=>x.id).sort(),folders);
+});
