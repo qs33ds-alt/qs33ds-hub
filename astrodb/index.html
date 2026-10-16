@@ -240,15 +240,14 @@ const PLANETAS_BASE=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno
 const REG={Aries:['Marte'],Tauro:['Venus'],'Géminis':['Mercurio'],'Cáncer':['Luna'],Leo:['Sol'],Virgo:['Mercurio'],Libra:['Venus'],Escorpio:['Marte','Plutón'],Sagitario:['Júpiter'],Capricornio:['Saturno'],Acuario:['Saturno','Urano'],Piscis:['Júpiter','Neptuno']};
 const STORAGE_KEY='astrodb_v51';
 function leerJSONLocal(key){try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){return []}}
-function claveFicha(f){return [f.nombre||'',f.dia||'',f.mes||'',f.anio||'',f.hora||'',f.ciudad||''].join('|').toLowerCase();}
 function cargarTodasLasFichasGuardadas(){
   const keys=['astrodb_v51','astrodb_v45','astrodb_v42_estable','astro_data_chromebook_v3','astro_data_chromebook_v4'];
   const mapa=new Map();
-  keys.forEach(key=>leerJSONLocal(key).forEach(f=>{
+  keys.forEach(key=>leerJSONLocal(key).forEach((f,index)=>{
     if(!f||typeof f!=='object')return;
-    const id=f.id || Date.now()+Math.random();
+    const id=f.id ?? ('legacy:'+key+':'+index);
     const limpia={...f,id};
-    const k=claveFicha(limpia)+'|'+(Array.isArray(limpia.planetas)?limpia.planetas.length:0)+'|'+(Array.isArray(limpia.casas)?limpia.casas.length:0);
+    const k=String(id);
     if(!mapa.has(k))mapa.set(k,limpia);
   }));
   const arr=[...mapa.values()].sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
@@ -265,7 +264,7 @@ function degdiff(a,b){let d=Math.abs(a-b)%360; return d>180?360-d:d;}
 function inSector(x,start,end){x=(x+360)%360;start=(start+360)%360;end=(end+360)%360;return start<=end?x>=start&&x<end:x>=start||x<end;}
 function casaDe(planeta,casas){if(!casas||casas.length<12)return planeta.casa||''; const x=lon(planeta.signo,planeta.grado); const cs=[...casas].sort((a,b)=>a.casa-b.casa); for(let i=0;i<12;i++){const a=lon(cs[i].signo,cs[i].grado), b=lon(cs[(i+1)%12].signo,cs[(i+1)%12].grado); if(inSector(x,a,b)) return cs[i].casa;} return planeta.casa||'';}
 function showEditor(){ $('inicio').classList.add('hidden'); $('editor').classList.remove('hidden');}
-function nueva(){idActivo=null; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(id=>{const el=$(id); if(el)el.value='';}); if($('tz'))$('tz').value='Europe/Madrid'; $('titulo').textContent='Nueva consulta'; setCarta(null,null); render();
+function nueva(){invalidarEstadoGuardadoAstroDB();idActivo=null; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(id=>{const el=$(id); if(el)el.value='';}); if($('tz'))$('tz').value='Europe/Madrid'; $('titulo').textContent='Nueva consulta'; setCarta(null,null); render();
   mostrarPanelDatosCopiables();
 }
 function setCarta(planetas,casas,ephemerisMeta=null){window.cartaActual={planetas:planetas||[],casas:casas||[]}; window.astrodbEphemerisMeta=ephemerisMeta||null; if(planetas&&casas&&planetas.length&&casas.length){planetas.forEach(p=>p.casa=casaDe(p,casas)); dibujar(planetas,casas); tablas(planetas,casas); const retroCount=planetas.filter(esRetrogrado).length; $('infoCarta').textContent=`Carta cargada: ${planetas.length} planetas · ${casas.length} casas · ${retroCount} retrógrado${retroCount===1?'':'s'}.`;} else {clearCanvas(); tablas([],[]); $('infoCarta').textContent='Calcula una carta para dibujar el mandala.';}
@@ -673,7 +672,7 @@ function aplicarComparativaGlobal(){
   $('panelComparativa').classList.remove('hidden');
   $('resumenComparativa').innerHTML=`Filtro aplicado a <strong>${datos.length}</strong> cartas guardadas: ${fp} · ${fs} · ${fc}.<br>Coincidencias encontradas: <strong>${rows.length}</strong>.`;
   $('tablaComparativa').innerHTML=tabla(rows.map(r=>[`<button class="btn btn-dark" type="button" data-id="${r.id}">${r.nombre}</button>`,r.fecha||'—',r.planeta,`${degText(r.grado)} ${r.signo}`,r.casa||'—']),['Persona','Fecha','Planeta','Posición','Casa']);
-  $('tablaComparativa').querySelectorAll('[data-id]').forEach(b=>b.addEventListener('click',()=>cargar(Number(b.dataset.id))));
+  $('tablaComparativa').querySelectorAll('[data-id]').forEach(b=>b.addEventListener('click',()=>cargar(b.dataset.id)));
   render();
 }
 function limpiarComparativaGlobal(){
@@ -825,73 +824,6 @@ async function iniciarSupabaseAstroDB(){
   }
 }
 
-function fichaARegistroSupabase(ficha){
-  let natalcore=null;
-
-  try{
-    if(
-      ficha &&
-      Array.isArray(ficha.planetas) &&
-      ficha.planetas.length &&
-      Array.isArray(ficha.casas) &&
-      ficha.casas.length &&
-      String(ficha.id)===String(idActivo)
-    ){
-      natalcore=construirNatalCore();
-    }
-  }catch(err){
-    console.warn('[AstroDB] NatalCore no incorporado al guardado remoto:',err);
-  }
-
-  return {
-    name: ficha.nombre || 'Sin nombre',
-
-    birth_date:
-      ficha.anio && ficha.mes && ficha.dia
-        ? `${String(ficha.anio).padStart(4,'0')}-${String(ficha.mes).padStart(2,'0')}-${String(ficha.dia).padStart(2,'0')}`
-        : null,
-
-    birth_time: ficha.hora || null,
-    birth_place: ficha.ciudad || null,
-
-    latitude:
-      ficha.lat!=='' && ficha.lat!=null
-        ? Number(ficha.lat)
-        : null,
-
-    longitude:
-      ficha.lon!=='' && ficha.lon!=null
-        ? Number(ficha.lon)
-        : null,
-
-    timezone: ficha.tz || null,
-
-    input_data: {
-      astrodb_local_id: ficha.id,
-      dia: ficha.dia,
-      mes: ficha.mes,
-      anio: ficha.anio,
-      hora: ficha.hora,
-      ciudad: ficha.ciudad,
-      lat: ficha.lat,
-      lon: ficha.lon,
-      tz: ficha.tz
-    },
-
-    chart_data: {
-      planetas: ficha.planetas || [],
-      casas: ficha.casas || []
-    },
-
-    natalcore: natalcore || {},
-
-    astrodb_version:
-      typeof ASTRODB_NATALCORE_VERSION!=='undefined'
-        ? ASTRODB_NATALCORE_VERSION
-        : 'v100'
-  };
-}
-
 async function actualizarSelectorAspectos(planetas){
   const sel=$('filtroAspectosPlaneta');
   if(!sel)return;
@@ -936,6 +868,8 @@ async function guardarFichaSupabase(ficha){
   if(!astrodbSupabase || !astrodbUser || !ficha) return false;
   if(ficha.id==null) { console.error('[AstroDB] Falta identificador estable de ficha.'); return false; }
 
+  const cliente=astrodbSupabase;
+  const usuarioId=astrodbUser.id;
   try{
     const nombre =
       ficha.nombre ||
@@ -943,7 +877,7 @@ async function guardarFichaSupabase(ficha){
       'Sin nombre';
 
     const payload = {
-      user_id: astrodbUser.id,
+      user_id: usuarioId,
       name: nombre,
 
       birth_date:
@@ -991,27 +925,28 @@ async function guardarFichaSupabase(ficha){
     };
 
     const {data:existente,error:errorBusqueda} =
-      await astrodbSupabase
+      await cliente
         .from('astrodb_charts')
         .select('id')
-        .eq('user_id',astrodbUser.id)
+        .eq('user_id',usuarioId)
         .contains('input_data',{id:ficha.id})
         .limit(1)
         .maybeSingle();
 
     if(errorBusqueda) throw errorBusqueda;
 
+    if(astrodbUser?.id!==usuarioId || astrodbSupabase!==cliente) return false;
     let resultado;
 
     if(existente?.id){
-      resultado = await astrodbSupabase
+      resultado = await cliente
         .from('astrodb_charts')
         .update(payload)
         .eq('id',existente.id)
         .select('id')
         .single();
     }else{
-      resultado = await astrodbSupabase
+      resultado = await cliente
         .from('astrodb_charts')
         .insert(payload)
         .select('id')
@@ -1047,14 +982,21 @@ function capturarFichaParaSincronizacion(ficha){
   }
   return copia;
 }
+const colasGuardadoSupabase=new Map();
 async function sincronizarFichaActivaSupabase(ficha){
-  if(!astrodbSupabase || !astrodbUser) return false;
-  try{
-    return await guardarFichaSupabase(ficha);
-  }catch(error){
-    console.error('[AstroDB] Error preparando sincronización:',error);
-    return false;
-  }
+  if(!astrodbSupabase || !astrodbUser || !ficha) return false;
+  const usuarioId=astrodbUser.id;
+  const copia=JSON.parse(JSON.stringify(ficha));
+  const clave=JSON.stringify([usuarioId,String(copia.id)]);
+  const anterior=colasGuardadoSupabase.get(clave)||Promise.resolve();
+  const pendiente=anterior.catch(()=>false).then(()=>{
+    if(astrodbUser?.id!==usuarioId) return false;
+    return guardarFichaSupabase(copia);
+  });
+  colasGuardadoSupabase.set(clave,pendiente);
+  try{return await pendiente;}
+  catch(error){console.error('[AstroDB] Error preparando sincronización:',error);return false;}
+  finally{if(colasGuardadoSupabase.get(clave)===pendiente)colasGuardadoSupabase.delete(clave);}
 }
 const ASTRODB_CODIGO_SEMILLA_DRIVE={
   natalcore:'https://drive.google.com/drive/folders/1EaSNz24SJGifOLYjJiYiHgfuxPlyzrsp',
@@ -1111,6 +1053,11 @@ function prepararCopiaCodigoSemilla(){
   alert('Se ha descargado Código Semilla con NatalCore incluido. Súbelo a «02 · Exportaciones AstroDB». Para guardar NatalCore por separado utiliza «Descargar NatalCore» y la carpeta «01 · NatalCore JSON». La subida a Drive todavía es manual.');
 }
 let ultimaSolicitudGuardadoAstroDB=0;
+function invalidarEstadoGuardadoAstroDB(){
+  ++ultimaSolicitudGuardadoAstroDB;
+  const estado=$('estadoGuardadoAstroDB');
+  if(estado)estado.textContent='Local: ficha abierta · Supabase: pendiente de confirmar · Drive: exportación manual';
+}
 function informarGuardadoRemoto(ok,etiqueta,solicitud){
   console.info(ok
     ? '[AstroDB] '+etiqueta+' sincronizada con Supabase.'
@@ -1169,7 +1116,7 @@ function guardarComoNueva(){
   alert('Nueva ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
 }
 
-function cargar(id){const f=datos.find(x=>x.id===id); if(!f)return; idActivo=id; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(k=>$(k).value=f[k]||''); $('titulo').textContent=f.nombre||'Ficha'; setCarta(f.planetas||[],f.casas||[],f.ephemeris||null); if($('interpretacionDirecta'))$('interpretacionDirecta').value=f.interpretacion||''; render();}
+function cargar(id){const f=datos.find(x=>String(x.id)===String(id)); if(!f)return; invalidarEstadoGuardadoAstroDB(); idActivo=f.id; showEditor(); ['nombre','dia','mes','anio','hora','ciudad','lat','lon','tz'].forEach(k=>$(k).value=f[k]??''); $('titulo').textContent=f.nombre||'Ficha'; setCarta(f.planetas||[],f.casas||[],f.ephemeris||null); if($('interpretacionDirecta'))$('interpretacionDirecta').value=f.interpretacion||''; render();}
 function eliminar(){if(!idActivo||!confirm('¿Eliminar ficha?'))return; datos=datos.filter(x=>x.id!==idActivo);localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));idActivo=null;render();nueva();}
 let cityTimer=null; function buscarCiudad(q){clearTimeout(cityTimer); const sug=$('sugerencias'); if(!q||q.length<3){sug.classList.add('hidden');sug.innerHTML='';return;} cityTimer=setTimeout(async()=>{try{const url='https://geocoding-api.open-meteo.com/v1/search?count=8&language=es&format=json&name='+encodeURIComponent(q);const r=await fetch(url);const data=await r.json();const results=data.results||[];sug.innerHTML='';results.forEach(place=>{const d=document.createElement('div');const pais=place.country?`, ${place.country}`:'';const admin=place.admin1?` (${place.admin1})`:'';d.textContent=`${place.name}${admin}${pais} · ${place.latitude.toFixed(4)}, ${place.longitude.toFixed(4)} · ${place.timezone||''}`;d.onclick=()=>{$('ciudad').value=`${place.name}${admin}${pais}`;$('lat').value=place.latitude;$('lon').value=place.longitude;$('tz').value=place.timezone||'Europe/Madrid';sug.classList.add('hidden');};sug.appendChild(d);});sug.classList.toggle('hidden',!results.length);}catch(e){sug.innerHTML='<div>No se pudo buscar online. Escribe ciudad y zona horaria manualmente.</div>';sug.classList.remove('hidden');}},450);}
 function parseTexto(txt){txt=String(txt||'').replace(/\r/g,'\n').replace(/[’′]/g,"'").replace(/\s+/g,' '); const planetas=[]; const casas=[]; const names=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Jupiter','Saturno','Urano','Neptuno','Plutón','Pluton','Nodo N.','Nodo Norte','Quirón','Quiron']; const sign='(Aries|Tauro|G[eé]minis|Cancer|C[aá]ncer|Leo|Virgo|Libra|Escorpio|Sagitario|Capricornio|Acuario|Piscis|Ari|Tau|Gem|Can|Leo|Vir|Lib|Esc|Sag|Cap|Acu|Pis)'; names.forEach(n=>{const re=new RegExp(n.replace('.','\\.')+'\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i'); const m=txt.match(re); if(m){let nombre=n.replace('Jupiter','Júpiter').replace('Pluton','Plutón').replace('Nodo N.','Nodo Norte').replace('Quiron','Quirón'); planetas.push({nombre,grado:Number(m[1])+(Number(m[2]||0)/60),signo:signoNombre(m[3])});}}); const ac=txt.match(new RegExp('AC\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i')); if(ac)casas.push({casa:1,grado:Number(ac[1])+Number(ac[2]||0)/60,signo:signoNombre(ac[3])}); const mc=txt.match(new RegExp('MC\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i')); if(mc)casas.push({casa:10,grado:Number(mc[1])+Number(mc[2]||0)/60,signo:signoNombre(mc[3])}); for(let i=2;i<=12;i++){if(i===10)continue; const re=new RegExp('C'+i+'\\s+(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'i'); const m=txt.match(re); if(m)casas.push({casa:i,grado:Number(m[1])+Number(m[2]||0)/60,signo:signoNombre(m[3])});} if(casas.length<12){const block=txt.match(/C2\s+C3\s+C4\s+C5\s+C6\s+C7\s+C8\s+C9\s+C11\s+C12\s+(.{20,250})/i); if(block){const re=new RegExp('(\\d{1,2})(?:[°º]|\\s)?\\s*(\\d{1,2})?\\s*\'?\\s*'+sign,'gi'); const seq=[2,3,4,5,6,7,8,9,11,12]; let k=0,m; while((m=re.exec(block[1]))&&k<seq.length){if(!casas.find(c=>c.casa===seq[k]))casas.push({casa:seq[k],grado:Number(m[1])+Number(m[2]||0)/60,signo:signoNombre(m[3])}); k++;}}} return {planetas,casas:casas.sort((a,b)=>a.casa-b.casa)};}
@@ -1904,8 +1851,8 @@ function bind(){
   on('btnFiltrar','click',aplicarComparativaGlobal);
   on('btnLimpiarFiltro','click',limpiarComparativaGlobal);
   on('btnExportarFiltro','click',exportarComparativaCSV);
-  on('btnAbrirSeleccion','click',()=>{const id=Number($('selectorCartas').value); if(id)cargar(id);});
-  on('selectorCartas','change',()=>{const id=Number($('selectorCartas').value); if(id)cargar(id);});
+  on('btnAbrirSeleccion','click',()=>{const id=$('selectorCartas').value; if(id!=='')cargar(id);});
+  on('selectorCartas','change',()=>{const id=$('selectorCartas').value; if(id!=='')cargar(id);});
   on('filtroAspectosPlaneta','change',pintarTablaAspectos);
   on('filtroAspectosPlaneta','input',pintarTablaAspectos);
   

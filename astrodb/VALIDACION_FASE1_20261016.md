@@ -25,3 +25,21 @@ Drive sigue siendo exportación manual. No se ha implementado OAuth ni ejecutado
 ## Siguiente trabajo
 
 Resolver la clave única tras revisar esquema y compatibilidad de registros antiguos, probar aislamiento y guardados concurrentes; implementar OAuth y guardado independiente de Drive; ejecutar pruebas de exportación y visuales en escritorio y móvil con navegador disponible. Mantener PR en borrador, sin fusionar ni publicar.
+
+## Segunda intervención
+
+Base remota: `183fb3667cc1cd67499a441b7bc920892fd6df2b`.
+
+Se corrigen las conversiones de UUID a número en el selector y la comparativa; cargar una ficha acepta IDs antiguos numéricos y nuevos de texto, conservando el tipo original. Al abrir se conservan coordenadas cero.
+
+La recuperación local deduplica por ID, no por datos personales. Dos fichas con IDs diferentes y datos personales idénticos permanecen separadas. Los registros antiguos sin ID reciben uno estable por origen y posición. Esto no intenta resolver fichas históricas que ya se hubieran perdido antes de esta intervención.
+
+Las escrituras de una misma ficha y usuario se ejecutan en orden dentro de la página. Cada trabajo copia su entrada antes de esperar; un fallo no bloquea los siguientes y otras fichas pueden avanzar independientemente. Se captura el usuario y cliente para la consulta y se cancela la escritura si cambia la cuenta antes de completar la búsqueda. Cambiar de ficha invalida las confirmaciones visuales pendientes. Se elimina un serializador remoto sin llamadas que consultaba el editor en vivo.
+
+Resultado de `node --test astrodb/tests/*.test.cjs`: 11 pruebas de ejecución/sintaxis y 14 comprobaciones estáticas pasan. Los dobles de Supabase comprueban orden, recuperación tras fallo y cancelación por cambio de cuenta. No equivalen a una escritura autenticada real.
+
+Auditoría agregada: 5 registros existentes, ninguno sin ID en `input_data.id` o `input_data.astrodb_local_id`; RLS activo; políticas SELECT/INSERT/UPDATE/DELETE restringidas al usuario propietario y UPDATE con USING y WITH CHECK. Ningún dato ni esquema remoto fue modificado.
+
+La cola solo protege una instancia de la página. Sigue pendiente una clave única por usuario/ficha y guardado atómico para concurrencia entre pestañas y dispositivos. Plan: revisar compatibilidad de los dos campos históricos de ID, añadir una columna derivada estable con restricción única, detenerse ante ambigüedades sin borrar filas y adoptar upsert con esa restricción. No se ha desplegado ese cambio.
+
+Se intentó obtener Chromium Headless Shell como alternativa al navegador completo; la descarga también devolvió un archivo inválido. Las pruebas visuales siguen bloqueadas. No se ha implementado OAuth ni probado subida real a Drive; permanece exportación manual. Sin fusión ni publicación.
