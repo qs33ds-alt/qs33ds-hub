@@ -26,45 +26,8 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
 <body>
 
 
-<aside class="sidebar no-print">
-  <div class="brand"><span class="futureBrandGlyph">◎</span><span class="futureBrandTitle">ASTRODB <b>PRO</b><small>QS33DS / v10.1</small></span></div>
-  <button id="btnNueva" class="btn btn-gold btn-block">Nueva ficha</button>
-
-  <div class="sideCard card">
-    <label style="margin-top:0">Abrir ficha</label>
-    <select id="selectorCartas"><option value="">Selecciona una ficha...</option></select>
-    <div id="lista" class="savedList"></div>
-    <button id="btnRecuperarLocalesAstroDB" type="button" class="btn btn-block" style="margin-top:8px">Traer fichas de AstroDB habitual</button>
-    <button id="btnRecuperarSupabaseAstroDB" type="button" class="btn btn-block" style="margin-top:6px">Recuperar fichas de Supabase</button>
-    <p id="estadoRecuperacionAstroDB" class="tiny" role="status" aria-live="polite">Las fichas recuperadas se añaden sin sobrescribir las existentes.</p>
-    <button id="btnAbrirSeleccion" class="btn btn-dark btn-block" style="margin-top:8px">Abrir seleccionada</button>
-  </div>
-
-  <details class="sideDetails">
-    <summary>Comparativa global</summary>
-    <div class="detailsBody">
-      <label>Planeta</label><select id="fPlaneta"><option value="">Cualquier planeta</option></select>
-      <label>Signo</label><select id="fSigno"><option value="">Cualquier signo</option></select>
-      <label>Casa</label><select id="fCasa"><option value="">Cualquier casa</option></select>
-      <button id="btnFiltrar" class="btn btn-gold btn-block" style="margin-top:9px">Buscar</button>
-      <div class="quickRow" style="margin-top:6px"><button id="btnLimpiarFiltro" class="btn btn-dark">Limpiar</button><button id="btnExportarFiltro" class="btn btn-dark">CSV</button></div>
-    </div>
-  </details>
-
-  <details class="sideDetails" id="astrodbCopiasPanel" open><summary>Copias automáticas</summary><div class="detailsBody">
-    <p class="tiny">Al calcular, abrir o guardar una carta se actualizan sus copias. Drive necesita conexión en cada sesión.</p>
-    <p id="astrodbDriveConexion" class="small" role="status">Drive sin conectar</p>
-    <div class="toolbar"><button id="astrodbDriveConectar" type="button" class="btn btn-gold">Conectar Google Drive</button><button id="astrodbDriveDesconectar" type="button" class="btn" disabled>Desconectar</button></div>
-    <p class="tiny">Crea «Código Semilla · AstroDB automático» en tu Drive con la ficha, NatalCore y un registro de verificación. Conserva tus carpetas anteriores.</p>
-    <p id="estadoGuardadoAstroDB" class="status" role="status" aria-live="polite"></p>
-    <p id="astrodbDriveDetalle" class="tiny"></p>
-    <a id="astrodbDriveCarpeta" target="_blank" rel="noopener noreferrer" hidden>Ver carpeta de copias</a>
-    <button id="astrodbReintentarCopias" type="button" class="btn btn-block">Guardar y reintentar copias</button>
-    <div id="astrodbCopiasAcciones" style="margin-top:6px"></div>
-    <details style="margin-top:10px"><summary>Ajustes de conexión</summary><label for="astrodbGoogleClientId">Identificador OAuth web de Google</label><input id="astrodbGoogleClientId" type="text" autocomplete="off" placeholder="…apps.googleusercontent.com"><p class="tiny">Identificador público configurado para esta web. No introduzcas contraseñas ni claves secretas.</p></details>
-  </div></details>
-
-</aside>
+<div id="astrodbSidebarMount"></div>
+<script src="modules/sidebar.js?v=1"></script>
 
 <main class="main">
 <div class="astrodbTopline no-print"><span class="astrodbToplineBrand">QS33DS <b>/</b> ASTRODB</span><span>OBSERVATORIO NATAL <i>·</i> PSYCHOLOGICAL FUTURIST</span><span class="astrodbToplinePulse">● ENTORNO DE VALIDACIÓN</span></div>
