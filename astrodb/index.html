@@ -1188,7 +1188,7 @@ function normalizaPos(nombre,pos){
   let L, speed;
   if(pos==null){L=undefined;}
   else if(typeof pos==='number'){L=pos;}
-  else if(Array.isArray(pos)||ArrayBuffer.isView(pos)){L=Number(pos[0]); speed=Number(pos[3]);}
+  else if(Array.isArray(pos)||ArrayBuffer.isView(pos)){L=pos[0]==null||pos[0]===''?undefined:Number(pos[0]); speed=pos[3];}
   else if(typeof pos==='object'){
     L=pos.longitude??pos.lon??pos.lng??pos?.xx?.[0]??pos?.data?.[0]??pos?.result?.[0];
     speed=pos.speedLongitude??pos.longitudeSpeed??pos.speed??pos.speedLon??pos.lonSpeed??pos?.xx?.[3]??pos?.data?.[3]??pos?.result?.[3]??pos?.values?.[3];
@@ -1197,7 +1197,7 @@ function normalizaPos(nombre,pos){
   if(typeof L!=='number'||!isFinite(L))throw new Error('Swiss no devolvió longitud válida para '+nombre);
   const sd=lonToSignDegree(L);
   const out={nombre,signo:sd.signo,grado:Number(sd.grado.toFixed(6)),longitude:Number(sd.longitude.toFixed(8))};
-  if(Number.isFinite(Number(speed))){out.speed=Number(Number(speed).toFixed(8));out.retrograde=Number(speed)<0;}
+  if(speed!=null&&speed!==''&&Number.isFinite(Number(speed))){out.speed=Number(Number(speed).toFixed(8));out.retrograde=Number(speed)<0;}
   return out;
 }
 function degNorm360(v){return ((Number(v)%360)+360)%360;}
