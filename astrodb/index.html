@@ -93,28 +93,6 @@ input::placeholder,textarea::placeholder{color:#a7b8c9}
     <details style="margin-top:10px"><summary>Ajustes de conexión</summary><label for="astrodbGoogleClientId">Identificador OAuth web de Google</label><input id="astrodbGoogleClientId" type="text" autocomplete="off" placeholder="…apps.googleusercontent.com"><p class="tiny">Identificador público configurado para esta web. No introduzcas contraseñas ni claves secretas.</p></details>
   </div></details>
 
-  <details class="sideDetails">
-    <summary>Base de datos</summary>
-    <div class="detailsBody">
-      <div class="quickRow" style="margin-top:9px"><button id="btnGuardarComoBD" class="btn btn-gold" type="button">Guardar</button><button id="btnExportarBD" class="btn btn-dark" type="button">JSON</button></div>
-      <button id="btnMostrarJSONBD" class="btn btn-dark btn-block" type="button" style="margin-top:6px">Mostrar / copiar JSON</button>
-      <label class="btn btn-dark btn-block" for="inputImportarBD" style="cursor:pointer;text-transform:none;font-size:12px;text-align:center;margin-top:6px">Importar JSON</label>
-      <input id="inputImportarBD" type="file" accept=".json,application/json" style="display:none">
-      <p id="estadoImportExport" class="tiny"></p>
-      <textarea id="jsonBDTexto" style="display:none;min-height:180px;font-family:monospace;font-size:11px" placeholder="JSON de la base"></textarea>
-    </div>
-  </details>
-
-  <details class="sideDetails">
-    <summary>NatalCore</summary>
-    <div class="detailsBody">
-      <p class="tiny">Capa 0 estructural de la ficha activa.</p>
-      <button id="btnMostrarNatalCore" class="btn btn-gold btn-block" type="button">Generar / copiar</button>
-      <div class="quickRow" style="margin-top:6px"><button id="btnValidarNatalCore" class="btn btn-dark" type="button">Validar</button><button id="btnDescargarNatalCore" class="btn btn-dark" type="button">Descargar</button></div>
-      <p id="estadoNatalCore" class="tiny">Calcula o abre una ficha.</p>
-      <textarea id="jsonNatalCoreTexto" style="display:none;min-height:200px;font-family:monospace;font-size:10px" placeholder="JSON NatalCore"></textarea>
-    </div>
-  </details>
 </aside>
 
 <main class="main">
@@ -194,6 +172,30 @@ box-shadow:0 2px 8px rgba(0,0,0,.06);
       </div>
     </div>
 
+    <div class="grid grid2 no-print" id="herramientasEstructurales" style="margin-bottom:14px">
+  <details class="sideDetails">
+    <summary>Base de datos · importar y exportar JSON</summary>
+    <div class="detailsBody">
+      <div class="quickRow" style="margin-top:9px"><button id="btnGuardarComoBD" class="btn btn-gold" type="button">Guardar</button><button id="btnExportarBD" class="btn btn-dark" type="button">JSON</button></div>
+      <button id="btnMostrarJSONBD" class="btn btn-dark btn-block" type="button" style="margin-top:6px">Mostrar / copiar JSON</button>
+      <label class="btn btn-dark btn-block" for="inputImportarBD" style="cursor:pointer;text-transform:none;font-size:12px;text-align:center;margin-top:6px">Importar JSON</label>
+      <input id="inputImportarBD" type="file" accept=".json,application/json" style="display:none">
+      <p id="estadoImportExport" class="tiny"></p>
+      <textarea id="jsonBDTexto" style="display:none;min-height:180px;font-family:monospace;font-size:11px" placeholder="JSON de la base"></textarea>
+    </div>
+  </details>
+
+  <details class="sideDetails">
+    <summary>NatalCore · generar, validar y descargar</summary>
+    <div class="detailsBody">
+      <p class="tiny">Capa 0 estructural de la ficha activa.</p>
+      <button id="btnMostrarNatalCore" class="btn btn-gold btn-block" type="button">Generar / copiar</button>
+      <div class="quickRow" style="margin-top:6px"><button id="btnValidarNatalCore" class="btn btn-dark" type="button">Validar</button><button id="btnDescargarNatalCore" class="btn btn-dark" type="button">Descargar</button></div>
+      <p id="estadoNatalCore" class="tiny">Calcula o abre una ficha.</p>
+      <textarea id="jsonNatalCoreTexto" style="display:none;min-height:200px;font-family:monospace;font-size:10px" placeholder="JSON NatalCore"></textarea>
+    </div>
+  </details>
+    </div>
     <div class="card compactCard">
       <div class="compactCardHeader">
         <div class="tabbar" role="tablist" aria-label="Datos astrológicos">
