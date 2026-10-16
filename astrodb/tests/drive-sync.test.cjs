@@ -44,7 +44,7 @@ test('uncertain network response reuses its reserved Drive ID on retry',async()=
  const retry=await f.client.save(bundle('a'));assert.equal(retry.ok,true);assert.equal(f.files.size,7);
 });
 test('failed chart copy does not stop NatalCore and retry repairs the partial save',async()=>{
- const f=fixture();f.setFailure('astrodb_');const partial=await f.client.save(bundle('a'));
+ const f=fixture();f.setFailure('AstroDB_');const partial=await f.client.save(bundle('a'));
  assert.equal(partial.ok,false);assert.equal(partial.outcomes.natalcore.state,'success');assert.equal(partial.outcomes.chart.state,'error');
  f.setFailure(null);assert.equal((await f.client.save(bundle('a'))).ok,true);assert.equal(f.files.size,7);
 });
@@ -74,4 +74,31 @@ test('OAuth identifies the Google account without persisting access tokens',asyn
  const f=fixture();f.client.disconnect();
  const google={accounts:{oauth2:{initTokenClient:o=>({requestAccessToken(){o.callback({access_token:'new-token',expires_in:3600});}}),hasGrantedAllScopes:()=>true}}};
  const state=await f.client.connect('test.apps.googleusercontent.com',google);assert.equal(state.connected,true);assert.equal(state.account,'google-user');assert.ok(!JSON.stringify([...f.storageMap]).includes('new-token'));
+});
+
+test('Drive filenames include person name and stable ID across all three copies',async()=>{
+ const f=fixture();const result=await f.client.save(bundle('a'));
+ assert.equal(result.ok,true);
+ const names=[...f.files.values()].filter(x=>x.mimeType==='application/json').map(x=>x.name).sort();
+ assert.deepEqual(names,['AstroDB_Mismo nombre_a.json','NatalCore_Mismo nombre_a.json','Sincronizacion_Mismo nombre_a.json'].sort());
+});
+test('renaming a person updates all three existing files without creating duplicates',async()=>{
+ const f=fixture();const first=await f.client.save(bundle('a'));
+ const renamed=bundle('a');renamed.chart.nombre='Nombre corregido';
+ const second=await f.client.save(renamed);
+ assert.equal(second.ok,true);assert.equal(f.files.size,7);
+ assert.equal(first.outcomes.chart.id,second.outcomes.chart.id);
+ assert.equal(first.outcomes.natalcore.id,second.outcomes.natalcore.id);
+ assert.equal(first.outcomes.log.id,second.outcomes.log.id);
+ const names=[...f.files.values()].filter(x=>x.mimeType==='application/json').map(x=>x.name);
+ assert.ok(names.every(name=>name.includes('Nombre corregido_a.json')));
+});
+test('two people with the same name retain separate Drive files',async()=>{
+ const f=fixture();await f.client.save(bundle('a'));await f.client.save(bundle('b'));
+ const files=[...f.files.values()].filter(x=>x.mimeType==='application/json');
+ assert.equal(files.length,6);assert.equal(new Set(files.map(x=>x.name)).size,6);
+});
+test('unsafe characters are removed from visible names without changing chart identity',()=>{
+ const f=fixture();const name=f.client.fileBase('NatalCore',{id:'uuid-1',nombre:'  Ana / María : test?  '});
+ assert.equal(name,'NatalCore_Ana María test_uuid-1.json');
 });
