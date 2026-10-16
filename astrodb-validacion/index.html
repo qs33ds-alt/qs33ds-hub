@@ -32,6 +32,9 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
     <label style="margin-top:0">Abrir ficha</label>
     <select id="selectorCartas"><option value="">Selecciona una ficha...</option></select>
     <div id="lista" class="savedList"></div>
+    <button id="btnRecuperarLocalesAstroDB" type="button" class="btn btn-block" style="margin-top:8px">Traer fichas de AstroDB habitual</button>
+    <button id="btnRecuperarSupabaseAstroDB" type="button" class="btn btn-block" style="margin-top:6px">Recuperar fichas de Supabase</button>
+    <p id="estadoRecuperacionAstroDB" class="tiny" role="status" aria-live="polite">Las fichas recuperadas se añaden sin sobrescribir las existentes.</p>
     <button id="btnAbrirSeleccion" class="btn btn-dark btn-block" style="margin-top:8px">Abrir seleccionada</button>
   </div>
 
@@ -84,7 +87,7 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
 </aside>
 
 <main class="main">
-<p class="status no-print"><strong>Copia de validación</strong> · Crea una ficha ficticia para comprobar Drive. Las fichas locales de esta copia están separadas de AstroDB habitual.</p>
+<p class="status no-print"><strong>Copia de validación</strong> · Puedes recuperar las fichas de AstroDB habitual con los botones de la lista. Se añaden a esta copia sin borrar ni sobrescribir las originales.</p>
 <div id="astrodbAuthPanel" style="
 position:relative;
 margin-bottom:12px;
@@ -197,6 +200,7 @@ box-shadow:0 2px 8px rgba(0,0,0,.06);
 window.ASTRODB_GOOGLE_CLIENT_ID='575707945836-1dihl63celivvh1dkmuv5d78har8qe8f.apps.googleusercontent.com';
 </script>
 <script src="drive-sync.js"></script>
+<script src="chart-recovery.js"></script>
 <script>
 
 function norm360(v){ return ((v % 360) + 360) % 360; }
@@ -678,7 +682,8 @@ function actualizarSelectorCartas(){
   const sel=$('selectorCartas'); if(!sel)return;
   const current=idActivo==null?sel.value:String(idActivo);
   const ordenadas=datos.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
-  sel.innerHTML='<option value="">Selecciona una ficha... ('+ordenadas.length+')</option>'+ordenadas.map(d=>`<option value="${d.id}">${d.nombre||'Sin nombre'}${d.dia?` · ${d.dia}/${d.mes}/${d.anio}`:''}</option>`).join('');
+  sel.replaceChildren(new Option('Selecciona una ficha... ('+ordenadas.length+')',''));
+  ordenadas.forEach(d=>sel.add(new Option((d.nombre||'Sin nombre')+(d.dia?' · '+d.dia+'/'+d.mes+'/'+d.anio:''),String(d.id))));
   if([...sel.options].some(o=>o.value===current))sel.value=current;
 }
 
@@ -727,7 +732,7 @@ function render(){
   if(!lista.length){l.innerHTML='<p class="tiny">No hay fichas guardadas.</p>';return;}
   lista.slice().reverse().forEach(d=>{
     const div=document.createElement('div');div.className='listItem '+(d.id===idActivo?'active':'');
-    div.innerHTML=(d.nombre||'Sin nombre')+(d.dia?`<br><span class="tiny">${d.dia}/${d.mes}/${d.anio}</span>`:'');div.onclick=()=>cargar(d.id);l.appendChild(div);
+    div.textContent=d.nombre||'Sin nombre';if(d.dia){const fecha=document.createElement('div');fecha.className='tiny';fecha.textContent=d.dia+'/'+d.mes+'/'+d.anio;div.appendChild(fecha);}div.onclick=()=>cargar(d.id);l.appendChild(div);
   });
 }
 function nuevoIdFicha(){return (globalThis.crypto&&typeof globalThis.crypto.randomUUID==='function')?globalThis.crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2,12);}
@@ -978,6 +983,46 @@ async function guardarFichaSupabase(ficha){
     console.error('[AstroDB] Error sincronizando carta:',error);
     return false;
   }
+}
+
+function incorporarFichasRecuperadasAstroDB(fichas){
+  if(!window.AstroDBRecovery)throw new Error('No se pudo cargar la recuperación de fichas. Recarga la página.');
+  const resultado=AstroDBRecovery.merge(datos,fichas);
+  if(resultado.added){
+    const anteriores=datos;datos=resultado.records;
+    try{persistirDatos();}catch(error){datos=anteriores;throw new Error('No se pudieron guardar las fichas recuperadas en este navegador. Las originales se conservan.');}
+  }
+  return resultado;
+}
+function recuperarFichasLocalesAstroDB(){
+  const estado=$('estadoRecuperacionAstroDB');if(!estado)return;
+  try{
+    const keys=['astrodb_v51','astrodb_v45','astrodb_v42_estable','astro_data_chromebook_v3','astro_data_chromebook_v4'].filter(k=>k!==STORAGE_KEY);
+    const origen=AstroDBRecovery.readLegacy(localStorage,keys);
+    const resultado=incorporarFichasRecuperadasAstroDB(origen.records);
+    estado.textContent=resultado.added+' fichas añadidas desde AstroDB habitual; '+resultado.skipped+' ya existentes u omitidas.'+(origen.unreadable.length?' Hay bases antiguas que no se pudieron leer; no se han modificado.':'')+(!origen.records.length?' Si estaban en otro dispositivo o navegador, entra para recuperar las de Supabase o importa su JSON.':'');
+  }catch(error){estado.textContent=error.message;}
+}
+let recuperacionSupabaseAstroDB=null;
+function recuperarFichasSupabaseAstroDB(){
+  if(recuperacionSupabaseAstroDB)return recuperacionSupabaseAstroDB;
+  const estado=$('estadoRecuperacionAstroDB');
+  if(!astrodbSupabase||!astrodbUser){if(estado)estado.textContent='Pulsa Entrar para recuperar tus fichas guardadas en Supabase.';return Promise.resolve(false);}
+  const client=astrodbSupabase,userId=astrodbUser.id;
+  if(estado)estado.textContent='Recuperando tus fichas de Supabase…';
+  recuperacionSupabaseAstroDB=AstroDBRecovery.readSupabase(client,userId,()=>astrodbSupabase===client&&astrodbUser?.id===userId)
+    .then(fichas=>{
+      const resultado=incorporarFichasRecuperadasAstroDB(fichas);
+      if(estado)estado.textContent=resultado.added+' fichas añadidas desde Supabase; '+resultado.skipped+' ya existentes. Se conservan las fichas locales y las originales.';
+      return true;
+    }).catch(error=>{if(estado)estado.textContent=error.message;return false;})
+    .finally(()=>{recuperacionSupabaseAstroDB=null;});
+  return recuperacionSupabaseAstroDB;
+}
+function iniciarRecuperacionAstroDB(){
+  $('btnRecuperarLocalesAstroDB')?.addEventListener('click',recuperarFichasLocalesAstroDB);
+  $('btnRecuperarSupabaseAstroDB')?.addEventListener('click',recuperarFichasSupabaseAstroDB);
+  if(STORAGE_KEY==='astrodb_validation_v51'&&!datos.length)recuperarFichasLocalesAstroDB();
 }
 
 function capturarFichaParaSincronizacion(ficha){
@@ -1868,41 +1913,10 @@ async function importarBaseJSON(ev){
     }
 
     if(typeof refrescarDatosDesdeLocal === 'function') refrescarDatosDesdeLocal();
-    const actuales = Array.isArray(datos) ? datos : [];
-    const mapa = new Map();
-
-    function claveFichaImport(f){
-      return [f.nombre||'', f.dia||'', f.mes||'', f.anio||'', f.hora||'', f.ciudad||''].join('|').toLowerCase();
-    }
-
-    actuales.forEach(f=>{
-      if(f && typeof f === 'object') mapa.set(claveFichaImport(f), f);
-    });
-
-    let anadidas = 0;
-    nuevas.forEach(f=>{
-      if(!f || typeof f !== 'object') return;
-      const ficha = {...f, id: f.id || Date.now()+Math.random()};
-      const k = claveFichaImport(ficha);
-      if(!mapa.has(k)){
-        mapa.set(k, ficha);
-        anadidas++;
-      }else{
-        const previa = mapa.get(k);
-        const mejor = (Array.isArray(ficha.planetas)&&ficha.planetas.length) ? ficha : previa;
-        mapa.set(k, {...previa, ...mejor});
-      }
-    });
-
-    datos = Array.from(mapa.values());
-    if(typeof persistirDatos === 'function') persistirDatos();
-    else localStorage.setItem(typeof STORAGE_KEY !== 'undefined' ? STORAGE_KEY : 'astrodb_v51', JSON.stringify(datos));
-
-    if(typeof actualizarSelectorCartas === 'function') actualizarSelectorCartas();
-    if(typeof render === 'function') render();
-
+    const fichas=nuevas.filter(f=>f&&typeof f==='object'&&!Array.isArray(f)).map(f=>({...f,id:f.id??nuevoIdFicha()}));
+    const resultado=incorporarFichasRecuperadasAstroDB(fichas);
     const st = $('estadoImportExport');
-    if(st) st.textContent = 'Importadas/fusionadas ' + nuevas.length + ' fichas. Nuevas añadidas: ' + anadidas + '. Total: ' + datos.length + '.';
+    if(st)st.textContent=resultado.added+' fichas añadidas; '+resultado.skipped+' ya existentes u omitidas. Las existentes no se sobrescriben.';
     alert('Importación completada. Total de fichas: ' + datos.length);
   }catch(e){
     alert('No se pudo importar el JSON: ' + e.message);
@@ -1956,7 +1970,9 @@ document.addEventListener('DOMContentLoaded',async()=>{
   ['nombre','interpretacionDirecta'].forEach(id=>$(id)?.addEventListener('input',()=>{invalidarEstadoGuardadoAstroDB();programarAutoguardadoAstroDB();}));
   actualizarSelectorCartas();
   render();
+  iniciarRecuperacionAstroDB();
   await iniciarSupabaseAstroDB();
+  if(astrodbUser)recuperarFichasSupabaseAstroDB();
 
 const loginBtn = document.getElementById('astrodbBtnLogin');
 const logoutBtn = document.getElementById('astrodbBtnLogout');
