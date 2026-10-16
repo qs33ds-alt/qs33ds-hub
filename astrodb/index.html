@@ -1048,6 +1048,31 @@ async function sincronizarFichaActivaSupabase(ficha){
     return false;
   }
 }
+function prepararCopiaCodigoSemilla(){
+  const ficha=fichaActualComoObjeto(false);
+  if(!Array.isArray(ficha.planetas)||!ficha.planetas.length||!Array.isArray(ficha.casas)||!ficha.casas.length){
+    alert('Para preparar Código Semilla, calcula o carga primero una carta completa.');
+    return;
+  }
+  let natalcore;
+  try { natalcore=construirNatalCore(); }
+  catch(error){ alert('No se pudo preparar NatalCore: '+error.message);return; }
+  const paquete={
+    format:'qs33ds.astrodb.codigo-semilla.v1',
+    exported_at:new Date().toISOString(),
+    storage_destination:'google_drive_manual_import',
+    chart_id:String(ficha.id),
+    chart:ficha,
+    natalcore
+  };
+  const blob=new Blob([JSON.stringify(paquete,null,2)],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='codigo_semilla_'+slugId(ficha.nombre||'sin_nombre')+'_'+String(ficha.id)+'.json';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
 function informarGuardadoRemoto(ok,etiqueta){
   console.info(ok
     ? '[AstroDB] '+etiqueta+' sincronizada con Supabase.'
@@ -1063,6 +1088,17 @@ function guardar(){
   sincronizarFichaActivaSupabase(f).then(ok=>informarGuardadoRemoto(ok,'Ficha'));
   alert('Ficha guardada localmente. Total de fichas: '+datos.length+'. Supabase se confirma por separado; Drive no conectado.');
 }
+function mostrarAccesoCodigoSemilla(){
+  if(document.getElementById('botonCodigoSemilla'))return;
+  const b=document.createElement('button');
+  b.id='botonCodigoSemilla';b.type='button';
+  b.textContent='Exportar Código Semilla (JSON)';
+  b.title='Descarga independiente para guardar en Drive. No realiza subida automática.';
+  b.onclick=prepararCopiaCodigoSemilla;
+  const reference=[...document.querySelectorAll('button')].find(x=>/guardar/i.test(x.textContent||''));
+  if(reference?.parentNode)reference.parentNode.insertBefore(b,reference.nextSibling);
+}
+document.addEventListener('DOMContentLoaded',mostrarAccesoCodigoSemilla);
 function guardarComoNueva(){
   const f=fichaActualComoObjeto(true);
   datos.push(f);idActivo=f.id;persistirDatos();
