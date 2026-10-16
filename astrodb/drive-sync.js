@@ -91,7 +91,7 @@
       const storageKey='astrodb.drive.id.'+key;
       const mimeType=content===null?FOLDER:'application/json';
       let id=this.storage.getItem(storageKey);let exists=false;
-      if(id){try{await this.inspect(id,key,parent,mimeType,s);exists=true;}catch(error){if(error.status!==404)throw error;}}
+      if(id){try{await this.inspect(id,key,parent,mimeType,s);exists=true;}catch(error){if(error.status!==404)throw error;id=null;}}
       if(!id){
         id=await this.find(key,parent,s);
         if(id){await this.inspect(id,key,parent,mimeType,s);exists=true;}
