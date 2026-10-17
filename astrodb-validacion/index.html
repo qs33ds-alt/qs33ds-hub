@@ -1037,7 +1037,9 @@ function guardarFichaCompletaAstroDB(forceNew=false){
   estadoSincronizacionAstroDB={local:'guardado',supabase:astrodbUser?'sincronizando…':'sin sesión',drive:conexionDrive?.connected?'sincronizando…':(conexionDrive?.expired?'sesión caducada; reconectar':'sin conectar; copia pendiente')};
   pintarEstadoGuardadoAstroDB();
   // Independent destinations: neither waits for the other to start.
-  const supabase=sincronizarFichaActivaSupabase(snapshot).then(ok=>{informarGuardadoRemoto(ok,'Ficha',solicitud);return ok;}).catch(()=>{informarGuardadoRemoto(false,'Ficha',solicitud);return false;});
+  const supabase=astrodbUser
+    ? sincronizarFichaActivaSupabase(snapshot).then(ok=>{informarGuardadoRemoto(ok,'Ficha',solicitud);return ok;}).catch(()=>{informarGuardadoRemoto(false,'Ficha',solicitud);return false;})
+    : Promise.resolve(false);
   const drive=sincronizarFichaDriveAstroDB(snapshot,solicitud);
   return Promise.allSettled([supabase,drive]);
 }
