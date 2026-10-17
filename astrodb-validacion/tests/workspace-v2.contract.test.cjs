@@ -94,3 +94,21 @@ test('Supabase recovery is scoped to the active account and stale errors cannot 
  assert.match(source,/if\(estado && astrodbSupabase===client && astrodbUser\?\.id===userId\)estado\.textContent=error\.message/);
  assert.match(source,/if\(recuperacionSupabaseAstroDB\?\.promise===promise\)recuperacionSupabaseAstroDB=null/);
 });
+
+test('V2 presentation uses isolated SVG orbital scene and reduced-motion support',()=>{
+ const controller=read('modules/workspace-navigation.js');const css=read('modules/workspace-v2.css');
+ assert.match(controller,/class="v2Orbital"/);
+ assert.match(controller,/mandala\?\.appendChild\(stage\)/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+ for(const view of ['observatorio','datos','analisis','natalcore'])assert.ok(css.includes('data-workspace-view='+view));
+ assert.match(css,/\.workspaceLibraryHeader/);
+});
+
+test('cinematic V2 shell uses semantic navigation and responsive five-item rail',()=>{
+ const js=read('modules/workspace-navigation.js');
+ const css=read('modules/workspace-v2.css');
+ assert.match(js,/masthead\.className='v2Masthead'/);
+ assert.match(js,/glyph\.setAttribute\('aria-hidden','true'\)/);
+ assert.match(css,/grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
+ assert.match(css,/\.v2LiveDot/);
+});

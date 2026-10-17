@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feature/astrodb-workspace-v2-20261016
+      - feature/astrodb-v2-visual-redesign-20261017
   workflow_dispatch:
 jobs:
   validate:

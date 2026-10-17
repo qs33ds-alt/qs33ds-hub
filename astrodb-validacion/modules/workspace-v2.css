@@ -20,3 +20,94 @@
 @media print{#astrodbWorkspaceNav{display:none!important}#editor[data-workspace-view] .futureAnalysisLayout{display:grid!important}#editor[data-workspace-view] .workspaceMandala,#editor[data-workspace-view] .workspaceBirth,#editor[data-workspace-view] .workspaceAnalysis{display:block!important}}
 
 .workspaceLibrary{padding:18px;min-height:60vh}.workspaceLibrary.hidden{display:none!important}.workspaceLibraryHeader{padding:24px;border:1px solid #2b5168;border-radius:16px;background:#0d2035;margin-bottom:16px}.workspaceLibraryHeader span{color:#7ddbea;font-size:10px;letter-spacing:.18em}.workspaceLibraryHeader h2{font-size:28px;color:#e9faff;margin:12px 0}.workspaceLibraryHeader p{color:#91b2c5}.workspaceLibrarySlot{max-width:900px}.workspaceLibraryCard{padding:22px!important;background:#132d45!important}.workspaceLibraryCard .savedList{max-height:48vh;overflow:auto}.workspaceLibraryInactive{display:none!important}
+
+/* V2 visual system: observatory stage, quiet controls, accessible responsive viewport. */
+:root{--v2-ink:#edf5ff;--v2-muted:#9bb1c8;--v2-edge:rgba(133,176,220,.18);--v2-glow:#79d8e9}
+body{background:radial-gradient(ellipse at 72% 8%,rgba(39,86,139,.23),transparent 42%),radial-gradient(ellipse at 20% 88%,rgba(22,75,100,.15),transparent 50%),#060d1c;color:var(--v2-ink)}
+#astrodbWorkspaceNav{top:0;padding:10px 0 15px;background:linear-gradient(180deg,#071222 78%,rgba(7,18,34,.88));backdrop-filter:blur(16px)}
+.workspaceV2Nav{justify-content:center;gap:4px;border:1px solid var(--v2-edge);border-radius:18px;background:rgba(11,25,46,.8);box-shadow:0 16px 48px rgba(0,0,0,.12)}
+.workspaceV2Nav button{padding:12px 20px;border-radius:12px;font-size:12px;letter-spacing:.035em;transition:background .2s,color .2s,box-shadow .2s}
+.workspaceV2Nav button[aria-pressed=true]{background:linear-gradient(125deg,#153e5e,#1b637a);border-color:rgba(118,221,241,.5);box-shadow:inset 0 1px rgba(255,255,255,.12),0 0 24px rgba(39,177,216,.15)}
+#editor[data-workspace-view=observatorio] .futureAnalysisLayout{position:relative;isolation:isolate;display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+#editor[data-workspace-view=observatorio] .workspaceMandala{position:relative;overflow:hidden;display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;min-width:0;min-height:0!important;padding:clamp(12px,2vw,30px)!important;border:1px solid var(--v2-edge)!important;border-radius:24px!important;background:radial-gradient(circle at 50% 47%,rgba(38,84,132,.26),transparent 54%),radial-gradient(circle at 50% 48%,rgba(91,149,181,.08),transparent 67%),#081326!important;box-shadow:inset 0 1px rgba(255,255,255,.06),0 22px 70px rgba(0,0,0,.18)}
+#editor[data-workspace-view=observatorio] .workspaceMandala::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.42;background-image:radial-gradient(circle,#b9d7f4 0.7px,transparent 1px);background-size:43px 53px;mask-image:radial-gradient(ellipse at center,transparent 20%,#000 100%)}
+#editor[data-workspace-view=observatorio] .workspaceMandala > *{position:relative;z-index:1}
+#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{display:block;width:min(100%,calc(100dvh - 370px),680px)!important;max-width:680px!important;min-width:0;height:auto!important;aspect-ratio:1/1;object-fit:contain;margin:0 auto;filter:drop-shadow(0 0 34px rgba(116,195,242,.11))}
+#editor[data-workspace-view=observatorio] .workspaceMandala .futurePanelHeading{width:100%;margin-bottom:6px}
+#editor[data-workspace-view=observatorio] .workspaceMandala .futurePanelHeading h3{font-size:clamp(18px,2.1vw,27px);letter-spacing:.015em}
+#editor[data-workspace-view=observatorio] .workspaceBirthSummary{margin:7px 0 5px;gap:6px 15px;text-align:center}
+#editor[data-workspace-view=observatorio] .workspaceBirthSummary strong{font-size:16px}
+#editor[data-workspace-view=observatorio] #infoCarta{margin-top:4px;max-width:720px}
+#editor .editorTop{gap:12px;flex-wrap:wrap;margin-bottom:12px}
+#editor .editorTop .toolbar{display:flex;gap:7px;flex-wrap:wrap}
+#editor .editorTop .toolbar .btn{border-radius:11px}
+.workspaceLibraryHeader{background:radial-gradient(ellipse at 90% 0,rgba(54,144,179,.19),transparent 50%),#0c1d34;border-color:var(--v2-edge);border-radius:20px}
+@media(max-height:820px) and (min-width:701px){#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{width:min(100%,calc(100dvh - 310px),570px)!important}}
+@media(max-width:900px){#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{width:min(100%,calc(100dvh - 290px),620px)!important}}
+@media(max-width:700px){#astrodbWorkspaceNav{position:relative;padding:8px 0}.workspaceV2Nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:5px}.workspaceV2Nav button{font-size:11px;padding:11px 5px}#editor[data-workspace-view=observatorio] .workspaceMandala{padding:12px 7px!important;border-radius:17px!important}#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{width:100%!important;max-width:100%!important}#editor[data-workspace-view=observatorio] .workspaceBirthSummary strong{font-size:14px}}
+@media print{#editor[data-workspace-view=observatorio] .workspaceMandala{background:#fff!important;box-shadow:none!important}#editor[data-workspace-view=observatorio] .workspaceMandala::before{display:none}}
+
+/* Unified visual language across the five functional modules. */
+#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{background:linear-gradient(145deg,rgba(18,42,69,.95),rgba(7,19,37,.98))!important;border:1px solid rgba(113,170,205,.22)!important;border-radius:22px!important;padding:clamp(16px,2.4vw,32px)!important;box-shadow:0 22px 60px rgba(0,0,0,.17)}
+#editor[data-workspace-view=datos] .workspaceBirth{max-width:1000px!important}
+#editor[data-workspace-view=analisis] .workspaceAnalysis{max-width:1080px;margin:12px auto!important}
+#editor[data-workspace-view=natalcore] .workspaceTools{max-width:1080px!important}
+#editor[data-workspace-view] .futurePanelHeading{border-bottom:1px solid rgba(115,169,203,.14);padding-bottom:15px;margin-bottom:18px}
+#editor[data-workspace-view] .futurePanelIndex{color:#70d7ed;letter-spacing:.17em;font-weight:700}
+#editor[data-workspace-view] .sectionTitle{color:#f4f8ff;font-weight:650}
+#editor[data-workspace-view] input:not([type=hidden]),#editor[data-workspace-view] select,#editor[data-workspace-view] textarea{border:1px solid rgba(117,164,202,.3);border-radius:10px;background:rgba(3,14,29,.62);color:#eff8ff}
+#editor[data-workspace-view] input:focus-visible,#editor[data-workspace-view] select:focus-visible,#editor[data-workspace-view] textarea:focus-visible{outline:2px solid #72cee8;outline-offset:2px}
+.workspaceLibraryHeader{padding:clamp(22px,3vw,38px)!important;min-height:140px}
+.workspaceLibraryHeader h2{font-size:clamp(26px,3.5vw,44px)!important;font-weight:650;letter-spacing:-.025em}
+.workspaceLibrarySlot{max-width:1100px!important;margin:0 auto}
+.workspaceLibraryCard{border:1px solid rgba(120,190,217,.22)!important;border-radius:22px!important;padding:clamp(18px,2vw,30px)!important;background:linear-gradient(140deg,#102840,#0b182c)!important}
+.workspaceLibraryCard .savedList{max-height:58vh!important}
+.workspaceLibrary{max-width:1320px;margin-inline:auto}
+@media(max-width:700px){#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{padding:15px!important;border-radius:15px!important}.workspaceLibrary{padding:9px!important}.workspaceLibraryHeader{min-height:0}.workspaceLibraryCard{padding:13px!important}}
+
+/* SVG scene: visually expressive yet noninteractive; never changes natal calculation. */
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Stage{position:absolute;inset:0;display:grid;place-items:center;z-index:0;pointer-events:none;overflow:hidden}
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Orbital{width:min(96%,860px);height:95%;max-height:860px;overflow:visible;opacity:.36;filter:drop-shadow(0 0 12px rgba(82,193,235,.22));animation:v2OrbitalPulse 19s ease-in-out infinite}
+.v2Orbital circle,.v2Orbital ellipse{fill:none;stroke:url(#v2Orbit);stroke-width:.8;stroke-dasharray:4 11}
+.v2Orbital .v2OrbitPoints circle{fill:#77e7fc;stroke:none;filter:drop-shadow(0 0 8px #7bdcf8)}
+@keyframes v2OrbitalPulse{0%,100%{opacity:.22;transform:scale(.97)}50%{opacity:.43;transform:scale(1.03)}}
+@media(prefers-reduced-motion:reduce){.v2Orbital{animation:none!important}}
+#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{z-index:2}
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Stage{z-index:0}
+
+/* Rebuilt five-space presentation language. No mutation of data models or storage. */
+#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{border:1px solid rgba(127,200,232,.22)!important;border-radius:22px!important;padding:clamp(18px,2.4vw,34px)!important;background:linear-gradient(145deg,rgba(19,44,73,.95),rgba(8,20,40,.97))!important;box-shadow:0 30px 75px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.06)}
+#editor[data-workspace-view=datos] .workspaceBirth{max-width:920px!important;margin:15px auto!important}
+#editor[data-workspace-view=datos] .workspaceBirth .futurePanelHeading h3{font-size:clamp(24px,3.1vw,36px);letter-spacing:-.03em}
+#editor[data-workspace-view=datos] .workspaceBirth label{color:#9ebad2;letter-spacing:.05em;margin-top:15px}
+#editor[data-workspace-view=datos] .workspaceBirth input{min-height:46px;border:1px solid rgba(133,176,220,.26);background:rgba(5,16,34,.72);border-radius:12px;padding:12px;color:#f0fbff}
+#editor[data-workspace-view=datos] .workspaceBirth #btnCalcularDatos{min-height:50px;border-radius:13px;margin-top:22px!important;box-shadow:0 0 28px rgba(51,166,203,.16)}
+#editor[data-workspace-view=analisis] .workspaceAnalysis{max-width:1160px;margin:15px auto!important;min-height:420px}
+#editor[data-workspace-view=analisis] .workspaceAnalysisHeading{max-width:1160px;margin:20px auto 10px}
+#editor[data-workspace-view=analisis] .workspaceAnalysis h3,#editor[data-workspace-view=natalcore] .workspaceTools summary{color:#eaf7ff}
+#editor[data-workspace-view=natalcore] .workspaceTools{max-width:1100px!important;min-height:460px;display:grid!important;align-content:start}
+#editor[data-workspace-view=natalcore] .workspaceTools details{border:1px solid rgba(125,192,220,.2);border-radius:16px;background:rgba(8,24,48,.72);padding:18px}
+.workspaceLibrary{max-width:1320px;margin:0 auto;padding:18px 10px 45px}
+.workspaceLibraryHeader{padding:clamp(23px,4vw,54px);margin:12px 0 22px;min-height:190px;position:relative;overflow:hidden}
+.workspaceLibraryHeader:after{content:"";position:absolute;right:7%;top:-75px;width:260px;height:260px;border:1px solid rgba(108,202,227,.2);border-radius:50%;box-shadow:0 0 0 35px rgba(108,202,227,.025),0 0 0 75px rgba(108,202,227,.025);pointer-events:none}
+.workspaceLibraryHeader h2{font-size:clamp(30px,4vw,54px);font-weight:600;letter-spacing:-.045em;margin:17px 0 12px}
+.workspaceLibrarySlot{max-width:1100px}
+.workspaceLibraryCard{border:1px solid rgba(127,200,232,.18)!important;border-radius:20px!important;padding:clamp(18px,2.3vw,30px)!important;background:linear-gradient(140deg,#112a45,#091b33)!important}
+.workspaceLibraryCard .savedList{max-height:55vh}
+@media(max-width:700px){.workspaceLibrary{padding:9px 4px 28px}.workspaceLibraryHeader{min-height:160px}.workspaceLibraryHeader:after{right:-95px}.workspaceLibraryCard{padding:14px!important}#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{padding:15px!important;border-radius:15px!important}}
+
+/* Visual shell V2 — distinct cinematic information hierarchy. */
+.v2Masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px clamp(12px,2vw,30px);margin:10px 0 3px;border:1px solid rgba(135,197,237,.18);border-radius:15px;background:linear-gradient(100deg,rgba(17,39,66,.95),rgba(9,22,44,.72));box-shadow:inset 0 1px rgba(255,255,255,.04)}
+.v2MastheadLabel{font-size:10px;letter-spacing:.22em;font-weight:800;color:#b8dff1}.v2MastheadLabel span{color:#4f8fae;padding:0 7px}
+.v2MastheadMeta{display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:.19em;font-weight:750;color:#8fb4ce}.v2MastheadDivider{opacity:.35}
+.v2LiveDot{width:6px;height:6px;border-radius:50%;background:#75dfdc;box-shadow:0 0 12px rgba(100,229,219,.6)}
+.workspaceV2Nav button{display:flex;align-items:center;justify-content:center;gap:10px;min-height:47px;white-space:nowrap}
+.v2NavGlyph{display:inline-grid;place-items:center;width:25px;height:25px;font-size:21px;font-weight:400;line-height:1;color:#80b8d1;opacity:.86}
+.workspaceV2Nav button[aria-pressed=true] .v2NavGlyph{color:#8fe7ef;text-shadow:0 0 16px rgba(80,226,243,.6)}
+#editor[data-workspace-view=observatorio] .workspaceMandala{min-height:min(77dvh,790px)!important}
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Stage{z-index:0}
+#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{position:relative;z-index:2}
+#editor[data-workspace-view=observatorio] .workspaceMandala .futurePanelHeading{z-index:3}
+@media(max-width:900px){.v2MastheadMeta{letter-spacing:.08em}.workspaceV2Nav button{gap:5px;padding:10px 8px}}
+@media(max-width:700px){.v2Masthead{padding:12px;margin-top:4px}.v2MastheadMeta{font-size:8px}.v2MastheadLabel{font-size:9px;letter-spacing:.1em}.workspaceV2Nav{grid-template-columns:repeat(5,minmax(0,1fr))}.workspaceV2Nav button{display:flex;flex-direction:column;gap:1px;padding:8px 2px;font-size:9px;white-space:normal;line-height:1.1;min-height:54px}.v2NavGlyph{font-size:19px;width:21px;height:23px}#editor[data-workspace-view=observatorio] .workspaceMandala{min-height:0!important}}
+@media(max-width:420px){.v2MastheadMeta{display:none}.workspaceV2Nav button{font-size:8px}}
