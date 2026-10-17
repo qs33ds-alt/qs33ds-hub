@@ -83,6 +83,7 @@ window.ASTRODB_GOOGLE_CLIENT_ID='575707945836-1dihl63celivvh1dkmuv5d78har8qe8f.a
 </script>
 <script src="drive-sync.js"></script>
 <script src="chart-recovery.js"></script>
+<script src="modules/bulk-library.js"></script>
 <script>
 
 function norm360(v){ return ((v % 360) + 360) % 360; }
@@ -1861,6 +1862,25 @@ document.addEventListener('DOMContentLoaded',async()=>{
   ['nombre','interpretacionDirecta'].forEach(id=>$(id)?.addEventListener('input',()=>{invalidarEstadoGuardadoAstroDB();programarAutoguardadoAstroDB();}));
   actualizarSelectorCartas();
   render();
+  if(window.AstroDBBulk){
+    const host=document.getElementById('workspaceLibrarySlot');
+    if(host){
+      const bulk=AstroDBBulk.mount({
+        host,
+        getRecords:()=>datos.slice(),
+        openChart:id=>{cargar(id);document.querySelector('[data-workspace="observatorio"]')?.click();},
+        removeLocal:ids=>{
+          const set=new Set(ids.map(String));
+          datos=datos.filter(f=>!set.has(String(f.id)));
+          localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));
+          if(idActivo!=null&&set.has(String(idActivo)))nueva();
+          actualizarSelectorCartas();render();
+        }
+      });
+      document.getElementById('btnRecuperarSupabaseAstroDB')?.addEventListener('click',()=>setTimeout(()=>bulk.refresh(),1500));
+      document.getElementById('btnRecuperarLocalesAstroDB')?.addEventListener('click',()=>setTimeout(()=>bulk.refresh(),100));
+    }
+  }
   iniciarRecuperacionAstroDB();
   await iniciarSupabaseAstroDB();
   if(astrodbUser)recuperarFichasSupabaseAstroDB();
