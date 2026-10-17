@@ -4,9 +4,9 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   function merge(existing,incoming){
-    const result=existing.slice();const ids=new Set(existing.filter(Boolean).map(f=>String(f.id)));let added=0,skipped=0;
+    const result=existing.slice();const ids=new Set(existing.filter(f=>f&&typeof f==='object'&&f.id!=null&&String(f.id)!=='').map(f=>String(f.id)));let added=0,skipped=0;
     for(const ficha of incoming){
-      if(!ficha||typeof ficha!=='object'||ficha.id==null||String(ficha.id)===''){skipped++;continue;}
+      if(!ficha||typeof ficha!=='object'||Array.isArray(ficha)||ficha.id==null||String(ficha.id)===''){skipped++;continue;}
       const id=String(ficha.id);if(ids.has(id)){skipped++;continue;}
       result.push(JSON.parse(JSON.stringify(ficha)));ids.add(id);added++;
     }
