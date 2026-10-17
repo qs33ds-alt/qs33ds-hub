@@ -35,3 +35,12 @@ Fecha: 2026-10-17. Rama: `feature/astrodb-workspace-v2-20261016`.
 
 - Código V2: https://github.com/qs33ds-alt/qs33ds-hub/archive/refs/heads/feature/astrodb-workspace-v2-20261016.zip
 - Pull request de revisión (sin fusionar): https://github.com/qs33ds-alt/qs33ds-hub/pull/2
+
+## Auditoría Supabase de solo lectura — 2026-10-17
+
+- Proyecto inspeccionado: `didehazzbdhgjpxvhycx`; tabla `public.astrodb_charts`.
+- RLS habilitado; políticas de SELECT, INSERT, UPDATE y DELETE limitadas a `authenticated` con comprobación de `auth.uid() = user_id` (y WITH CHECK en inserción y actualización).
+- `chart_local_id` es una columna generada desde `input_data.id` / `input_data.astrodb_local_id`. El frontend no debe enviarla explícitamente.
+- Índice único `astrodb_charts_user_chart_unique` en `(user_id,chart_local_id)`.
+- Los permisos SQL concedidos a `anon` no implican acceso a las filas: RLS no contiene políticas para `anon`.
+- Esta auditoría no sustituye las pruebas de autenticación y escritura con una cuenta de ensayo. No se ha escrito ni borrado ningún registro.
