@@ -41,3 +41,11 @@
   .workspaceV2Nav{grid-template-columns:repeat(2,minmax(0,1fr))}
   .main{padding:10px!important}
 }
+
+/* Selectable library, touch-friendly on Android. */
+.bulkLibrary{padding:16px;margin-bottom:18px;border:1px solid #31546b;border-radius:14px;background:#0e2135;color:#e5f6fc}
+.bulkLibrary h3{margin:0 0 8px;font-size:20px}.bulkLibrary p{line-height:1.5}
+.bulkControls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.bulkControls button,.bulkRow button{min-height:44px;border:1px solid #43778b;background:#163d53;color:#e9faff;border-radius:9px;padding:9px 12px;cursor:pointer}
+.bulkControls input{flex:1 1 220px;min-width:0;margin:0;min-height:44px}
+.bulkRows{max-height:52vh;overflow:auto;display:grid;gap:6px}.bulkRow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:10px;border:1px solid #31546b;border-radius:10px;padding:8px;overflow-wrap:anywhere}.bulkRow input{width:20px;height:20px;margin:0}.bulkRow span{font-size:12px}.bulkWarning{font-size:12px;color:#a9c7d7}
+@media(max-width:480px){.bulkLibrary{padding:12px}.bulkControls button{flex:1 1 100%}.bulkRow{gap:6px}.bulkRow button{padding:8px}}

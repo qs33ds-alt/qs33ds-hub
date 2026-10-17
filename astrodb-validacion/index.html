@@ -83,6 +83,7 @@ window.ASTRODB_GOOGLE_CLIENT_ID='575707945836-1dihl63celivvh1dkmuv5d78har8qe8f.a
 </script>
 <script src="drive-sync.js"></script>
 <script src="chart-recovery.js"></script>
+<script src="modules/bulk-library.js"></script>
 <script>
 
 function norm360(v){ return ((v % 360) + 360) % 360; }
@@ -870,9 +871,30 @@ async function guardarFichaSupabase(ficha){
   }
 }
 
+const ASTRODB_RETIRED_KEY='astrodb_v2_retired_ids_v1';
+function leerIdsRetiradosAstroDB(){
+  try{
+    const value=JSON.parse(localStorage.getItem(ASTRODB_RETIRED_KEY)||'[]');
+    return new Set(Array.isArray(value)?value.filter(x=>typeof x==='string'&&x.length>0):[]);
+  }catch(error){throw new Error('No se pudo leer el registro de cartas retiradas. No se realizará ninguna recuperación para evitar duplicados.');}
+}
+function registrarIdsRetiradosAstroDB(ids){
+  const prev=leerIdsRetiradosAstroDB();
+  for(const id of ids)prev.add(String(id));
+  localStorage.setItem(ASTRODB_RETIRED_KEY,JSON.stringify([...prev]));
+}
+function rehabilitarIdAstroDB(id){
+  const prev=leerIdsRetiradosAstroDB();
+  if(!prev.has(String(id)))return;
+  prev.delete(String(id));
+  localStorage.setItem(ASTRODB_RETIRED_KEY,JSON.stringify([...prev]));
+}
 function incorporarFichasRecuperadasAstroDB(fichas){
   if(!window.AstroDBRecovery)throw new Error('No se pudo cargar la recuperación de fichas. Recarga la página.');
-  const resultado=AstroDBRecovery.merge(datos,fichas);
+  const retirados=leerIdsRetiradosAstroDB();
+  const permitidas=fichas.filter(f=>f?.id==null||!retirados.has(String(f.id)));
+  const resultado=AstroDBRecovery.merge(datos,permitidas);
+  resultado.retiredSkipped=fichas.length-permitidas.length;
   if(resultado.added){
     const anteriores=datos;datos=resultado.records;
     try{persistirDatos();}catch(error){datos=anteriores;throw new Error('No se pudieron guardar las fichas recuperadas en este navegador. Las originales se conservan.');}
@@ -1030,7 +1052,12 @@ function guardarFichaCompletaAstroDB(forceNew=false){
     const activoAnterior=idActivo;
     datos=posicion<0?[...datos,f]:datos.map((x,i)=>i===posicion?f:x);
     idActivo=f.id;
-    try{persistirDatos();}catch(error){datos=anteriores;idActivo=activoAnterior;throw error;}
+    const retiradosAntes=localStorage.getItem(ASTRODB_RETIRED_KEY);
+    try{persistirDatos();rehabilitarIdAstroDB(f.id);}catch(error){
+      datos=anteriores;idActivo=activoAnterior;
+      try{localStorage.setItem(STORAGE_KEY,JSON.stringify(anteriores));if(retiradosAntes===null)localStorage.removeItem(ASTRODB_RETIRED_KEY);else localStorage.setItem(ASTRODB_RETIRED_KEY,retiradosAntes);}catch(rollbackError){console.error('[AstroDB] No se pudo revertir el guardado:',rollbackError);}
+      throw error;
+    }
     snapshot=capturarFichaParaSincronizacion(f);
   }catch(error){estadoSincronizacionAstroDB.local='error; no se ha confirmado el guardado';pintarEstadoGuardadoAstroDB();return Promise.resolve(false);}
   const solicitud=++ultimaSolicitudGuardadoAstroDB;
@@ -1861,6 +1888,37 @@ document.addEventListener('DOMContentLoaded',async()=>{
   ['nombre','interpretacionDirecta'].forEach(id=>$(id)?.addEventListener('input',()=>{invalidarEstadoGuardadoAstroDB();programarAutoguardadoAstroDB();}));
   actualizarSelectorCartas();
   render();
+  if(window.AstroDBBulk){
+    const host=document.getElementById('workspaceLibrarySlot');
+    if(host){
+      const bulk=AstroDBBulk.mount({
+        host,
+        getRecords:()=>datos.slice(),
+        openChart:id=>{cargar(id);document.querySelector('[data-workspace="observatorio"]')?.click();},
+        removeLocal:ids=>{
+          const set=new Set(ids.map(String));
+          const anteriores=datos;
+          const retiradosAntes=localStorage.getItem(ASTRODB_RETIRED_KEY);
+          try{
+            registrarIdsRetiradosAstroDB(ids);
+            datos=datos.filter(f=>!set.has(String(f.id)));
+            localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));
+          }catch(error){
+            datos=anteriores;
+            if(retiradosAntes===null)localStorage.removeItem(ASTRODB_RETIRED_KEY);
+            else localStorage.setItem(ASTRODB_RETIRED_KEY,retiradosAntes);
+            throw error;
+          }
+          if(idActivo!=null&&set.has(String(idActivo)))nueva();
+          actualizarSelectorCartas();render();
+        }
+      });
+      document.getElementById('btnRecuperarLocalesAstroDB')?.addEventListener('click',()=>queueMicrotask(()=>bulk.refresh()));
+      const bulkObserver=new MutationObserver(()=>bulk.refresh());
+      const status=document.getElementById('estadoRecuperacionAstroDB');
+      if(status)bulkObserver.observe(status,{childList:true,characterData:true,subtree:true});
+    }
+  }
   iniciarRecuperacionAstroDB();
   await iniciarSupabaseAstroDB();
   if(astrodbUser)recuperarFichasSupabaseAstroDB();
