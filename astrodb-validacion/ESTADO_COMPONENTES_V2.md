@@ -19,7 +19,7 @@ Fecha: 2026-10-17. Rama: `feature/astrodb-workspace-v2-20261016`.
 
 | Componente | Estado | Requisito para cierre |
 | --- | --- | --- |
-| Supabase autenticado | PENDIENTE | Prueba con cuenta de ensayo y aislamiento por usuario, sin tocar datos reales |
+| Supabase autenticado | ESQUEMA Y RLS VERIFICADOS; E2E PENDIENTE | La tabla tiene RLS, políticas SELECT/INSERT/UPDATE/DELETE por auth.uid() y un índice único (user_id, chart_local_id); falta prueba autenticada de extremo a extremo sin tocar datos reales |
 | Sincronización automática Google Drive | PENDIENTE | OAuth autorizado y comprobación de las copias remotas y reintentos |
 | Publicación pública V2 | BLOQUEADA | Revisión funcional y aprobación explícita antes de modificar `main` |
 
