@@ -1046,7 +1046,7 @@ function guardarFichaCompletaAstroDB(forceNew=false){
 function guardar(){return guardarFichaCompletaAstroDB(false);}
 function guardarComoNueva(){return guardarFichaCompletaAstroDB(true);}
 let astrodbDrive=null;
-async async function sincronizarFichaDriveAstroDB(ficha,solicitud){
+async function sincronizarFichaDriveAstroDB(ficha,solicitud){
   const clienteDrive=astrodbDrive;
   const cuentaDrive=clienteDrive?.state();
   if(!cuentaDrive?.connected)return false;
