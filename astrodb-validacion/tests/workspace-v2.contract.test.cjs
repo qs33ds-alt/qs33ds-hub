@@ -94,3 +94,12 @@ test('Supabase recovery is scoped to the active account and stale errors cannot 
  assert.match(source,/if\(estado && astrodbSupabase===client && astrodbUser\?\.id===userId\)estado\.textContent=error\.message/);
  assert.match(source,/if\(recuperacionSupabaseAstroDB\?\.promise===promise\)recuperacionSupabaseAstroDB=null/);
 });
+
+test('V2 presentation uses isolated SVG orbital scene and reduced-motion support',()=>{
+ const controller=read('modules/workspace-navigation.js');const css=read('modules/workspace-v2.css');
+ assert.match(controller,/class="v2Orbital"/);
+ assert.match(controller,/mandala\?\.appendChild\(stage\)/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+ for(const view of ['observatorio','datos','analisis','natalcore'])assert.ok(css.includes('data-workspace-view='+view));
+ assert.match(css,/\.workspaceLibraryHeader/);
+});
