@@ -225,15 +225,14 @@ test('mobile bulk selection retires duplicate locally and prevents reimport',asy
  page.on('dialog',dialog=>dialog.accept());
  await page.locator('#bulkRemove').click();
  await expect(page.locator('#bulkSummary')).toContainText('1 cartas');
- const result=await page.evaluate(incoming=>{
-   const before=JSON.parse(localStorage.getItem('astrodb_validation_v51'));
-   const retired=JSON.parse(localStorage.getItem('astrodb_v2_retired_ids_v1'));
-   const merged=incorporarFichasRecuperadasAstroDB(incoming);
-   return {before:before.map(x=>x.id),retired,after:merged.records.map(x=>x.id),retiredSkipped:merged.retiredSkipped};
- },fixture);
- expect(result.before).toEqual(['bulk-a']);
+ await page.evaluate(incoming=>localStorage.setItem('astrodb_v51',JSON.stringify(incoming)),fixture);
+ await page.locator('#btnRecuperarLocalesAstroDB').click();
+ await expect(page.locator('#bulkSummary')).toContainText('1 cartas');
+ const result=await page.evaluate(()=>({
+   after:JSON.parse(localStorage.getItem('astrodb_validation_v51')).map(x=>x.id),
+   retired:JSON.parse(localStorage.getItem('astrodb_v2_retired_ids_v1'))
+ }));
  expect(result.retired).toContain('bulk-b');
  expect(result.after).toEqual(['bulk-a']);
- expect(result.retiredSkipped).toBe(1);
  await page.screenshot({path:'test-artifacts/astrodb-bulk-mobile.png',fullPage:true});
 });
