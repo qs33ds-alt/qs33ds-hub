@@ -57,3 +57,14 @@ test('offline save does not overwrite no-session status with a failed remote syn
  assert.match(body,/const supabase=astrodbUser\s*\?/);
  assert.match(body,/: Promise\.resolve\(false\)/);
 });
+
+test('Drive sync results cannot overwrite the UI after changing Google account',()=>{
+ const html=read('index.html');
+ const start=html.indexOf('async function sincronizarFichaDriveAstroDB(ficha,solicitud)');
+ const end=html.indexOf('let cargaGoogleAstroDB=null',start);
+ assert.ok(start>=0&&end>start);
+ const body=html.slice(start,end);
+ assert.match(body,/const cuentaDrive=clienteDrive\?\.state\(\)/);
+ assert.match(body,/clienteDrive\.state\(\)\.account===cuentaDrive\.account/);
+ assert.match(body,/astrodbDrive===clienteDrive/);
+});
