@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feature/astrodb-workspace-v2-20261016
+      - feature/astrodb-bulk-library-20261017
   workflow_dispatch:
 jobs:
   validate:
@@ -19,6 +20,7 @@ jobs:
           node --check astrodb-validacion/modules/editor-view.js
           node --check astrodb-validacion/drive-sync.js
           node --check astrodb-validacion/chart-recovery.js
+          node --check astrodb-validacion/modules/bulk-library.js
       - name: Parse embedded HTML scripts
         run: node --test astrodb-validacion/tests/inline-syntax.test.cjs
       - name: Run workspace contract tests
