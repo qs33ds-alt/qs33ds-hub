@@ -98,8 +98,11 @@ test('real ephemeris calculation creates consistent houses and NatalCore',async(
  await page.getByRole('button',{name:'Datos natales',exact:true}).click();
  await page.locator('#nombre').fill('E2E Swiss Ephemeris verification');
  await page.locator('#dia').fill('15');await page.locator('#mes').fill('6');await page.locator('#anio').fill('1992');
- await page.locator('#hora').fill('12:30');await page.locator('#lat').fill('41.3874');await page.locator('#lon').fill('2.1686');
- await page.locator('#tz').fill('Europe/Madrid');
+ await page.locator('#hora').fill('12:30');
+ // Coordinates and timezone are intentionally hidden inputs populated by city selection.
+ await page.locator('#lat').evaluate(el=>{el.value='41.3874';el.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.locator('#lon').evaluate(el=>{el.value='2.1686';el.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.locator('#tz').evaluate(el=>{el.value='Europe/Madrid';el.dispatchEvent(new Event('input',{bubbles:true}));});
  await page.locator('#btnCalcularDatos').click();
  await expect.poll(async()=>page.evaluate(()=>({planets:window.cartaActual?.planetas?.length||0,houses:window.cartaActual?.casas?.length||0})),{timeout:60000}).toMatchObject({houses:12});
  const carta=await page.evaluate(()=>window.cartaActual);
