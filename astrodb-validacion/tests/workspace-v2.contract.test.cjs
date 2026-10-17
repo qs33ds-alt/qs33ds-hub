@@ -67,4 +67,6 @@ test('Drive sync results cannot overwrite the UI after changing Google account',
  assert.match(body,/const cuentaDrive=clienteDrive\?\.state\(\)/);
  assert.match(body,/clienteDrive\.state\(\)\.account===cuentaDrive\.account/);
  assert.match(body,/astrodbDrive===clienteDrive/);
+ assert.match(body,/await clienteDrive\.save\(bundle\)/);
+ assert.doesNotMatch(body,/await astrodbDrive\.save\(bundle\)/);
 });
