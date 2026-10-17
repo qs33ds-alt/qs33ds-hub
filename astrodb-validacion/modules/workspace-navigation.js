@@ -7,6 +7,6 @@ sections.forEach(([id,label])=>{const button=document.createElement('button');bu
 mount.appendChild(nav);
 const editor=document.getElementById('editor');if(!editor)return;
 const targets={observatorio:editor.querySelector('.futureMandalaPanel'),datos:editor.querySelector('.futureBirthPanel'),analisis:editor.querySelector('.compactCard'),natalcore:document.getElementById('herramientasEstructurales')};
-function activate(id){const target=targets[id];if(!target)return;nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspace===id)));target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}
+function activate(id){const target=targets[id];if(!target)return;nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspace===id)));if(id==='natalcore'){const details=target.querySelectorAll('details');details.forEach(d=>{if(/NatalCore/i.test(d.querySelector('summary')?.textContent||''))d.open=true;});}target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}
 nav.addEventListener('click',event=>{const b=event.target.closest('button[data-workspace]');if(b)activate(b.dataset.workspace)});
 })();
