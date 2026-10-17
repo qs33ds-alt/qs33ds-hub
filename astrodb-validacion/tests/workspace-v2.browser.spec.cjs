@@ -174,3 +174,19 @@ test('calculated natal chart survives local save, reload and NatalCore revalidat
  await page.locator('#btnValidarNatalCore').click();
  await expect(page.locator('#estadoNatalCore .ok')).toHaveText('NatalCore válido.');
 });
+
+
+test('legacy recovery adds a missing chart without overwriting source data or duplicating on retry',async({page})=>{
+ await page.goto(app);
+ const legacy=[{id:'legacy-recovery-01',nombre:'Carta recuperada E2E',dia:'2',mes:'1',anio:'1985',planetas:[],casas:[]}];
+ await page.evaluate(records=>localStorage.setItem('astrodb_v51',JSON.stringify(records)),legacy);
+ await page.reload();
+ await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await expect(page.locator('#lista')).toContainText('Carta recuperada E2E');
+ const initial=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]'));
+ expect(initial.filter(x=>x.nombre==='Carta recuperada E2E')).toHaveLength(1);
+ await page.locator('#btnRecuperarLocalesAstroDB').click();
+ const after=await page.evaluate(()=>({active:JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]'),legacy:JSON.parse(localStorage.getItem('astrodb_v51')||'[]')}));
+ expect(after.active.filter(x=>x.nombre==='Carta recuperada E2E')).toHaveLength(1);
+ expect(after.legacy).toEqual(legacy);
+});
