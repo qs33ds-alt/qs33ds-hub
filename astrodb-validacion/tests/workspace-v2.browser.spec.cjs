@@ -90,3 +90,25 @@ test('birth-data calculator reports missing coordinates instead of fabricating a
  await expect(page.locator('#infoCarta')).toContainText('Calcula la carta');
  await expect(page.evaluate(()=>window.cartaActual.planetas.length)).resolves.toBe(0);
 });
+
+
+test('real ephemeris calculation creates consistent houses and NatalCore',async({page})=>{
+ test.setTimeout(90000);
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ await page.locator('#nombre').fill('E2E Swiss Ephemeris verification');
+ await page.locator('#dia').fill('15');await page.locator('#mes').fill('6');await page.locator('#anio').fill('1992');
+ await page.locator('#hora').fill('12:30');await page.locator('#lat').fill('41.3874');await page.locator('#lon').fill('2.1686');
+ await page.locator('#tz').fill('Europe/Madrid');
+ await page.locator('#btnCalcularDatos').click();
+ await expect.poll(async()=>page.evaluate(()=>({planets:window.cartaActual?.planetas?.length||0,houses:window.cartaActual?.casas?.length||0})),{timeout:60000}).toMatchObject({houses:12});
+ const carta=await page.evaluate(()=>window.cartaActual);
+ expect(carta.planetas.length).toBeGreaterThanOrEqual(8);
+ for(const p of carta.planetas)expect(Number.isFinite(Number(p.longitude))).toBe(true);
+ await page.getByRole('button',{name:'NatalCore',exact:true}).click();
+ await page.locator('#btnValidarNatalCore').click();
+ const core=await page.evaluate(()=>construirNatalCore());
+ expect(core).toHaveProperty('validation');
+ expect(core.validation.valid).toBe(true);
+ expect(core.houses).toHaveLength(12);
+});
