@@ -22,3 +22,14 @@ test('Supabase upsert derives generated local chart identifier from input_data',
  assert.doesNotMatch(body,/^\s*chart_local_id\s*:/m);
  assert.match(body,/onConflict:'user_id,chart_local_id'/);
 });
+
+test('Supabase recovery rechecks the account before modifying local records',()=>{
+ const html=read('index.html');
+ const start=html.indexOf('function recuperarFichasSupabaseAstroDB()');
+ const end=html.indexOf('function iniciarRecuperacionAstroDB()',start);
+ assert.ok(start>=0&&end>start);
+ const body=html.slice(start,end);
+ const check=body.indexOf('astrodbSupabase!==client||astrodbUser?.id!==userId');
+ const merge=body.indexOf('incorporarFichasRecuperadasAstroDB(fichas)');
+ assert.ok(check>=0&&merge>check,'must verify user identity immediately before merge');
+});
