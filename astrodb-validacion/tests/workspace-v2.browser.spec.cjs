@@ -104,6 +104,7 @@ test('real ephemeris calculation creates consistent houses and NatalCore',async(
  await page.locator('#lon').evaluate(el=>{el.value='2.1686';el.dispatchEvent(new Event('input',{bubbles:true}));});
  await page.locator('#tz').evaluate(el=>{el.value='Europe/Madrid';el.dispatchEvent(new Event('input',{bubbles:true}));});
  await page.locator('#btnCalcularDatos').click();
+ await expect(page.locator('#estadoCalculo')).not.toContainText('Faltan coordenadas');
  await expect.poll(async()=>page.evaluate(()=>({planets:window.cartaActual?.planetas?.length||0,houses:window.cartaActual?.casas?.length||0})),{timeout:60000}).toMatchObject({houses:12});
  const carta=await page.evaluate(()=>window.cartaActual);
  expect(carta.planetas.length).toBeGreaterThanOrEqual(8);
