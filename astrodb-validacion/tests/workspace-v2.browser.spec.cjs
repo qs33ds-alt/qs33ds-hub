@@ -60,3 +60,23 @@ test('capture Observatory and Library mobile screenshots',async({page})=>{
  await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
  await page.screenshot({path:'test-artifacts/astrodb-biblioteca-mobile.png',fullPage:true});
 });
+
+test('NatalCore refuses to invent a structural snapshot for an uncalculated draft',async({page})=>{
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'NatalCore',exact:true}).click();
+ await page.locator('#btnValidarNatalCore').click();
+ await expect(page.locator('#estadoNatalCore')).toContainText('No hay una carta activa');
+});
+
+test('saving an existing draft updates the same record rather than duplicating it',async({page})=>{
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ const name='Stable identity '+Date.now();await page.locator('#nombre').fill(name);
+ await page.locator('#btnGuardar').click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]').length)).toBe(1);
+ const first=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51'))[0].id);
+ await page.locator('#nombre').fill(name+' updated');await page.locator('#btnGuardar').click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51'))[0].nombre)).toBe(name+' updated');
+ const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')));
+ expect(after).toHaveLength(1);expect(after[0].id).toBe(first);
+});
