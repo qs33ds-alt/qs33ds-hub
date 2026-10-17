@@ -1047,7 +1047,9 @@ function guardar(){return guardarFichaCompletaAstroDB(false);}
 function guardarComoNueva(){return guardarFichaCompletaAstroDB(true);}
 let astrodbDrive=null;
 async function sincronizarFichaDriveAstroDB(ficha,solicitud){
-  if(!astrodbDrive?.state().connected)return false;
+  const clienteDrive=astrodbDrive;
+  const cuentaDrive=clienteDrive?.state();
+  if(!cuentaDrive?.connected)return false;
   try{
     const core=ficha.natalcoreSnapshot;
     if(!core)throw new Error('Calcula la carta completa para crear NatalCore y la copia de Drive.');
@@ -1056,7 +1058,7 @@ async function sincronizarFichaDriveAstroDB(ficha,solicitud){
     const bundle=prepararPaqueteCodigoSemilla(chart,core);
     if(!comprobarPaqueteCodigoSemilla(bundle))throw new Error('La identidad de la ficha y NatalCore no coincide.');
     const resultado=await astrodbDrive.save(bundle);
-    if(solicitud===ultimaSolicitudGuardadoAstroDB){
+    if(solicitud===ultimaSolicitudGuardadoAstroDB && astrodbDrive===clienteDrive && clienteDrive.state().connected && clienteDrive.state().account===cuentaDrive.account){
       estadoSincronizacionAstroDB.drive=resultado.ok?'3 copias verificadas':'copia parcial; reintentar';
       const link=$('astrodbDriveCarpeta');
       if(link){link.href='https://drive.google.com/drive/folders/'+resultado.root;link.hidden=false;}
@@ -1066,7 +1068,7 @@ async function sincronizarFichaDriveAstroDB(ficha,solicitud){
     }
     return resultado.ok;
   }catch(error){
-    if(solicitud===ultimaSolicitudGuardadoAstroDB){estadoSincronizacionAstroDB.drive=error.message;pintarEstadoGuardadoAstroDB();}
+    if(solicitud===ultimaSolicitudGuardadoAstroDB && astrodbDrive===clienteDrive && clienteDrive.state().account===cuentaDrive.account){estadoSincronizacionAstroDB.drive=error.message;pintarEstadoGuardadoAstroDB();}
     return false;
   }
 }
