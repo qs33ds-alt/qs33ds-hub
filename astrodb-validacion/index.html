@@ -800,7 +800,7 @@ async function guardarFichaSupabase(ficha){
 
     const payload = {
       user_id: usuarioId,
-      chart_local_id: String(ficha.id),
+      // chart_local_id is a generated column derived from input_data.id in Supabase.
       name: nombre,
 
       birth_date:
