@@ -23,3 +23,14 @@ test('library navigation works on a narrow mobile viewport',async({page})=>{
  await expect(page.locator('#workspaceLibrary')).toBeVisible();
  await expect(page.locator('#selectorCartas')).toHaveCount(1);
 });
+
+test('new chart opens its natal editor and retains calculation controls',async({page})=>{
+ await page.goto(app);
+ await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await page.locator('#btnNueva').click();
+ await expect(page.locator('#editor')).toHaveAttribute('data-workspace-view','observatorio');
+ await expect(page.locator('#astroWheel')).toHaveCount(1);
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ await expect(page.locator('#btnCalcularDatos')).toBeVisible();
+ await expect(page.locator('#nombre')).toBeVisible();
+});
