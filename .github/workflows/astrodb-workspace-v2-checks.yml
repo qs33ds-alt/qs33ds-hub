@@ -21,3 +21,9 @@ jobs:
           node --check astrodb-validacion/chart-recovery.js
       - name: Run workspace contract tests
         run: node --test astrodb-validacion/tests/*.test.cjs
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Chromium desktop and mobile smoke tests
+        run: npx playwright test astrodb-validacion/tests/workspace-v2.browser.spec.cjs --reporter=line --workers=1
