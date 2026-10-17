@@ -19,6 +19,8 @@ jobs:
           node --check astrodb-validacion/modules/editor-view.js
           node --check astrodb-validacion/drive-sync.js
           node --check astrodb-validacion/chart-recovery.js
+      - name: Parse embedded HTML scripts
+        run: node --test astrodb-validacion/tests/inline-syntax.test.cjs
       - name: Run workspace contract tests
         run: node --test astrodb-validacion/tests/*.test.cjs
       - name: Install Playwright Chromium
