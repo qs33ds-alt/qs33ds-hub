@@ -70,3 +70,11 @@ test('Drive sync results cannot overwrite the UI after changing Google account',
  assert.match(body,/await clienteDrive\.save\(bundle\)/);
  assert.doesNotMatch(body,/await astrodbDrive\.save\(bundle\)/);
 });
+
+test('Drive synchronization remains async because it awaits remote save',()=>{
+ const html=read('index.html');
+ const start=html.indexOf('async function sincronizarFichaDriveAstroDB(ficha,solicitud)');
+ const end=html.indexOf('let cargaGoogleAstroDB=null',start);
+ assert.ok(start>=0&&end>start,'Drive sync must be declared async');
+ assert.match(html.slice(start,end),/await clienteDrive\.save\(bundle\)/);
+});
