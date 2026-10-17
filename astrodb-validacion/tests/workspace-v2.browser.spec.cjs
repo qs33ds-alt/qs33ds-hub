@@ -87,5 +87,6 @@ test('birth-data calculator reports missing coordinates instead of fabricating a
  await page.locator('#dia').fill('12');await page.locator('#mes').fill('5');await page.locator('#anio').fill('1990');
  await page.locator('#hora').fill('10:30');await page.locator('#btnCalcularDatos').click();
  await expect(page.locator('#estadoCalculo')).toContainText('Faltan coordenadas');
- await expect(page.locator('#infoCarta')).toContainText('Calcula una carta');
+ await expect(page.locator('#infoCarta')).toContainText('Calcula la carta');
+ await expect(page.evaluate(()=>window.cartaActual.planetas.length)).resolves.toBe(0);
 });
