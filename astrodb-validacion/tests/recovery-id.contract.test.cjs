@@ -21,3 +21,13 @@ test('incoming record is copied to prevent accidental mutation',()=>{
  const r=merge([], [input]);input.planetas[0].longitude=100;
  assert.equal(r.records[0].planetas[0].longitude,42);
 });
+
+test('same-ID recovery remains idempotent across repeated merges',()=>{
+ const current=[{id:'keep',nombre:'Actual'}];
+ const old=[{id:'keep',nombre:'Antigua'},{id:'new',nombre:'Nueva'}];
+ const first=merge(current,old);
+ const second=merge(first.records,old);
+ assert.equal(first.added,1);assert.equal(second.added,0);
+ assert.deepEqual(second.records,first.records);
+ assert.equal(second.records[0].nombre,'Actual');
+});
