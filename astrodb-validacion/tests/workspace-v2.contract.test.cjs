@@ -6,3 +6,5 @@ test('development uses isolated storage and existing sync services',()=>{const h
 test('styles include separate visible layouts',()=>{const css=read('modules/workspace-v2.css');for(const key of ['observatorio','datos','analisis','natalcore'].slice(1))assert.ok(css.includes('data-workspace-view='+key),key)});
 
 test('library workspace reuses existing selector rather than cloning it',()=>{const js=read('modules/workspace-navigation.js');assert.match(js,/appendChild\(library\)/);assert.match(js,/workspaceLibrary/);assert.doesNotMatch(js,/cloneNode\(/)});
+
+test('opening or creating a chart returns to the observatory',()=>{const js=read('modules/workspace-navigation.js');assert.match(js,/btnAbrirSeleccion/);assert.match(js,/btnNueva/);assert.match(js,/setView\('observatorio'\)/)});
