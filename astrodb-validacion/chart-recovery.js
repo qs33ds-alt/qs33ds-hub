@@ -4,9 +4,9 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   function merge(existing,incoming){
-    const result=existing.slice();const ids=new Set(existing.filter(Boolean).map(f=>String(f.id)));let added=0,skipped=0;
+    const result=existing.slice();const ids=new Set(existing.filter(f=>f&&typeof f==='object'&&f.id!=null&&String(f.id)!=='').map(f=>String(f.id)));let added=0,skipped=0;
     for(const ficha of incoming){
-      if(!ficha||typeof ficha!=='object'||ficha.id==null||String(ficha.id)===''){skipped++;continue;}
+      if(!ficha||typeof ficha!=='object'||Array.isArray(ficha)||ficha.id==null||String(ficha.id)===''){skipped++;continue;}
       const id=String(ficha.id);if(ids.has(id)){skipped++;continue;}
       result.push(JSON.parse(JSON.stringify(ficha)));ids.add(id);added++;
     }
@@ -26,7 +26,8 @@
   function fromSupabase(row){
     if(!row||typeof row!=='object')throw Error('Registro remoto inválido.');
     const input=row.input_data&&typeof row.input_data==='object'&&!Array.isArray(row.input_data)?row.input_data:{};
-    const chart=row.chart_data||{};const birth=String(row.birth_date||'').split('-');
+    const chart=row.chart_data&&typeof row.chart_data==='object'&&!Array.isArray(row.chart_data)?row.chart_data:{};
+    const birth=String(row.birth_date||'').split('-');
     const id=input.id??input.astrodb_local_id??row.chart_local_id??(row.id?'supabase:'+row.id:null);
     if(id==null||String(id)==='')throw Error('Ficha remota sin identificador.');
     const array=(primary,fallback)=>Array.isArray(primary)&&primary.length?primary:(Array.isArray(fallback)?fallback:[]);
@@ -43,8 +44,12 @@
         .eq('user_id',userId).order('id').range(offset,offset+pageSize-1);
       if(!isCurrent())throw Error('La cuenta cambió durante la recuperación.');
       if(error)throw Error('No se pudieron recuperar las fichas de Supabase. Revisa la sesión y reintenta.');
-      if(!Array.isArray(data)||data.some(row=>row.user_id!==userId))throw Error('La respuesta no corresponde a la cuenta iniciada.');
-      records.push(...data.map(fromSupabase));
+      if(!Array.isArray(data)||data.length>pageSize||data.some(row=>row.user_id!==userId))throw Error('La respuesta no corresponde a la cuenta iniciada.');
+      const page=data.map(fromSupabase);
+      // Reject repeated rows across pages instead of silently treating partial pagination as complete.
+      const seen=new Set(records.map(record=>String(record.id)));
+      if(page.some(record=>seen.has(String(record.id)))||new Set(page.map(record=>String(record.id))).size!==page.length)throw Error('Supabase devolvió fichas duplicadas durante la paginación. Reintenta la recuperación.');
+      records.push(...page);
       if(data.length<pageSize)return records;
     }
   }

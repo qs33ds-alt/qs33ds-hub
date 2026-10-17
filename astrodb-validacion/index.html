@@ -22,6 +22,7 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
 
 </style>
 <link rel="stylesheet" href="modules/observatory-theme.css?v=1">
+<link rel="stylesheet" href="modules/workspace-v2.css?v=1">
 </head>
 <body>
 
@@ -70,8 +71,10 @@ box-shadow:0 2px 8px rgba(0,0,0,.06);
     <div id="tablaComparativa" style="margin-top:10px"></div>
   </section>
 
-  <div id="astrodbEditorMount"></div>
+  <div id="astrodbWorkspaceNav" class="no-print"></div>
+<div id="astrodbEditorMount"></div>
 <script src="modules/editor-view.js?v=1"></script>
+<script src="modules/workspace-navigation.js?v=1"></script>
 <p id="versionBanner" class="small no-print">AstroDB v10.1 · Copias de cartas</p>
 </main>
 <script>
@@ -797,6 +800,7 @@ async function guardarFichaSupabase(ficha){
 
     const payload = {
       user_id: usuarioId,
+      // chart_local_id is a generated column derived from input_data.id in Supabase.
       name: nombre,
 
       birth_date:
@@ -849,6 +853,8 @@ async function guardarFichaSupabase(ficha){
       .select('id').single();
 
     if(resultado.error) throw resultado.error;
+    // A successful write from an old session must not be reported as current-session sync.
+    if(astrodbUser?.id!==usuarioId || astrodbSupabase!==cliente) return false;
 
     console.info(
       '[AstroDB] Carta sincronizada con Supabase:',
@@ -884,19 +890,21 @@ function recuperarFichasLocalesAstroDB(){
 }
 let recuperacionSupabaseAstroDB=null;
 function recuperarFichasSupabaseAstroDB(){
-  if(recuperacionSupabaseAstroDB)return recuperacionSupabaseAstroDB;
   const estado=$('estadoRecuperacionAstroDB');
   if(!astrodbSupabase||!astrodbUser){if(estado)estado.textContent='Pulsa Entrar para recuperar tus fichas guardadas en Supabase.';return Promise.resolve(false);}
   const client=astrodbSupabase,userId=astrodbUser.id;
+  if(recuperacionSupabaseAstroDB?.client===client && recuperacionSupabaseAstroDB?.userId===userId)return recuperacionSupabaseAstroDB.promise;
   if(estado)estado.textContent='Recuperando tus fichas de Supabase…';
-  recuperacionSupabaseAstroDB=AstroDBRecovery.readSupabase(client,userId,()=>astrodbSupabase===client&&astrodbUser?.id===userId)
+  const promise=AstroDBRecovery.readSupabase(client,userId,()=>astrodbSupabase===client&&astrodbUser?.id===userId)
     .then(fichas=>{
+      if(astrodbSupabase!==client||astrodbUser?.id!==userId)throw new Error('La cuenta cambió antes de incorporar las fichas. No se ha modificado el almacenamiento local.');
       const resultado=incorporarFichasRecuperadasAstroDB(fichas);
       if(estado)estado.textContent=resultado.added+' fichas añadidas desde Supabase; '+resultado.skipped+' ya existentes. Se conservan las fichas locales y las originales.';
       return true;
-    }).catch(error=>{if(estado)estado.textContent=error.message;return false;})
-    .finally(()=>{recuperacionSupabaseAstroDB=null;});
-  return recuperacionSupabaseAstroDB;
+    }).catch(error=>{if(estado && astrodbSupabase===client && astrodbUser?.id===userId)estado.textContent=error.message;return false;})
+    .finally(()=>{if(recuperacionSupabaseAstroDB?.promise===promise)recuperacionSupabaseAstroDB=null;});
+  recuperacionSupabaseAstroDB={client,userId,promise};
+  return promise;
 }
 function iniciarRecuperacionAstroDB(){
   $('btnRecuperarLocalesAstroDB')?.addEventListener('click',recuperarFichasLocalesAstroDB);
@@ -1030,7 +1038,9 @@ function guardarFichaCompletaAstroDB(forceNew=false){
   estadoSincronizacionAstroDB={local:'guardado',supabase:astrodbUser?'sincronizando…':'sin sesión',drive:conexionDrive?.connected?'sincronizando…':(conexionDrive?.expired?'sesión caducada; reconectar':'sin conectar; copia pendiente')};
   pintarEstadoGuardadoAstroDB();
   // Independent destinations: neither waits for the other to start.
-  const supabase=sincronizarFichaActivaSupabase(snapshot).then(ok=>{informarGuardadoRemoto(ok,'Ficha',solicitud);return ok;}).catch(()=>{informarGuardadoRemoto(false,'Ficha',solicitud);return false;});
+  const supabase=astrodbUser
+    ? sincronizarFichaActivaSupabase(snapshot).then(ok=>{informarGuardadoRemoto(ok,'Ficha',solicitud);return ok;}).catch(()=>{informarGuardadoRemoto(false,'Ficha',solicitud);return false;})
+    : Promise.resolve(false);
   const drive=sincronizarFichaDriveAstroDB(snapshot,solicitud);
   return Promise.allSettled([supabase,drive]);
 }
@@ -1038,7 +1048,9 @@ function guardar(){return guardarFichaCompletaAstroDB(false);}
 function guardarComoNueva(){return guardarFichaCompletaAstroDB(true);}
 let astrodbDrive=null;
 async function sincronizarFichaDriveAstroDB(ficha,solicitud){
-  if(!astrodbDrive?.state().connected)return false;
+  const clienteDrive=astrodbDrive;
+  const cuentaDrive=clienteDrive?.state();
+  if(!cuentaDrive?.connected)return false;
   try{
     const core=ficha.natalcoreSnapshot;
     if(!core)throw new Error('Calcula la carta completa para crear NatalCore y la copia de Drive.');
@@ -1046,8 +1058,8 @@ async function sincronizarFichaDriveAstroDB(ficha,solicitud){
     const {natalcoreSnapshot,...chart}=ficha;
     const bundle=prepararPaqueteCodigoSemilla(chart,core);
     if(!comprobarPaqueteCodigoSemilla(bundle))throw new Error('La identidad de la ficha y NatalCore no coincide.');
-    const resultado=await astrodbDrive.save(bundle);
-    if(solicitud===ultimaSolicitudGuardadoAstroDB){
+    const resultado=await clienteDrive.save(bundle);
+    if(solicitud===ultimaSolicitudGuardadoAstroDB && astrodbDrive===clienteDrive && clienteDrive.state().connected && clienteDrive.state().account===cuentaDrive.account){
       estadoSincronizacionAstroDB.drive=resultado.ok?'3 copias verificadas':'copia parcial; reintentar';
       const link=$('astrodbDriveCarpeta');
       if(link){link.href='https://drive.google.com/drive/folders/'+resultado.root;link.hidden=false;}
@@ -1057,7 +1069,7 @@ async function sincronizarFichaDriveAstroDB(ficha,solicitud){
     }
     return resultado.ok;
   }catch(error){
-    if(solicitud===ultimaSolicitudGuardadoAstroDB){estadoSincronizacionAstroDB.drive=error.message;pintarEstadoGuardadoAstroDB();}
+    if(solicitud===ultimaSolicitudGuardadoAstroDB && astrodbDrive===clienteDrive && clienteDrive.state().account===cuentaDrive.account){estadoSincronizacionAstroDB.drive=error.message;pintarEstadoGuardadoAstroDB();}
     return false;
   }
 }

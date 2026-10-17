@@ -1,0 +1,40 @@
+name: AstroDB Workspace V2 checks
+on:
+  push:
+    branches:
+      - feature/astrodb-workspace-v2-20261016
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check modular controllers
+        run: |
+          node --check astrodb-validacion/modules/workspace-navigation.js
+          node --check astrodb-validacion/modules/sidebar.js
+          node --check astrodb-validacion/modules/editor-view.js
+          node --check astrodb-validacion/drive-sync.js
+          node --check astrodb-validacion/chart-recovery.js
+      - name: Parse embedded HTML scripts
+        run: node --test astrodb-validacion/tests/inline-syntax.test.cjs
+      - name: Run workspace contract tests
+        run: node --test astrodb-validacion/tests/*.test.cjs
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Chromium desktop and mobile smoke tests
+        run: npx playwright test astrodb-validacion/tests/workspace-v2.browser.spec.cjs --reporter=line --workers=1
+      - name: Upload browser screenshots and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: astrodb-workspace-v2-browser-evidence
+          path: |
+            test-artifacts/
+            test-results/
+          if-no-files-found: ignore

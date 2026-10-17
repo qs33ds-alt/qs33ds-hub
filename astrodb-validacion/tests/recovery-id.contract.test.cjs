@@ -1,0 +1,50 @@
+const assert=require('node:assert/strict');
+const test=require('node:test');
+const {merge}=require('../chart-recovery.js');
+test('existing record wins when legacy record reuses its ID',()=>{
+ const current={id:'42',nombre:'Actual',planetas:[{longitude:10}]};
+ const old={id:42,nombre:'Antigua',planetas:[{longitude:99}]};
+ const r=merge([current],[old]);
+ assert.equal(r.added,0);assert.equal(r.skipped,1);
+ assert.deepEqual(r.records,[current]);
+});
+test('duplicate incoming IDs cannot add multiple copies',()=>{
+ const r=merge([], [{id:'x',nombre:'Primera'},{id:'x',nombre:'Segunda'}]);
+ assert.equal(r.added,1);assert.equal(r.skipped,1);assert.equal(r.records[0].nombre,'Primera');
+});
+test('invalid incoming objects and arrays cannot create records',()=>{
+ const r=merge([], [null,[],{}, {id:''},{id:'ok',nombre:'Válida'}]);
+ assert.equal(r.added,1);assert.equal(r.skipped,4);
+});
+test('incoming record is copied to prevent accidental mutation',()=>{
+ const input={id:'copy',planetas:[{longitude:42}]};
+ const r=merge([], [input]);input.planetas[0].longitude=100;
+ assert.equal(r.records[0].planetas[0].longitude,42);
+});
+
+test('same-ID recovery remains idempotent across repeated merges',()=>{
+ const current=[{id:'keep',nombre:'Actual'}];
+ const old=[{id:'keep',nombre:'Antigua'},{id:'new',nombre:'Nueva'}];
+ const first=merge(current,old);
+ const second=merge(first.records,old);
+ assert.equal(first.added,1);assert.equal(second.added,0);
+ assert.deepEqual(second.records,first.records);
+ assert.equal(second.records[0].nombre,'Actual');
+});
+
+test('Supabase recovery rejects duplicate local IDs in one page without returning partial records',async()=>{
+ const {readSupabase}=require('../chart-recovery.js');
+ const client={from:()=>({select:()=>({eq:()=>({order:()=>({range:async()=>({data:[{id:'remote1',user_id:'owner',input_data:{id:'same'}},{id:'remote2',user_id:'owner',input_data:{id:'same'}}],error:null})})})})})};
+ await assert.rejects(()=>readSupabase(client,'owner'),/duplicadas/);
+});
+
+test('malformed remote chart_data does not override valid stored input arrays',()=>{
+ const {fromSupabase}=require('../chart-recovery.js');
+ for(const chart_data of [null,[],42,'invalid']){
+  const row={id:'remote',user_id:'owner',input_data:{id:'local',planetas:[{nombre:'Sol'}],casas:[{numero:1}]},chart_data};
+  const restored=fromSupabase(row);
+  assert.equal(restored.id,'local');
+  assert.deepEqual(restored.planetas,[{nombre:'Sol'}]);
+  assert.deepEqual(restored.casas,[{numero:1}]);
+ }
+});
