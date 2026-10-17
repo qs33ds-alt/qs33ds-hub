@@ -64,3 +64,13 @@ body{background:radial-gradient(ellipse at 72% 8%,rgba(39,86,139,.23),transparen
 .workspaceLibraryCard .savedList{max-height:58vh!important}
 .workspaceLibrary{max-width:1320px;margin-inline:auto}
 @media(max-width:700px){#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{padding:15px!important;border-radius:15px!important}.workspaceLibrary{padding:9px!important}.workspaceLibraryHeader{min-height:0}.workspaceLibraryCard{padding:13px!important}}
+
+/* SVG scene: visually expressive yet noninteractive; never changes natal calculation. */
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Stage{position:absolute;inset:0;display:grid;place-items:center;z-index:0;pointer-events:none;overflow:hidden}
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Orbital{width:min(96%,860px);height:95%;max-height:860px;overflow:visible;opacity:.36;filter:drop-shadow(0 0 12px rgba(82,193,235,.22));animation:v2OrbitalPulse 19s ease-in-out infinite}
+.v2Orbital circle,.v2Orbital ellipse{fill:none;stroke:url(#v2Orbit);stroke-width:.8;stroke-dasharray:4 11}
+.v2Orbital .v2OrbitPoints circle{fill:#77e7fc;stroke:none;filter:drop-shadow(0 0 8px #7bdcf8)}
+@keyframes v2OrbitalPulse{0%,100%{opacity:.22;transform:scale(.97)}50%{opacity:.43;transform:scale(1.03)}}
+@media(prefers-reduced-motion:reduce){.v2Orbital{animation:none!important}}
+#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{z-index:2}
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Stage{z-index:0}
