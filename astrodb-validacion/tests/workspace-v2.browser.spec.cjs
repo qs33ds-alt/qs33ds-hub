@@ -34,3 +34,29 @@ test('new chart opens its natal editor and retains calculation controls',async({
  await expect(page.locator('#btnCalcularDatos')).toBeVisible();
  await expect(page.locator('#nombre')).toBeVisible();
 });
+
+test('save and reopen a draft chart locally without remote credentials',async({page})=>{
+ await page.goto(app);
+ await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ const name='Workspace smoke '+Date.now();
+ await page.locator('#nombre').fill(name);
+ await page.locator('#dia').fill('15');await page.locator('#mes').fill('6');await page.locator('#anio').fill('1992');
+ await page.locator('#hora').fill('12:30');
+ await page.locator('#btnGuardar').click();
+ await expect.poll(async()=>page.evaluate(()=>{const d=JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]');return d.length})).toBeGreaterThan(0);
+ await page.reload();
+ await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await expect(page.locator('#lista')).toContainText(name);
+ await page.locator('#lista .listItem').filter({hasText:name}).click();
+ await expect(page.locator('#editor')).toHaveAttribute('data-workspace-view','observatorio');
+ await expect(page.locator('#nombre')).toHaveValue(name);
+});
+
+test('capture Observatory and Library mobile screenshots',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto(app);
+ await page.locator('#btnNueva').click();
+ await page.screenshot({path:'test-artifacts/astrodb-observatorio-mobile.png',fullPage:true});
+ await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await page.screenshot({path:'test-artifacts/astrodb-biblioteca-mobile.png',fullPage:true});
+});
