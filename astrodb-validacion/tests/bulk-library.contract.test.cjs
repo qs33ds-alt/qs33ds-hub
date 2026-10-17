@@ -9,3 +9,5 @@ test('recovery excludes locally retired IDs before merge, and explicit save reha
 
 test('duplicate comparison accepts zero-padded birth dates',()=>{const a={id:'a',nombre:'Ana',dia:'02',mes:'03',anio:'1985',hora:'10:30',ciudad:'Barcelona'};const b={...a,id:'b',dia:2,mes:3,anio:1985};assert.equal(bulk.groups([a,b]).length,1)});
 test('one-tap candidate selection exists and explicitly preserves remote copies',()=>{const source=fs.readFileSync(path.join(__dirname,'../modules/bulk-library.js'),'utf8');assert.match(source,/bulkSuggested/);assert.match(source,/otros dispositivos/);});
+
+test('library refresh follows actual recovery status rather than timing guesses',()=>{const source=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert.match(source,/bulkObserver=new MutationObserver/);assert.doesNotMatch(source,/setTimeout\(\(\)=>bulk\.refresh\(\),1500\)/)});
