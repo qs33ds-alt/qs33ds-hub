@@ -1907,8 +1907,10 @@ document.addEventListener('DOMContentLoaded',async()=>{
           actualizarSelectorCartas();render();
         }
       });
-      document.getElementById('btnRecuperarSupabaseAstroDB')?.addEventListener('click',()=>setTimeout(()=>bulk.refresh(),1500));
-      document.getElementById('btnRecuperarLocalesAstroDB')?.addEventListener('click',()=>setTimeout(()=>bulk.refresh(),100));
+      document.getElementById('btnRecuperarLocalesAstroDB')?.addEventListener('click',()=>queueMicrotask(()=>bulk.refresh()));
+      const bulkObserver=new MutationObserver(()=>bulk.refresh());
+      const status=document.getElementById('estadoRecuperacionAstroDB');
+      if(status)bulkObserver.observe(status,{childList:true,characterData:true,subtree:true});
     }
   }
   iniciarRecuperacionAstroDB();
