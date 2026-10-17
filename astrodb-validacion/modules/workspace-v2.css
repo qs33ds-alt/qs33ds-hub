@@ -20,3 +20,24 @@
 @media print{#astrodbWorkspaceNav{display:none!important}#editor[data-workspace-view] .futureAnalysisLayout{display:grid!important}#editor[data-workspace-view] .workspaceMandala,#editor[data-workspace-view] .workspaceBirth,#editor[data-workspace-view] .workspaceAnalysis{display:block!important}}
 
 .workspaceLibrary{padding:18px;min-height:60vh}.workspaceLibrary.hidden{display:none!important}.workspaceLibraryHeader{padding:24px;border:1px solid #2b5168;border-radius:16px;background:#0d2035;margin-bottom:16px}.workspaceLibraryHeader span{color:#7ddbea;font-size:10px;letter-spacing:.18em}.workspaceLibraryHeader h2{font-size:28px;color:#e9faff;margin:12px 0}.workspaceLibraryHeader p{color:#91b2c5}.workspaceLibrarySlot{max-width:900px}.workspaceLibraryCard{padding:22px!important;background:#132d45!important}.workspaceLibraryCard .savedList{max-height:48vh;overflow:auto}.workspaceLibraryInactive{display:none!important}
+
+/* Mobile layout: override late desktop sidebar width in observatory-theme.css.
+   Keep navigation and forms within the viewport without horizontal clipping. */
+@media screen and (max-width:900px){
+  html,body{width:100%;max-width:100%;overflow-x:clip}
+  body{display:block!important}
+  .sidebar{position:static!important;width:100%!important;min-width:0!important;max-width:100%!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;border-right:0!important}
+  .main{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;padding:12px!important;overflow:visible!important}
+  .sidebar .sideCard,.sidebar .sideDetails,.sidebar .detailsBody,.main .card{min-width:0;max-width:100%}
+  .sidebar .toolbar>*{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+  #astrodbAuthPanel{flex-wrap:wrap}
+  .workspaceV2Nav{min-width:0;max-width:100%}
+  .futureAnalysisLayout,.futureWorkspace{min-width:0;max-width:100%}
+}
+@media screen and (max-width:480px){
+  .sidebar{padding:12px!important}
+  .sidebar .toolbar{display:grid;grid-template-columns:minmax(0,1fr)}
+  .sidebar .toolbar .btn{width:100%}
+  .workspaceV2Nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .main{padding:10px!important}
+}
