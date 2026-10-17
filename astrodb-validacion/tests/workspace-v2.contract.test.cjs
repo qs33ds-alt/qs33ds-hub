@@ -87,3 +87,10 @@ test('QS33DS portal preserves classic AstroDB and separately exposes V2',()=>{
  assert.equal((portal.match(/href="\.\/astrodb\/"/g)||[]).length,1);
  assert.equal((portal.match(/href="\.\/astrodb-validacion\/"/g)||[]).length,1);
 });
+
+test('Supabase recovery is scoped to the active account and stale errors cannot overwrite UI',()=>{
+ const source=read('index.html');
+ assert.match(source,/recuperacionSupabaseAstroDB\?\.client===client && recuperacionSupabaseAstroDB\?\.userId===userId/);
+ assert.match(source,/if\(estado && astrodbSupabase===client && astrodbUser\?\.id===userId\)estado\.textContent=error\.message/);
+ assert.match(source,/if\(recuperacionSupabaseAstroDB\?\.promise===promise\)recuperacionSupabaseAstroDB=null/);
+});
