@@ -223,6 +223,7 @@ test('mobile bulk selection retires duplicate locally and prevents reimport',asy
  await page.locator('#bulkSuggested').click();
  await expect(page.locator('#bulkSummary')).toContainText('1 seleccionadas');
  page.on('dialog',dialog=>dialog.accept());
+ await page.locator('#bulkExport').click();
  await page.locator('#bulkRemove').click();
  await expect(page.locator('#bulkSummary')).toContainText('1 cartas');
  await page.evaluate(incoming=>localStorage.setItem('astrodb_v51',JSON.stringify(incoming)),fixture);
