@@ -31,3 +31,9 @@ test('same-ID recovery remains idempotent across repeated merges',()=>{
  assert.deepEqual(second.records,first.records);
  assert.equal(second.records[0].nombre,'Actual');
 });
+
+test('Supabase recovery rejects duplicate local IDs in one page without returning partial records',async()=>{
+ const {readSupabase}=require('../chart-recovery.js');
+ const client={from:()=>({select:()=>({eq:()=>({order:()=>({range:async()=>({data:[{id:'remote1',user_id:'owner',input_data:{id:'same'}},{id:'remote2',user_id:'owner',input_data:{id:'same'}}],error:null})})})})})};
+ await assert.rejects(()=>readSupabase(client,'owner'),/duplicadas/);
+});
