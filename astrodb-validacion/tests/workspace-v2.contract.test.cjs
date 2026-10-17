@@ -33,3 +33,16 @@ test('Supabase recovery rechecks the account before modifying local records',()=
  const merge=body.indexOf('incorporarFichasRecuperadasAstroDB(fichas)');
  assert.ok(check>=0&&merge>check,'must verify user identity immediately before merge');
 });
+
+test('Supabase save checks the account before and after asynchronous upsert',()=>{
+ const html=read('index.html');
+ const start=html.indexOf('async function guardarFichaSupabase(ficha)');
+ const end=html.indexOf('function incorporarFichasRecuperadasAstroDB',start);
+ assert.ok(start>=0&&end>start);
+ const body=html.slice(start,end);
+ const guard='astrodbUser?.id!==usuarioId || astrodbSupabase!==cliente';
+ const first=body.indexOf(guard);
+ const upsert=body.indexOf(".upsert(payload,{onConflict:'user_id,chart_local_id'})");
+ const second=body.indexOf(guard,upsert);
+ assert.ok(first>=0&&first<upsert&&second>upsert,'both identity guards are required');
+});
