@@ -134,3 +134,16 @@ test('selecting a saved chart opens its original record without duplication',asy
  const all=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')));
  expect(all).toHaveLength(1);expect(String(all[0].id)).toBe(String(id));
 });
+
+
+test('an unauthenticated save never reports remote copies as completed',async({page})=>{
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ await page.locator('#nombre').fill('Offline guard '+Date.now());
+ await page.locator('#btnGuardar').click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]').length)).toBe(1);
+ await expect(page.locator('#astrodbAuthEstado')).toContainText('Sin sesión');
+ const state=await page.evaluate(()=>({user:typeof astrodbUser!=='undefined'&&astrodbUser!==null,drive:typeof astrodbDrive!=='undefined'&&astrodbDrive?.state()?.connected===true}));
+ expect(state.user).toBe(false);
+ expect(state.drive).toBe(false);
+});
