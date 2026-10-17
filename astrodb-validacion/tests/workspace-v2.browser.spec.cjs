@@ -147,3 +147,30 @@ test('an unauthenticated save never reports remote copies as completed',async({p
  expect(state.user).toBe(false);
  expect(state.drive).toBe(false);
 });
+
+
+test('calculated natal chart survives local save, reload and NatalCore revalidation',async({page})=>{
+ test.setTimeout(90000);
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ const name='E2E persisted calculation '+Date.now();
+ await page.locator('#nombre').fill(name);
+ await page.locator('#dia').fill('15');await page.locator('#mes').fill('6');await page.locator('#anio').fill('1992');
+ await page.locator('#hora').fill('12:30');
+ for(const [id,value] of [['lat','41.3874'],['lon','2.1686'],['tz','Europe/Madrid']]){
+  await page.locator('#'+id).evaluate((el,value)=>{el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));},value);
+ }
+ await page.locator('#btnCalcularDatos').click();
+ await expect.poll(()=>page.evaluate(()=>window.cartaActual?.casas?.length||0),{timeout:60000}).toBe(12);
+ const initial=await page.evaluate(()=>window.cartaActual.planetas.map(p=>({name:p.nombre,longitude:p.longitude})));
+ await page.locator('#btnGuardar').click();
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]').length)).toBe(1);
+ await page.reload();await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await page.locator('#lista .listItem').filter({hasText:name}).click();
+ const restored=await page.evaluate(()=>window.cartaActual);
+ expect(restored.casas).toHaveLength(12);
+ expect(restored.planetas.map(p=>({name:p.nombre,longitude:p.longitude}))).toEqual(initial);
+ await page.getByRole('button',{name:'NatalCore',exact:true}).click();
+ await page.locator('#btnValidarNatalCore').click();
+ await expect(page.locator('#estadoNatalCore .ok')).toHaveText('NatalCore válido.');
+});
