@@ -46,3 +46,14 @@ test('Supabase save checks the account before and after asynchronous upsert',()=
  const second=body.indexOf(guard,upsert);
  assert.ok(first>=0&&first<upsert&&second>upsert,'both identity guards are required');
 });
+
+test('offline save does not overwrite no-session status with a failed remote sync message',()=>{
+ const html=read('index.html');
+ const start=html.indexOf('function guardarFichaCompletaAstroDB(forceNew=false)');
+ const end=html.indexOf('function guardar(){',start);
+ assert.ok(start>=0&&end>start);
+ const body=html.slice(start,end);
+ assert.match(body,/supabase:astrodbUser\?'sincronizando…':'sin sesión'/);
+ assert.match(body,/const supabase=astrodbUser\s*\?/);
+ assert.match(body,/: Promise\.resolve\(false\)/);
+});
