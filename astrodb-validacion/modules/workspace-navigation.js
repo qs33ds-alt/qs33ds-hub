@@ -1,12 +1,18 @@
-/* AstroDB Workspace V2 — navigation controller; no persistence or calculation writes. */
+/* AstroDB Workspace V2 — isolated presentation controller. No changes to calculation, chart IDs or storage. */
 (function(){'use strict';
-const mount=document.getElementById('astrodbWorkspaceNav');if(!mount)return;
-const sections=[['observatorio','Observatorio'],['datos','Datos natales'],['analisis','Análisis'],['natalcore','NatalCore']];
+const mount=document.getElementById('astrodbWorkspaceNav');const editor=document.getElementById('editor');if(!mount||!editor)return;
+const items=[['observatorio','Observatorio'],['datos','Datos natales'],['analisis','Análisis'],['natalcore','NatalCore']];
 const nav=document.createElement('nav');nav.className='workspaceV2Nav';nav.setAttribute('aria-label','Espacios de trabajo');
-sections.forEach(([id,label])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.workspace=id;button.setAttribute('aria-pressed',id==='observatorio'?'true':'false');nav.appendChild(button)});
-mount.appendChild(nav);
-const editor=document.getElementById('editor');if(!editor)return;
-const targets={observatorio:editor.querySelector('.futureMandalaPanel'),datos:editor.querySelector('.futureBirthPanel'),analisis:editor.querySelector('.compactCard'),natalcore:document.getElementById('herramientasEstructurales')};
-function activate(id){const target=targets[id];if(!target)return;nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspace===id)));if(id==='natalcore'){const details=target.querySelectorAll('details');details.forEach(d=>{if(/NatalCore/i.test(d.querySelector('summary')?.textContent||''))d.open=true;});}target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});}
-nav.addEventListener('click',event=>{const b=event.target.closest('button[data-workspace]');if(b)activate(b.dataset.workspace)});
+for(const [id,label] of items){const button=document.createElement('button');button.type='button';button.dataset.workspace=id;button.textContent=label;button.setAttribute('aria-pressed',String(id==='observatorio'));nav.appendChild(button)}mount.appendChild(nav);
+const birth=editor.querySelector('.futureBirthPanel');const mandala=editor.querySelector('.futureAnalysisLayout > .card:nth-child(2)');const tools=editor.querySelector('#herramientasEstructurales');const data=editor.querySelector('.compactCard');const heading=editor.querySelector('.futureSectionLabel');
+if(!birth||!mandala||!tools||!data)return;
+birth.classList.add('workspaceBirth');mandala.classList.add('workspaceMandala');tools.classList.add('workspaceTools');data.classList.add('workspaceAnalysis');if(heading)heading.classList.add('workspaceAnalysisHeading');
+const natal=Array.from(tools.querySelectorAll('details')).find(d=>/NatalCore/i.test(d.querySelector('summary')?.textContent||''));const json=Array.from(tools.querySelectorAll('details')).find(d=>/Base de datos/i.test(d.querySelector('summary')?.textContent||''));
+const summary=document.createElement('div');summary.className='workspaceBirthSummary';summary.setAttribute('aria-live','polite');const summaryTitle=document.createElement('strong');const summaryInfo=document.createElement('span');summary.append(summaryTitle,summaryInfo);mandala.insertBefore(summary,mandala.querySelector('canvas'));
+function updateSummary(){const get=id=>document.getElementById(id)?.value?.trim()||'';summaryTitle.textContent=get('nombre')||'Nueva carta natal';const date=[get('dia'),get('mes'),get('anio')].filter(Boolean).join('/');summaryInfo.textContent=[date,get('hora'),get('ciudad')].filter(Boolean).join(' · ')||'Introduce los datos de nacimiento para calcular la carta'}
+for(const id of ['nombre','dia','mes','anio','hora','ciudad'])document.getElementById(id)?.addEventListener('input',updateSummary);updateSummary();
+function setView(view){if(!items.some(([id])=>id===view))return;editor.dataset.workspaceView=view;nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspace===view)));if(view==='natalcore'&&natal)natal.open=true;if(view==='datos'&&json)json.open=false;updateSummary();}
+nav.addEventListener('click',e=>{const button=e.target.closest('button[data-workspace]');if(button)setView(button.dataset.workspace)});
+const observer=new MutationObserver(()=>{if(!editor.classList.contains('hidden'))updateSummary()});observer.observe(editor,{attributes:true,attributeFilter:['class']});
+setView('observatorio');
 })();
