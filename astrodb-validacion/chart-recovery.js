@@ -26,7 +26,8 @@
   function fromSupabase(row){
     if(!row||typeof row!=='object')throw Error('Registro remoto inválido.');
     const input=row.input_data&&typeof row.input_data==='object'&&!Array.isArray(row.input_data)?row.input_data:{};
-    const chart=row.chart_data||{};const birth=String(row.birth_date||'').split('-');
+    const chart=row.chart_data&&typeof row.chart_data==='object'&&!Array.isArray(row.chart_data)?row.chart_data:{};
+    const birth=String(row.birth_date||'').split('-');
     const id=input.id??input.astrodb_local_id??row.chart_local_id??(row.id?'supabase:'+row.id:null);
     if(id==null||String(id)==='')throw Error('Ficha remota sin identificador.');
     const array=(primary,fallback)=>Array.isArray(primary)&&primary.length?primary:(Array.isArray(fallback)?fallback:[]);
