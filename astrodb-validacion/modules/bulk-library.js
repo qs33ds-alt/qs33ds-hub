@@ -3,6 +3,8 @@
 'use strict';
 const key=f=>[f.nombre,f.dia,f.mes,f.anio,f.hora,f.ciudad].map(v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ')).join('|');
 function groups(records){const map=new Map();for(const f of records){if(!f||f.id==null||!String(f.nombre||'').trim()||!f.dia||!f.mes||!f.anio)continue;const k=key(f);if(!map.has(k))map.set(k,[]);map.get(k).push(f)}return [...map.values()].filter(a=>a.length>1)}
+function chooseKeep(group){return group.slice().sort((a,b)=>{const quality=f=>Number(Array.isArray(f.planetas)&&f.planetas.length>0)+Number(Array.isArray(f.casas)&&f.casas.length===12)+Number(!!f.natalcoreSnapshot)+Number(!!f.ephemeris);return quality(b)-quality(a)||String(b.updated_at||b.updatedAt||'').localeCompare(String(a.updated_at||a.updatedAt||''))||String(a.id).localeCompare(String(b.id))})[0]}
+function suggest(records){return groups(records).map(group=>({keep:chooseKeep(group),candidates:group.filter(f=>String(f.id)!==String(chooseKeep(group).id))}));}
 function mount({host,getRecords,removeLocal,openChart}){
 const panel=document.createElement('section');panel.className='bulkLibrary';panel.innerHTML='<h3>Gestión de cartas</h3><p>Selecciona varias fichas o revisa posibles duplicados. Ninguna carta se elimina automáticamente.</p><div class="bulkControls"><input id="bulkSearch" type="search" placeholder="Buscar nombre, fecha o ciudad" aria-label="Buscar cartas"><button id="bulkDuplicates" type="button">Ver duplicados</button><button id="bulkAll" type="button">Seleccionar visibles</button><button id="bulkNone" type="button">Limpiar selección</button></div><p id="bulkSummary" role="status"></p><div id="bulkRows" class="bulkRows"></div><div class="bulkControls"><button id="bulkExport" type="button">Descargar copia de seleccionadas</button><button id="bulkRemove" type="button">Retirar seleccionadas del dispositivo</button></div><p class="bulkWarning">La retirada afecta solo a este navegador. Las copias de Supabase y Google Drive se conservan y pueden reaparecer al recuperar fichas. Para eliminar definitivamente de todas las fuentes se necesita otra operación.</p>';
 host.prepend(panel);
@@ -14,5 +16,5 @@ find('bulkExport').onclick=()=>{const records=getRecords().filter(f=>selected.ha
 find('bulkRemove').onclick=()=>{const ids=[...selected];if(!ids.length){alert('Selecciona las cartas que quieres retirar.');return}const records=getRecords().filter(f=>selected.has(String(f.id)));const backup=JSON.stringify({exportedAt:new Date().toISOString(),records});const blob=new Blob([backup],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='astrodb-respaldo-antes-de-retirar-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);if(!confirm('Se ha preparado una copia JSON. ¿Retirar '+records.length+' cartas SOLO de este navegador? Supabase y Drive no se borrarán y podrían recuperarse de nuevo.'))return;removeLocal(ids);selected.clear();draw()};
 draw();return {refresh:draw};
 }
-return {key,groups,mount};
+return {key,groups,suggest,mount};
 });
