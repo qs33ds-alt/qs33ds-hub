@@ -12,12 +12,13 @@ test('opening or creating a chart returns to the observatory',()=>{const js=read
 test('workspace loads after its original DOM mounts and before the legacy application',()=>{const html=read('index.html');const order=['modules/sidebar.js','id="astrodbWorkspaceNav"','modules/editor-view.js','modules/workspace-navigation.js','drive-sync.js','chart-recovery.js'];let previous=-1;for(const token of order){const next=html.indexOf(token);assert.ok(next>previous,'Expected load order: '+token);previous=next}});
 test('library has a dedicated presentation and no duplicate form controls',()=>{const js=read('modules/workspace-navigation.js');assert.match(js,/workspaceLibrarySlot/);assert.match(js,/appendChild\(library\)/);assert.doesNotMatch(js,/id="selectorCartas"/)});
 
-test('Supabase upsert includes the stable local chart identifier used by its conflict key',()=>{
+test('Supabase upsert derives generated local chart identifier from input_data',()=>{
  const html=read('index.html');
  const start=html.indexOf('async function guardarFichaSupabase(ficha)');
  const end=html.indexOf('function incorporarFichasRecuperadasAstroDB',start);
  assert.ok(start>=0&&end>start);
  const body=html.slice(start,end);
- assert.match(body,/chart_local_id:\s*String\(ficha\.id\)/);
+ assert.match(body,/input_data:\s*Object\.fromEntries\(Object\.entries\(ficha\)/);
+ assert.doesNotMatch(body,/^\s*chart_local_id\s*:/m);
  assert.match(body,/onConflict:'user_id,chart_local_id'/);
 });
