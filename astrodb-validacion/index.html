@@ -1057,7 +1057,7 @@ async function sincronizarFichaDriveAstroDB(ficha,solicitud){
     const {natalcoreSnapshot,...chart}=ficha;
     const bundle=prepararPaqueteCodigoSemilla(chart,core);
     if(!comprobarPaqueteCodigoSemilla(bundle))throw new Error('La identidad de la ficha y NatalCore no coincide.');
-    const resultado=await astrodbDrive.save(bundle);
+    const resultado=await clienteDrive.save(bundle);
     if(solicitud===ultimaSolicitudGuardadoAstroDB && astrodbDrive===clienteDrive && clienteDrive.state().connected && clienteDrive.state().account===cuentaDrive.account){
       estadoSincronizacionAstroDB.drive=resultado.ok?'3 copias verificadas':'copia parcial; reintentar';
       const link=$('astrodbDriveCarpeta');
