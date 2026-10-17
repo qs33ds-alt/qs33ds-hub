@@ -18,8 +18,9 @@ for(const id of ['nombre','dia','mes','anio','hora','ciudad'])document.getElemen
 function setView(view){if(!items.some(([id])=>id===view))return;editor.dataset.workspaceView=view;librarySpace.classList.toggle('hidden',view!=='biblioteca');editor.classList.toggle('workspaceLibraryInactive',view==='biblioteca');nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspace===view)));if(view==='natalcore'&&natal)natal.open=true;if(view==='datos'&&json)json.open=false;updateSummary();}
 nav.addEventListener('click',e=>{const button=e.target.closest('button[data-workspace]');if(button)setView(button.dataset.workspace)});
 // Opening or creating a chart must leave the library-only view; original handlers remain unchanged.
-const openButton=document.getElementById('btnAbrirSeleccion');const newButton=document.getElementById('btnNueva');
+const openButton=document.getElementById('btnAbrirSeleccion');const newButton=document.getElementById('btnNueva');const chartSelector=document.getElementById('selectorCartas');
 for(const button of [openButton,newButton])button?.addEventListener('click',()=>setView('observatorio'));
+chartSelector?.addEventListener('change',()=>{if(chartSelector.value!=='')setView('observatorio')});
 const libraryList=document.getElementById('lista');libraryList?.addEventListener('click',event=>{if(event.target.closest('button,a,[role="button"],.listItem')&&editor.dataset.workspaceView==='biblioteca')setView('observatorio')});
 const observer=new MutationObserver(()=>{if(!editor.classList.contains('hidden'))updateSummary()});observer.observe(editor,{attributes:true,attributeFilter:['class']});
 setView('observatorio');
