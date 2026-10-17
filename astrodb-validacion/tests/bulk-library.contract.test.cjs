@@ -11,3 +11,5 @@ test('duplicate comparison accepts zero-padded birth dates',()=>{const a={id:'a'
 test('one-tap candidate selection exists and explicitly preserves remote copies',()=>{const source=fs.readFileSync(path.join(__dirname,'../modules/bulk-library.js'),'utf8');assert.match(source,/bulkSuggested/);assert.match(source,/otros dispositivos/);});
 
 test('library refresh follows actual recovery status rather than timing guesses',()=>{const source=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert.match(source,/bulkObserver=new MutationObserver/);assert.doesNotMatch(source,/setTimeout\(\(\)=>bulk\.refresh\(\),1500\)/)});
+
+test('failed explicit save restores local records and retired markers',()=>{const source=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert.match(source,/try\{persistirDatos\(\);rehabilitarIdAstroDB\(f\.id\);\}/);assert.match(source,/localStorage\.setItem\(STORAGE_KEY,JSON\.stringify\(anteriores\)\)/);assert.match(source,/const retiradosAntes=localStorage\.getItem\(ASTRODB_RETIRED_KEY\)/)});
