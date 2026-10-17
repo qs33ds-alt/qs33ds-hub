@@ -1,7 +1,7 @@
 /* AstroDB V2 bulk library: explicit selection, duplicate suggestions, reversible local removal. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.AstroDBBulk=factory()})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const key=f=>[f.nombre,f.dia,f.mes,f.anio,f.hora,f.ciudad].map(v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ')).join('|');
+const key=f=>[f.nombre,f.dia,f.mes,f.anio,f.hora,f.ciudad].map((v,i)=>{let x=String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ');if(i>=1&&i<=3&&/^\d+$/.test(x))x=String(Number(x));return x}).join('|');
 function groups(records){const map=new Map();for(const f of records){if(!f||f.id==null||!String(f.nombre||'').trim()||!f.dia||!f.mes||!f.anio)continue;const k=key(f);if(!map.has(k))map.set(k,[]);map.get(k).push(f)}return [...map.values()].filter(a=>a.length>1)}
 function chooseKeep(group){return group.slice().sort((a,b)=>{const quality=f=>Number(Array.isArray(f.planetas)&&f.planetas.length>0)+Number(Array.isArray(f.casas)&&f.casas.length===12)+Number(!!f.natalcoreSnapshot)+Number(!!f.ephemeris);return quality(b)-quality(a)||String(b.updated_at||b.updatedAt||'').localeCompare(String(a.updated_at||a.updatedAt||''))||String(a.id).localeCompare(String(b.id))})[0]}
 function suggest(records){return groups(records).map(group=>({keep:chooseKeep(group),candidates:group.filter(f=>String(f.id)!==String(chooseKeep(group).id))}));}
