@@ -895,6 +895,7 @@ function recuperarFichasSupabaseAstroDB(){
   if(estado)estado.textContent='Recuperando tus fichas de Supabase…';
   recuperacionSupabaseAstroDB=AstroDBRecovery.readSupabase(client,userId,()=>astrodbSupabase===client&&astrodbUser?.id===userId)
     .then(fichas=>{
+      if(astrodbSupabase!==client||astrodbUser?.id!==userId)throw new Error('La cuenta cambió antes de incorporar las fichas. No se ha modificado el almacenamiento local.');
       const resultado=incorporarFichasRecuperadasAstroDB(fichas);
       if(estado)estado.textContent=resultado.added+' fichas añadidas desde Supabase; '+resultado.skipped+' ya existentes. Se conservan las fichas locales y las originales.';
       return true;
