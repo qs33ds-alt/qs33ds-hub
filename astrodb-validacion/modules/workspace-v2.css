@@ -95,3 +95,19 @@ body{background:radial-gradient(ellipse at 72% 8%,rgba(39,86,139,.23),transparen
 .workspaceLibraryCard{border:1px solid rgba(127,200,232,.18)!important;border-radius:20px!important;padding:clamp(18px,2.3vw,30px)!important;background:linear-gradient(140deg,#112a45,#091b33)!important}
 .workspaceLibraryCard .savedList{max-height:55vh}
 @media(max-width:700px){.workspaceLibrary{padding:9px 4px 28px}.workspaceLibraryHeader{min-height:160px}.workspaceLibraryHeader:after{right:-95px}.workspaceLibraryCard{padding:14px!important}#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{padding:15px!important;border-radius:15px!important}}
+
+/* Visual shell V2 — distinct cinematic information hierarchy. */
+.v2Masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px clamp(12px,2vw,30px);margin:10px 0 3px;border:1px solid rgba(135,197,237,.18);border-radius:15px;background:linear-gradient(100deg,rgba(17,39,66,.95),rgba(9,22,44,.72));box-shadow:inset 0 1px rgba(255,255,255,.04)}
+.v2MastheadLabel{font-size:10px;letter-spacing:.22em;font-weight:800;color:#b8dff1}.v2MastheadLabel span{color:#4f8fae;padding:0 7px}
+.v2MastheadMeta{display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:.19em;font-weight:750;color:#8fb4ce}.v2MastheadDivider{opacity:.35}
+.v2LiveDot{width:6px;height:6px;border-radius:50%;background:#75dfdc;box-shadow:0 0 12px rgba(100,229,219,.6)}
+.workspaceV2Nav button{display:flex;align-items:center;justify-content:center;gap:10px;min-height:47px;white-space:nowrap}
+.v2NavGlyph{display:inline-grid;place-items:center;width:25px;height:25px;font-size:21px;font-weight:400;line-height:1;color:#80b8d1;opacity:.86}
+.workspaceV2Nav button[aria-pressed=true] .v2NavGlyph{color:#8fe7ef;text-shadow:0 0 16px rgba(80,226,243,.6)}
+#editor[data-workspace-view=observatorio] .workspaceMandala{min-height:min(77dvh,790px)!important}
+#editor[data-workspace-view=observatorio] .workspaceMandala .v2Stage{z-index:0}
+#editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{position:relative;z-index:2}
+#editor[data-workspace-view=observatorio] .workspaceMandala .futurePanelHeading{z-index:3}
+@media(max-width:900px){.v2MastheadMeta{letter-spacing:.08em}.workspaceV2Nav button{gap:5px;padding:10px 8px}}
+@media(max-width:700px){.v2Masthead{padding:12px;margin-top:4px}.v2MastheadMeta{font-size:8px}.v2MastheadLabel{font-size:9px;letter-spacing:.1em}.workspaceV2Nav{grid-template-columns:repeat(5,minmax(0,1fr))}.workspaceV2Nav button{display:flex;flex-direction:column;gap:1px;padding:8px 2px;font-size:9px;white-space:normal;line-height:1.1;min-height:54px}.v2NavGlyph{font-size:19px;width:21px;height:23px}#editor[data-workspace-view=observatorio] .workspaceMandala{min-height:0!important}}
+@media(max-width:420px){.v2MastheadMeta{display:none}.workspaceV2Nav button{font-size:8px}}
