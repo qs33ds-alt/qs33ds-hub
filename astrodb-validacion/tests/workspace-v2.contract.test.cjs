@@ -78,3 +78,12 @@ test('Drive synchronization remains async because it awaits remote save',()=>{
  assert.ok(start>=0&&end>start,'Drive sync must be declared async');
  assert.match(html.slice(start,end),/await clienteDrive\.save\(bundle\)/);
 });
+
+test('QS33DS portal preserves classic AstroDB and separately exposes V2',()=>{
+ const portal=read('../index.html');
+ assert.match(portal,/class="card astro" href="\.\/astrodb\/"/);
+ assert.match(portal,/class="card astro" href="\.\/astrodb-validacion\/"/);
+ assert.match(portal,/AstroDB Workspace V2/);
+ assert.equal((portal.match(/href="\.\/astrodb\/"/g)||[]).length,1);
+ assert.equal((portal.match(/href="\.\/astrodb-validacion\/"/g)||[]).length,1);
+});
