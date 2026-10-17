@@ -207,3 +207,33 @@ test('legacy recovery preserves a current record when an older source reuses its
  expect(result.active[0].nombre).toBe('Registro vigente protegido');
  expect(result.source[0].nombre).toBe('Versión antigua del mismo identificador');
 });
+
+test('mobile bulk selection retires duplicate locally and prevents reimport',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto(app);
+ const fixture=[
+  {id:'bulk-a',nombre:'Prueba Duplicada',dia:2,mes:3,anio:1985,hora:'10:30',ciudad:'Barcelona',planetas:[{nombre:'Sol'}],casas:Array.from({length:12},(_,i)=>({casa:i+1}))},
+  {id:'bulk-b',nombre:'Prueba Duplicada',dia:'02',mes:'03',anio:'1985',hora:'10:30',ciudad:'Barcelona',planetas:[],casas:[]}
+ ];
+ await page.evaluate(records=>localStorage.setItem('astrodb_validation_v51',JSON.stringify(records)),fixture);
+ await page.reload();
+ await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await expect(page.locator('#bulkSummary')).toContainText('2 cartas');
+ await expect(page.locator('#bulkSummary')).toContainText('1 grupos');
+ await page.locator('#bulkSuggested').click();
+ await expect(page.locator('#bulkSummary')).toContainText('1 seleccionadas');
+ page.on('dialog',dialog=>dialog.accept());
+ await page.locator('#bulkRemove').click();
+ await expect(page.locator('#bulkSummary')).toContainText('1 cartas');
+ const result=await page.evaluate(incoming=>{
+   const before=JSON.parse(localStorage.getItem('astrodb_validation_v51'));
+   const retired=JSON.parse(localStorage.getItem('astrodb_v2_retired_ids_v1'));
+   const merged=incorporarFichasRecuperadasAstroDB(incoming);
+   return {before:before.map(x=>x.id),retired,after:merged.records.map(x=>x.id),retiredSkipped:merged.retiredSkipped};
+ },fixture);
+ expect(result.before).toEqual(['bulk-a']);
+ expect(result.retired).toContain('bulk-b');
+ expect(result.after).toEqual(['bulk-a']);
+ expect(result.retiredSkipped).toBe(1);
+ await page.screenshot({path:'test-artifacts/astrodb-bulk-mobile.png',fullPage:true});
+});
