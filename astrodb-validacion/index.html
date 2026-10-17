@@ -885,7 +885,9 @@ function registrarIdsRetiradosAstroDB(ids){
 }
 function rehabilitarIdAstroDB(id){
   const prev=leerIdsRetiradosAstroDB();
-  if(prev.delete(String(id)))localStorage.setItem(ASTRODB_RETIRED_KEY,JSON.stringify([...prev]));
+  if(!prev.has(String(id)))return;
+  prev.delete(String(id));
+  localStorage.setItem(ASTRODB_RETIRED_KEY,JSON.stringify([...prev]));
 }
 function incorporarFichasRecuperadasAstroDB(fichas){
   if(!window.AstroDBRecovery)throw new Error('No se pudo cargar la recuperación de fichas. Recarga la página.');
@@ -1050,8 +1052,12 @@ function guardarFichaCompletaAstroDB(forceNew=false){
     const activoAnterior=idActivo;
     datos=posicion<0?[...datos,f]:datos.map((x,i)=>i===posicion?f:x);
     idActivo=f.id;
-    rehabilitarIdAstroDB(f.id);
-    try{persistirDatos();}catch(error){datos=anteriores;idActivo=activoAnterior;throw error;}
+    const retiradosAntes=localStorage.getItem(ASTRODB_RETIRED_KEY);
+    try{persistirDatos();rehabilitarIdAstroDB(f.id);}catch(error){
+      datos=anteriores;idActivo=activoAnterior;
+      try{if(retiradosAntes===null)localStorage.removeItem(ASTRODB_RETIRED_KEY);else localStorage.setItem(ASTRODB_RETIRED_KEY,retiradosAntes);}catch(rollbackError){console.error('[AstroDB] No se pudo revertir el registro de retiradas:',rollbackError);}
+      throw error;
+    }
     snapshot=capturarFichaParaSincronizacion(f);
   }catch(error){estadoSincronizacionAstroDB.local='error; no se ha confirmado el guardado';pintarEstadoGuardadoAstroDB();return Promise.resolve(false);}
   const solicitud=++ultimaSolicitudGuardadoAstroDB;
