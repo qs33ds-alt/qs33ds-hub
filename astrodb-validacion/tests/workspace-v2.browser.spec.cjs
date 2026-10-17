@@ -190,3 +190,20 @@ test('legacy recovery adds a missing chart without overwriting source data or du
  expect(after.active.filter(x=>x.nombre==='Carta recuperada E2E')).toHaveLength(1);
  expect(after.legacy).toEqual(legacy);
 });
+
+
+test('legacy recovery preserves a current record when an older source reuses its id',async({page})=>{
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ await page.locator('#nombre').fill('Registro vigente protegido');
+ await page.locator('#btnGuardar').click();
+ const current=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]')[0]);
+ const older={...current,nombre:'Versión antigua del mismo identificador'};
+ await page.evaluate(record=>localStorage.setItem('astrodb_v51',JSON.stringify([record])),older);
+ await page.reload();await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await page.locator('#btnRecuperarLocalesAstroDB').click();
+ const result=await page.evaluate(()=>({active:JSON.parse(localStorage.getItem('astrodb_validation_v51')||'[]'),source:JSON.parse(localStorage.getItem('astrodb_v51')||'[]')}));
+ expect(result.active).toHaveLength(1);
+ expect(result.active[0].nombre).toBe('Registro vigente protegido');
+ expect(result.source[0].nombre).toBe('Versión antigua del mismo identificador');
+});
