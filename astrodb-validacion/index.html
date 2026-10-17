@@ -1055,7 +1055,7 @@ function guardarFichaCompletaAstroDB(forceNew=false){
     const retiradosAntes=localStorage.getItem(ASTRODB_RETIRED_KEY);
     try{persistirDatos();rehabilitarIdAstroDB(f.id);}catch(error){
       datos=anteriores;idActivo=activoAnterior;
-      try{if(retiradosAntes===null)localStorage.removeItem(ASTRODB_RETIRED_KEY);else localStorage.setItem(ASTRODB_RETIRED_KEY,retiradosAntes);}catch(rollbackError){console.error('[AstroDB] No se pudo revertir el registro de retiradas:',rollbackError);}
+      try{localStorage.setItem(STORAGE_KEY,JSON.stringify(anteriores));if(retiradosAntes===null)localStorage.removeItem(ASTRODB_RETIRED_KEY);else localStorage.setItem(ASTRODB_RETIRED_KEY,retiradosAntes);}catch(rollbackError){console.error('[AstroDB] No se pudo revertir el guardado:',rollbackError);}
       throw error;
     }
     snapshot=capturarFichaParaSincronizacion(f);
