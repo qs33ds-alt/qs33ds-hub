@@ -853,6 +853,8 @@ async function guardarFichaSupabase(ficha){
       .select('id').single();
 
     if(resultado.error) throw resultado.error;
+    // A successful write from an old session must not be reported as current-session sync.
+    if(astrodbUser?.id!==usuarioId || astrodbSupabase!==cliente) return false;
 
     console.info(
       '[AstroDB] Carta sincronizada con Supabase:',
