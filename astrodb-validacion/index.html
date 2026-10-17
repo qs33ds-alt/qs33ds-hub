@@ -800,6 +800,7 @@ async function guardarFichaSupabase(ficha){
 
     const payload = {
       user_id: usuarioId,
+      chart_local_id: String(ficha.id),
       name: nombre,
 
       birth_date:
