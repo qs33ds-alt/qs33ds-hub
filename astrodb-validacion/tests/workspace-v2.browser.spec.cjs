@@ -111,4 +111,10 @@ test('real ephemeris calculation creates consistent houses and NatalCore',async(
  expect(core).toHaveProperty('validation');
  expect(core.validation.valid).toBe(true);
  expect(core.houses).toHaveLength(12);
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#btnDescargarNatalCore').click()]);
+ expect(download.suggestedFilename()).toMatch(/^natalcore_.*\\.json$/);
+ const fs=require('node:fs');const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
+ expect(exported.validation.valid).toBe(true);
+ expect(exported.points).toHaveLength(core.points.length);
+ expect(exported.houses).toHaveLength(12);
 });
