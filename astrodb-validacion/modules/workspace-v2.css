@@ -74,3 +74,24 @@ body{background:radial-gradient(ellipse at 72% 8%,rgba(39,86,139,.23),transparen
 @media(prefers-reduced-motion:reduce){.v2Orbital{animation:none!important}}
 #editor[data-workspace-view=observatorio] .workspaceMandala #astroWheel{z-index:2}
 #editor[data-workspace-view=observatorio] .workspaceMandala .v2Stage{z-index:0}
+
+/* Rebuilt five-space presentation language. No mutation of data models or storage. */
+#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{border:1px solid rgba(127,200,232,.22)!important;border-radius:22px!important;padding:clamp(18px,2.4vw,34px)!important;background:linear-gradient(145deg,rgba(19,44,73,.95),rgba(8,20,40,.97))!important;box-shadow:0 30px 75px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.06)}
+#editor[data-workspace-view=datos] .workspaceBirth{max-width:920px!important;margin:15px auto!important}
+#editor[data-workspace-view=datos] .workspaceBirth .futurePanelHeading h3{font-size:clamp(24px,3.1vw,36px);letter-spacing:-.03em}
+#editor[data-workspace-view=datos] .workspaceBirth label{color:#9ebad2;letter-spacing:.05em;margin-top:15px}
+#editor[data-workspace-view=datos] .workspaceBirth input{min-height:46px;border:1px solid rgba(133,176,220,.26);background:rgba(5,16,34,.72);border-radius:12px;padding:12px;color:#f0fbff}
+#editor[data-workspace-view=datos] .workspaceBirth #btnCalcularDatos{min-height:50px;border-radius:13px;margin-top:22px!important;box-shadow:0 0 28px rgba(51,166,203,.16)}
+#editor[data-workspace-view=analisis] .workspaceAnalysis{max-width:1160px;margin:15px auto!important;min-height:420px}
+#editor[data-workspace-view=analisis] .workspaceAnalysisHeading{max-width:1160px;margin:20px auto 10px}
+#editor[data-workspace-view=analisis] .workspaceAnalysis h3,#editor[data-workspace-view=natalcore] .workspaceTools summary{color:#eaf7ff}
+#editor[data-workspace-view=natalcore] .workspaceTools{max-width:1100px!important;min-height:460px;display:grid!important;align-content:start}
+#editor[data-workspace-view=natalcore] .workspaceTools details{border:1px solid rgba(125,192,220,.2);border-radius:16px;background:rgba(8,24,48,.72);padding:18px}
+.workspaceLibrary{max-width:1320px;margin:0 auto;padding:18px 10px 45px}
+.workspaceLibraryHeader{padding:clamp(23px,4vw,54px);margin:12px 0 22px;min-height:190px;position:relative;overflow:hidden}
+.workspaceLibraryHeader:after{content:"";position:absolute;right:7%;top:-75px;width:260px;height:260px;border:1px solid rgba(108,202,227,.2);border-radius:50%;box-shadow:0 0 0 35px rgba(108,202,227,.025),0 0 0 75px rgba(108,202,227,.025);pointer-events:none}
+.workspaceLibraryHeader h2{font-size:clamp(30px,4vw,54px);font-weight:600;letter-spacing:-.045em;margin:17px 0 12px}
+.workspaceLibrarySlot{max-width:1100px}
+.workspaceLibraryCard{border:1px solid rgba(127,200,232,.18)!important;border-radius:20px!important;padding:clamp(18px,2.3vw,30px)!important;background:linear-gradient(140deg,#112a45,#091b33)!important}
+.workspaceLibraryCard .savedList{max-height:55vh}
+@media(max-width:700px){.workspaceLibrary{padding:9px 4px 28px}.workspaceLibraryHeader{min-height:160px}.workspaceLibraryHeader:after{right:-95px}.workspaceLibraryCard{padding:14px!important}#editor[data-workspace-view=datos] .workspaceBirth,#editor[data-workspace-view=analisis] .workspaceAnalysis,#editor[data-workspace-view=natalcore] .workspaceTools{padding:15px!important;border-radius:15px!important}}
