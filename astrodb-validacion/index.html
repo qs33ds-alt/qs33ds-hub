@@ -890,20 +890,21 @@ function recuperarFichasLocalesAstroDB(){
 }
 let recuperacionSupabaseAstroDB=null;
 function recuperarFichasSupabaseAstroDB(){
-  if(recuperacionSupabaseAstroDB)return recuperacionSupabaseAstroDB;
   const estado=$('estadoRecuperacionAstroDB');
   if(!astrodbSupabase||!astrodbUser){if(estado)estado.textContent='Pulsa Entrar para recuperar tus fichas guardadas en Supabase.';return Promise.resolve(false);}
   const client=astrodbSupabase,userId=astrodbUser.id;
+  if(recuperacionSupabaseAstroDB?.client===client && recuperacionSupabaseAstroDB?.userId===userId)return recuperacionSupabaseAstroDB.promise;
   if(estado)estado.textContent='Recuperando tus fichas de Supabase…';
-  recuperacionSupabaseAstroDB=AstroDBRecovery.readSupabase(client,userId,()=>astrodbSupabase===client&&astrodbUser?.id===userId)
+  const promise=AstroDBRecovery.readSupabase(client,userId,()=>astrodbSupabase===client&&astrodbUser?.id===userId)
     .then(fichas=>{
       if(astrodbSupabase!==client||astrodbUser?.id!==userId)throw new Error('La cuenta cambió antes de incorporar las fichas. No se ha modificado el almacenamiento local.');
       const resultado=incorporarFichasRecuperadasAstroDB(fichas);
       if(estado)estado.textContent=resultado.added+' fichas añadidas desde Supabase; '+resultado.skipped+' ya existentes. Se conservan las fichas locales y las originales.';
       return true;
-    }).catch(error=>{if(estado)estado.textContent=error.message;return false;})
-    .finally(()=>{recuperacionSupabaseAstroDB=null;});
-  return recuperacionSupabaseAstroDB;
+    }).catch(error=>{if(estado && astrodbSupabase===client && astrodbUser?.id===userId)estado.textContent=error.message;return false;})
+    .finally(()=>{if(recuperacionSupabaseAstroDB?.promise===promise)recuperacionSupabaseAstroDB=null;});
+  recuperacionSupabaseAstroDB={client,userId,promise};
+  return promise;
 }
 function iniciarRecuperacionAstroDB(){
   $('btnRecuperarLocalesAstroDB')?.addEventListener('click',recuperarFichasLocalesAstroDB);
