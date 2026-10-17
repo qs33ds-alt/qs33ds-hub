@@ -111,7 +111,7 @@ test('real ephemeris calculation creates consistent houses and NatalCore',async(
  for(const p of carta.planetas)expect(Number.isFinite(Number(p.longitude))).toBe(true);
  await page.getByRole('button',{name:'NatalCore',exact:true}).click();
  await page.locator('#btnValidarNatalCore').click();
- await expect(page.locator('#estadoNatalCore')).toContainText('válid');
+ await expect(page.locator('#estadoNatalCore .ok')).toHaveText('NatalCore válido.');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#btnDescargarNatalCore').click()]);
  expect(download.suggestedFilename()).toMatch(/^natalcore_.*\\.json$/);
  const fs=require('node:fs');const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
