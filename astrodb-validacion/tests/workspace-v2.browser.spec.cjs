@@ -80,3 +80,12 @@ test('saving an existing draft updates the same record rather than duplicating i
  const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')));
  expect(after).toHaveLength(1);expect(after[0].id).toBe(first);
 });
+
+test('birth-data calculator reports missing coordinates instead of fabricating a chart',async({page})=>{
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ await page.locator('#dia').fill('12');await page.locator('#mes').fill('5');await page.locator('#anio').fill('1990');
+ await page.locator('#hora').fill('10:30');await page.locator('#btnCalcularDatos').click();
+ await expect(page.locator('#estadoCalculo')).toContainText('Faltan coordenadas');
+ await expect(page.locator('#infoCarta')).toContainText('Calcula una carta');
+});
