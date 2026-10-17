@@ -37,3 +37,14 @@ test('Supabase recovery rejects duplicate local IDs in one page without returnin
  const client={from:()=>({select:()=>({eq:()=>({order:()=>({range:async()=>({data:[{id:'remote1',user_id:'owner',input_data:{id:'same'}},{id:'remote2',user_id:'owner',input_data:{id:'same'}}],error:null})})})})})};
  await assert.rejects(()=>readSupabase(client,'owner'),/duplicadas/);
 });
+
+test('malformed remote chart_data does not override valid stored input arrays',()=>{
+ const {fromSupabase}=require('../chart-recovery.js');
+ for(const chart_data of [null,[],42,'invalid']){
+  const row={id:'remote',user_id:'owner',input_data:{id:'local',planetas:[{nombre:'Sol'}],casas:[{numero:1}]},chart_data};
+  const restored=fromSupabase(row);
+  assert.equal(restored.id,'local');
+  assert.deepEqual(restored.planetas,[{nombre:'Sol'}]);
+  assert.deepEqual(restored.casas,[{numero:1}]);
+ }
+});
