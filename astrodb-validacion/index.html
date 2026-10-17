@@ -871,9 +871,28 @@ async function guardarFichaSupabase(ficha){
   }
 }
 
+const ASTRODB_RETIRED_KEY='astrodb_v2_retired_ids_v1';
+function leerIdsRetiradosAstroDB(){
+  try{
+    const value=JSON.parse(localStorage.getItem(ASTRODB_RETIRED_KEY)||'[]');
+    return new Set(Array.isArray(value)?value.filter(x=>typeof x==='string'&&x.length>0):[]);
+  }catch(error){throw new Error('No se pudo leer el registro de cartas retiradas. No se realizará ninguna recuperación para evitar duplicados.');}
+}
+function registrarIdsRetiradosAstroDB(ids){
+  const prev=leerIdsRetiradosAstroDB();
+  for(const id of ids)prev.add(String(id));
+  localStorage.setItem(ASTRODB_RETIRED_KEY,JSON.stringify([...prev]));
+}
+function rehabilitarIdAstroDB(id){
+  const prev=leerIdsRetiradosAstroDB();
+  if(prev.delete(String(id)))localStorage.setItem(ASTRODB_RETIRED_KEY,JSON.stringify([...prev]));
+}
 function incorporarFichasRecuperadasAstroDB(fichas){
   if(!window.AstroDBRecovery)throw new Error('No se pudo cargar la recuperación de fichas. Recarga la página.');
-  const resultado=AstroDBRecovery.merge(datos,fichas);
+  const retirados=leerIdsRetiradosAstroDB();
+  const permitidas=fichas.filter(f=>f?.id==null||!retirados.has(String(f.id)));
+  const resultado=AstroDBRecovery.merge(datos,permitidas);
+  resultado.retiredSkipped=fichas.length-permitidas.length;
   if(resultado.added){
     const anteriores=datos;datos=resultado.records;
     try{persistirDatos();}catch(error){datos=anteriores;throw new Error('No se pudieron guardar las fichas recuperadas en este navegador. Las originales se conservan.');}
@@ -1031,6 +1050,7 @@ function guardarFichaCompletaAstroDB(forceNew=false){
     const activoAnterior=idActivo;
     datos=posicion<0?[...datos,f]:datos.map((x,i)=>i===posicion?f:x);
     idActivo=f.id;
+    rehabilitarIdAstroDB(f.id);
     try{persistirDatos();}catch(error){datos=anteriores;idActivo=activoAnterior;throw error;}
     snapshot=capturarFichaParaSincronizacion(f);
   }catch(error){estadoSincronizacionAstroDB.local='error; no se ha confirmado el guardado';pintarEstadoGuardadoAstroDB();return Promise.resolve(false);}
@@ -1871,8 +1891,11 @@ document.addEventListener('DOMContentLoaded',async()=>{
         openChart:id=>{cargar(id);document.querySelector('[data-workspace="observatorio"]')?.click();},
         removeLocal:ids=>{
           const set=new Set(ids.map(String));
+          const anteriores=datos;
+          registrarIdsRetiradosAstroDB(ids);
           datos=datos.filter(f=>!set.has(String(f.id)));
-          localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));
+          try{localStorage.setItem(STORAGE_KEY,JSON.stringify(datos));}
+          catch(error){datos=anteriores;throw error;}
           if(idActivo!=null&&set.has(String(idActivo)))nueva();
           actualizarSelectorCartas();render();
         }
