@@ -118,3 +118,18 @@ test('real ephemeris calculation creates consistent houses and NatalCore',async(
  expect(exported.points).toHaveLength(core.points.length);
  expect(exported.houses).toHaveLength(12);
 });
+
+
+test('selecting a saved chart opens its original record without duplication',async({page})=>{
+ await page.goto(app);await page.locator('#btnNueva').click();
+ await page.getByRole('button',{name:'Datos natales',exact:true}).click();
+ const name='Selector regression '+Date.now();await page.locator('#nombre').fill(name);
+ await page.locator('#btnGuardar').click();
+ const id=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51'))[0].id);
+ await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await page.locator('#selectorCartas').selectOption(String(id));
+ await expect(page.locator('#editor')).toHaveAttribute('data-workspace-view','observatorio');
+ await expect(page.locator('#nombre')).toHaveValue(name);
+ const all=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')));
+ expect(all).toHaveLength(1);expect(String(all[0].id)).toBe(String(id));
+});
