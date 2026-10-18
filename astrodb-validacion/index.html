@@ -84,6 +84,7 @@ window.ASTRODB_GOOGLE_CLIENT_ID='575707945836-1dihl63celivvh1dkmuv5d78har8qe8f.a
 <script src="drive-sync.js"></script>
 <script src="chart-recovery.js"></script>
 <script src="modules/bulk-library.js"></script>
+<script src="modules/natalcore-fe33.js"></script>
 <script>
 
 function norm360(v){ return ((v % 360) + 360) % 360; }
@@ -1535,7 +1536,8 @@ function construirNatalCore(){
     detectionCriteria:{aspects:CONFIG_ASPECTOS.map(a=>({type:a.nombre,angle:a.angulo})),orbsByBody:ORBES_COSMOGRAMA},
     validation:null
   };
-  core.validation=validarNatalCore(core); return core;
+  const enriched=window.AstroDBFE33?window.AstroDBFE33.enrich(core):core;
+  enriched.validation=validarNatalCore(enriched); return enriched;
 }
 
 function validarNatalCore(core){
