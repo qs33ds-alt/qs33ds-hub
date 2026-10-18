@@ -2,7 +2,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.AstroDBFE33=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const SIGNS=['Aries','Tauro','Géminis','Cáncer','Leo','Virgo','Libra','Escorpio','Sagitario','Capricornio','Acuario','Piscis'];
-const DOM={Sol:['Leo'],Luna:['Cáncer'],Mercurio:['Géminis','Virgo'],Venus:['Tauro','Libra'],Marte:['Aries','Escorpio'],Júpiter:['Sagitario','Piscis'],Saturno:['Capricornio','Acuario'],Urano:['Acuario'],Neptuno:['Piscis'],Plutón:['Escorpio']};
+const DOM={Sol:['Leo'],Luna:['Cáncer'],Mercurio:['Géminis','Virgo'],Venus:['Tauro','Libra'],Marte:['Aries','Escorpio'],Júpiter:['Sagitario','Piscis'],Saturno:['Capricornio','Acuario']};
 const EX={Sol:['Aries'],Luna:['Tauro'],Mercurio:['Virgo'],Venus:['Piscis'],Marte:['Capricornio'],Júpiter:['Cáncer'],Saturno:['Libra']};
 const FALL={Sol:['Libra'],Luna:['Escorpio'],Mercurio:['Piscis'],Venus:['Virgo'],Marte:['Cáncer'],Júpiter:['Capricornio'],Saturno:['Aries']};
 const opposite=s=>SIGNS[(SIGNS.indexOf(s)+6)%12];
