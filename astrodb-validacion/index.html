@@ -23,6 +23,7 @@ label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--m
 </style>
 <link rel="stylesheet" href="modules/observatory-theme.css?v=1">
 <link rel="stylesheet" href="modules/workspace-v2.css?v=1">
+<link rel="stylesheet" href="modules/cycles-workspace.css?v=21">
 </head>
 <body>
 
@@ -52,6 +53,8 @@ box-shadow:0 2px 8px rgba(0,0,0,.06);
     style="padding:5px 9px;cursor:pointer;">
     Entrar
   </button>
+  <button id="astrodbBtnGoogle" type="button" style="padding:5px 9px;cursor:pointer;">Google</button>
+  <button id="astrodbBtnReset" type="button" style="padding:5px 9px;cursor:pointer;">Recuperar acceso</button>
   <button id="astrodbBtnLogout" type="button"
 
     style="padding:5px 9px;cursor:pointer;display:none;">
@@ -156,6 +159,30 @@ function movimientoRetrogrado(p){
 function esRetrogrado(p){return movimientoRetrogrado(p)===true;}
 const PLANETAS_BASE=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno','Urano','Neptuno','Plutón','Nodo Norte','Quirón'];
 const REG={Aries:['Marte'],Tauro:['Venus'],'Géminis':['Mercurio'],'Cáncer':['Luna'],Leo:['Sol'],Virgo:['Mercurio'],Libra:['Venus'],Escorpio:['Marte','Plutón'],Sagitario:['Júpiter'],Capricornio:['Saturno'],Acuario:['Saturno','Urano'],Piscis:['Júpiter','Neptuno']};
+/* Workspace V2.1: read-only temporal provider using the existing natal Swiss runtime. */
+window.WorkspaceAstroBridge=Object.freeze({
+ snapshot(){return JSON.parse(JSON.stringify(fichaActualComoObjeto(false)))},
+ savedCharts(){return JSON.parse(JSON.stringify(datos))},
+ userId(){return astrodbUser?.id||null},
+ async localToJD(iso,tz){
+  const [{DateTime},swe]=await Promise.all([cargarLuxon(),cargarSwissEphemeris()]);
+  const dt=DateTime.fromISO(iso,{zone:tz});if(!dt.isValid)throw Error('Fecha o zona horaria inválida');
+  const utc=dt.toUTC(),hour=utc.hour+utc.minute/60+utc.second/3600+utc.millisecond/3600000;
+  return {jd:swe.julday(utc.year,utc.month,utc.day,hour),localISO:dt.toISO(),utcISO:utc.toISO(),timezone:tz};
+ },
+ async positionsAtJD(jd,requested=null){
+  const swe=await cargarSwissEphemeris(),flags=(swe.SEFLG_SWIEPH||2)|(swe.SEFLG_SPEED||256),fallback=(swe.SEFLG_MOSEPH||4)|(swe.SEFLG_SPEED||256);
+  const ids={Sol:swe.SE_SUN,Luna:swe.SE_MOON,Mercurio:swe.SE_MERCURY,Venus:swe.SE_VENUS,Marte:swe.SE_MARS,'Júpiter':swe.SE_JUPITER,Saturno:swe.SE_SATURN,Urano:swe.SE_URANUS,Neptuno:swe.SE_NEPTUNE,'Plutón':swe.SE_PLUTO,'Nodo Norte':swe.SE_MEAN_NODE,'Quirón':swe.SE_CHIRON};
+  const names=requested||Object.keys(ids);const result=[];
+  for(const name of names){const id=ids[name];if(typeof id!=='number'){if(requested)throw Error('Factor no disponible: '+name);continue}
+   let raw;try{raw=swe.calc_ut(jd,id,flags)}catch(e){raw=swe.calc_ut(jd,id,fallback)}
+   result.push(normalizaPos(name,raw));
+  }
+  if(!result.some(p=>p.nombre==='Sol'))throw Error('Swiss no devolvió el Sol');
+  return result;
+ },
+ async housesAtJD(jd,lat,lon){const swe=await cargarSwissEphemeris();return calcularCasasSwiss(swe,jd,lat,lon)}
+});
 const STORAGE_KEY='astrodb_validation_v51';
 function leerJSONLocal(key){try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){return []}}
 function cargarTodasLasFichasGuardadas(){
@@ -639,6 +666,8 @@ const ASTRODB_SUPABASE_KEY = 'sb_publishable_XGUwWEkOvofRnr3Qu-fWUw_KH_8zxwR';
 
 let astrodbSupabase = null;
 let astrodbUser = null;
+const ASTRODB_OWNER_ID = 'eb6c7867-4246-496f-8cb3-70bac6de9ec6';
+const ASTRODB_OWNER_EMAIL = 'qs33ds@gmail.com';
 
 
 
@@ -646,17 +675,23 @@ function actualizarEstadoAuthAstroDB(){
   const estado = document.getElementById('astrodbAuthEstado');
   const login = document.getElementById('astrodbBtnLogin');
   const logout = document.getElementById('astrodbBtnLogout');
+  const google = document.getElementById('astrodbBtnGoogle');
+  const reset = document.getElementById('astrodbBtnReset');
 
   if(!estado) return;
 
-  if(astrodbUser){
+  if(astrodbUser && astrodbUser.id === ASTRODB_OWNER_ID){
     estado.textContent = astrodbUser.email || 'Sesión iniciada';
     if(login) login.style.display = 'none';
     if(logout) logout.style.display = '';
+    if(google) google.style.display = 'none';
+    if(reset) reset.style.display = 'none';
   }else{
     estado.textContent = 'Sin sesión';
     if(login) login.style.display = '';
     if(logout) logout.style.display = 'none';
+    if(google) google.style.display = '';
+    if(reset) reset.style.display = '';
   }
 }
 
@@ -666,7 +701,7 @@ async function astrodbLogin(){
     return;
   }
 
-  const email = prompt('Email de acceso a AstroDB:');
+  const email = prompt('Email de acceso a AstroDB (cuenta autorizada):', ASTRODB_OWNER_EMAIL);
   if(!email) return;
 
   const password = prompt('Contraseña:');
@@ -679,11 +714,12 @@ async function astrodbLogin(){
 
   if(error){
     console.error('[AstroDB] Error de acceso:', error);
-    alert('No se pudo iniciar sesión: ' + error.message);
+    alert('No se pudo iniciar sesión con contraseña. Comprueba que utilizas la contraseña de Supabase Auth (no necesariamente la del panel). También puedes probar Google o Recuperar acceso. Detalle: ' + error.message);
     return;
   }
 
-  astrodbUser = data.user || null;
+  astrodbUser = data.user?.id === ASTRODB_OWNER_ID ? data.user : null;
+  if(!astrodbUser){ await astrodbSupabase.auth.signOut(); alert('Esta cuenta no tiene acceso a las cartas privadas de AstroDB.'); return; }
 
   console.info(
     '[AstroDB] Sesión iniciada:',
@@ -692,6 +728,37 @@ async function astrodbLogin(){
 
   alert('Sesión iniciada correctamente.');
   location.reload();
+}
+
+async function astrodbLoginGoogle(){
+  if(!astrodbSupabase){ alert('Supabase todavía no está inicializado.'); return; }
+  // El proveedor Google y la URL de retorno deben estar autorizados en Supabase Auth.
+  const redirectTo = 'https://qs33ds-alt.github.io/qs33ds-hub/astrodb-validacion/';
+  if(location.protocol === 'file:'){
+    alert('El acceso con Google requiere abrir AstroDB desde una URL HTTPS autorizada en Supabase, no desde un archivo local.');
+    return;
+  }
+  const {error} = await astrodbSupabase.auth.signInWithOAuth({
+    provider:'google', options:{redirectTo, queryParams:{prompt:'select_account'}}
+  });
+  if(error) alert('No se pudo iniciar sesión con Google: ' + error.message);
+}
+
+async function astrodbRecuperarAcceso(){
+  if(!astrodbSupabase){ alert('Supabase todavía no está inicializado.'); return; }
+  if(location.protocol === 'file:'){
+    alert('La recuperación de acceso requiere una URL HTTPS autorizada en Supabase.'); return;
+  }
+  const email = prompt('Correo de la cuenta autorizada:', ASTRODB_OWNER_EMAIL);
+  if(!email) return;
+  if(email.trim().toLowerCase() !== ASTRODB_OWNER_EMAIL){
+    alert('Este espacio privado solo admite la cuenta autorizada.'); return;
+  }
+  const {error} = await astrodbSupabase.auth.resetPasswordForEmail(ASTRODB_OWNER_EMAIL, {
+    redirectTo: 'https://qs33ds-alt.github.io/qs33ds-hub/astrodb-validacion/'
+  });
+  if(error){ alert('No se pudo solicitar la recuperación: '+error.message); return; }
+  alert('Si la cuenta permite recuperar contraseña, recibirás un correo. La URL de retorno debe estar autorizada en Supabase.');
 }
 
 async function astrodbLogout(){
@@ -727,8 +794,24 @@ async function iniciarSupabaseAstroDB(){
       ASTRODB_SUPABASE_KEY
     );
 
+    astrodbSupabase.auth.onAuthStateChange((event, session) => {
+      if(event === 'PASSWORD_RECOVERY'){
+        setTimeout(async()=>{
+          const password=prompt('Introduce la nueva contraseña para tu cuenta Supabase Auth (mínimo 8 caracteres):');
+          if(!password)return;
+          if(password.length<8){alert('La contraseña debe tener al menos 8 caracteres.');return;}
+          const {error}=await astrodbSupabase.auth.updateUser({password});
+          alert(error ? 'No se pudo actualizar la contraseña: '+error.message : 'Contraseña actualizada. Ya puedes acceder a AstroDB.');
+        },0);
+      }
+      if(event === 'SIGNED_IN' && session?.user?.id === ASTRODB_OWNER_ID){
+        astrodbUser=session.user;
+        actualizarEstadoAuthAstroDB();
+        recuperarFichasSupabaseAstroDB().catch(console.error);
+      }
+    });
     const {data:{session}}=await astrodbSupabase.auth.getSession();
-    astrodbUser=session?.user || null;
+    astrodbUser=session?.user?.id === ASTRODB_OWNER_ID ? session.user : null;
     actualizarEstadoAuthAstroDB();
 
     console.info(
@@ -789,7 +872,7 @@ function pintarTablaAspectos(){
    ========================================================== */
 
 async function guardarFichaSupabase(ficha){
-  if(!astrodbSupabase || !astrodbUser || !ficha) return false;
+  if(!astrodbSupabase || astrodbUser?.id !== ASTRODB_OWNER_ID || !ficha) return false;
   if(ficha.id==null) { console.error('[AstroDB] Falta identificador estable de ficha.'); return false; }
 
   const cliente=astrodbSupabase;
@@ -914,7 +997,7 @@ function recuperarFichasLocalesAstroDB(){
 let recuperacionSupabaseAstroDB=null;
 function recuperarFichasSupabaseAstroDB(){
   const estado=$('estadoRecuperacionAstroDB');
-  if(!astrodbSupabase||!astrodbUser){if(estado)estado.textContent='Pulsa Entrar para recuperar tus fichas guardadas en Supabase.';return Promise.resolve(false);}
+  if(!astrodbSupabase||astrodbUser?.id!==ASTRODB_OWNER_ID){if(estado)estado.textContent='Pulsa Entrar para recuperar tus fichas guardadas en Supabase.';return Promise.resolve(false);}
   const client=astrodbSupabase,userId=astrodbUser.id;
   if(recuperacionSupabaseAstroDB?.client===client && recuperacionSupabaseAstroDB?.userId===userId)return recuperacionSupabaseAstroDB.promise;
   if(estado)estado.textContent='Recuperando tus fichas de Supabase…';
@@ -1923,10 +2006,14 @@ document.addEventListener('DOMContentLoaded',async()=>{
   }
   iniciarRecuperacionAstroDB();
   await iniciarSupabaseAstroDB();
-  if(astrodbUser)recuperarFichasSupabaseAstroDB();
+  if(astrodbUser?.id===ASTRODB_OWNER_ID)await recuperarFichasSupabaseAstroDB();
 
 const loginBtn = document.getElementById('astrodbBtnLogin');
 const logoutBtn = document.getElementById('astrodbBtnLogout');
+const googleBtn = document.getElementById('astrodbBtnGoogle');
+const resetBtn = document.getElementById('astrodbBtnReset');
+googleBtn?.addEventListener('click',()=>astrodbLoginGoogle().catch(e=>alert('Error de acceso Google: '+e.message)));
+resetBtn?.addEventListener('click',()=>astrodbRecuperarAcceso().catch(e=>alert('Error de recuperación: '+e.message)));
 
 if (loginBtn) {
   loginBtn.addEventListener('click', () => {
@@ -1950,5 +2037,7 @@ if (logoutBtn) {
 
 
 
+<script src="modules/cycles-core.js?v=21"></script>
+<script src="modules/cycles-workspace.js?v=21"></script>
 </body>
 </html>
