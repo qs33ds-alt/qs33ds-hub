@@ -1,8 +1,8 @@
 const {test,expect}=require('@playwright/test');
 const path=require('node:path');
 const app='file://'+path.resolve(__dirname,'../index.html');
-test('five workspaces remain navigable with no duplicated controls',async({page})=>{
- await page.goto(app);await expect(page.locator('.workspaceV2Nav button')).toHaveCount(5);
+test('eight workspaces remain navigable with no duplicated controls',async({page})=>{
+ await page.goto(app);await expect(page.locator('.workspaceV2Nav button')).toHaveCount(8);
  await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
  await expect(page.locator('#workspaceLibrary')).toBeVisible();
  await expect(page.locator('#selectorCartas')).toHaveCount(1);

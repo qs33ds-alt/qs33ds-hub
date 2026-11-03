@@ -1,7 +1,7 @@
 /* AstroDB Workspace V2 — isolated presentation controller. No changes to calculation, chart IDs or storage. */
 (function(){'use strict';
 const mount=document.getElementById('astrodbWorkspaceNav');const editor=document.getElementById('editor');if(!mount||!editor)return;
-const items=[['biblioteca','Biblioteca'],['observatorio','Observatorio'],['datos','Datos natales'],['analisis','Análisis'],['natalcore','NatalCore']];
+const items=[['biblioteca','Biblioteca'],['observatorio','Observatorio'],['datos','Datos natales'],['analisis','Análisis'],['natalcore','NatalCore'],['transitos','Tránsitos'],['solar','Revolución solar'],['sinastria','Sinastría']];
 const nav=document.createElement('nav');nav.className='workspaceV2Nav';nav.setAttribute('aria-label','Espacios de trabajo');
 for(const [id,label] of items){const button=document.createElement('button');button.type='button';button.dataset.workspace=id;button.textContent=label;button.setAttribute('aria-pressed',String(id==='observatorio'));nav.appendChild(button)}mount.appendChild(nav);
 const sidebar=document.querySelector('.sidebar');const library=sidebar?.querySelector('.sideCard');
@@ -15,7 +15,7 @@ const natal=Array.from(tools.querySelectorAll('details')).find(d=>/NatalCore/i.t
 const summary=document.createElement('div');summary.className='workspaceBirthSummary';summary.setAttribute('aria-live','polite');const summaryTitle=document.createElement('strong');const summaryInfo=document.createElement('span');summary.append(summaryTitle,summaryInfo);mandala.insertBefore(summary,mandala.querySelector('canvas'));
 function updateSummary(){const get=id=>document.getElementById(id)?.value?.trim()||'';summaryTitle.textContent=get('nombre')||'Nueva carta natal';const date=[get('dia'),get('mes'),get('anio')].filter(Boolean).join('/');summaryInfo.textContent=[date,get('hora'),get('ciudad')].filter(Boolean).join(' · ')||'Introduce los datos de nacimiento para calcular la carta'}
 for(const id of ['nombre','dia','mes','anio','hora','ciudad'])document.getElementById(id)?.addEventListener('input',updateSummary);updateSummary();
-function setView(view){if(!items.some(([id])=>id===view))return;editor.dataset.workspaceView=view;librarySpace.classList.toggle('hidden',view!=='biblioteca');editor.classList.toggle('workspaceLibraryInactive',view==='biblioteca');nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspace===view)));if(view==='natalcore'&&natal)natal.open=true;if(view==='datos'&&json)json.open=false;updateSummary();}
+function setView(view){if(!items.some(([id])=>id===view))return;if(['transitos','solar','sinastria'].includes(view)){editor.classList.remove('hidden');document.getElementById('inicio')?.classList.add('hidden');}editor.dataset.workspaceView=view;librarySpace.classList.toggle('hidden',view!=='biblioteca');editor.classList.toggle('workspaceLibraryInactive',view==='biblioteca');nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspace===view)));if(view==='natalcore'&&natal)natal.open=true;if(view==='datos'&&json)json.open=false;updateSummary();}
 nav.addEventListener('click',e=>{const button=e.target.closest('button[data-workspace]');if(button)setView(button.dataset.workspace)});
 // Opening or creating a chart must leave the library-only view; original handlers remain unchanged.
 const openButton=document.getElementById('btnAbrirSeleccion');const newButton=document.getElementById('btnNueva');const chartSelector=document.getElementById('selectorCartas');
