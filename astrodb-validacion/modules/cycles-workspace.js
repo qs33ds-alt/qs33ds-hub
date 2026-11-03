@@ -2,7 +2,6 @@
 (function(){'use strict';
 const $=id=>document.getElementById(id),Core=()=>window.WorkspaceCyclesCore,Bridge=()=>window.WorkspaceAstroBridge;
 let latest={transitos:null,solar:null,sinastria:null},revision=0;
-const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c]));
 function createUI(){const editor=$('editor');if(!editor)return;const section=document.createElement('section');section.id='workspaceCycles';section.className='workspaceCycles';section.innerHTML=`
 <div class="cycleHeading"><span>QS33DS / ASTRODB</span><h2>Estudios astrológicos</h2><p>Tránsitos · Revolución solar · Sinastría. Cálculos geométricos neutrales a partir de las fichas del Workspace.</p></div>
 <article class="cyclePanel" data-cycle-panel="transitos"><h3>Tránsitos</h3><p>Posiciones de una fecha respecto a la carta natal activa.</p><div class="cycleFields"><label>Fecha y hora local<input id="cyWhen" type="datetime-local"></label><label>Zona horaria<input id="cyTZ" value="Europe/Madrid"></label><label>Orbe exploratorio (°)<input id="cyTransitOrb" type="number" value="3" min=".1" max="10" step=".1"></label></div><div class="cycleActions"><button id="cyTransitRun" type="button">Calcular tránsitos</button><button id="cyTransitExport" type="button" disabled>Exportar TransitosCore</button><button id="cyTransitSave" type="button" disabled>Guardar estudio local</button></div><p id="cyTransitStatus" role="status">Selecciona una carta natal activa y una fecha.</p><div id="cyTransitResult"></div></article>
