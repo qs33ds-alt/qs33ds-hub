@@ -156,6 +156,29 @@ function movimientoRetrogrado(p){
 function esRetrogrado(p){return movimientoRetrogrado(p)===true;}
 const PLANETAS_BASE=['Sol','Luna','Mercurio','Venus','Marte','Júpiter','Saturno','Urano','Neptuno','Plutón','Nodo Norte','Quirón'];
 const REG={Aries:['Marte'],Tauro:['Venus'],'Géminis':['Mercurio'],'Cáncer':['Luna'],Leo:['Sol'],Virgo:['Mercurio'],Libra:['Venus'],Escorpio:['Marte','Plutón'],Sagitario:['Júpiter'],Capricornio:['Saturno'],Acuario:['Saturno','Urano'],Piscis:['Júpiter','Neptuno']};
+/* Workspace V2.1: read-only temporal provider using the existing natal Swiss runtime. */
+window.WorkspaceAstroBridge=Object.freeze({
+ snapshot(){return JSON.parse(JSON.stringify(fichaActualComoObjeto(false)))},
+ savedCharts(){return JSON.parse(JSON.stringify(datos))},
+ async localToJD(iso,tz){
+  const [{DateTime},swe]=await Promise.all([cargarLuxon(),cargarSwissEphemeris()]);
+  const dt=DateTime.fromISO(iso,{zone:tz});if(!dt.isValid)throw Error('Fecha o zona horaria inválida');
+  const utc=dt.toUTC(),hour=utc.hour+utc.minute/60+utc.second/3600+utc.millisecond/3600000;
+  return {jd:swe.julday(utc.year,utc.month,utc.day,hour),localISO:dt.toISO(),utcISO:utc.toISO(),timezone:tz};
+ },
+ async positionsAtJD(jd,requested=null){
+  const swe=await cargarSwissEphemeris(),flags=(swe.SEFLG_SWIEPH||2)|(swe.SEFLG_SPEED||256),fallback=(swe.SEFLG_MOSEPH||4)|(swe.SEFLG_SPEED||256);
+  const ids={Sol:swe.SE_SUN,Luna:swe.SE_MOON,Mercurio:swe.SE_MERCURY,Venus:swe.SE_VENUS,Marte:swe.SE_MARS,'Júpiter':swe.SE_JUPITER,Saturno:swe.SE_SATURN,Urano:swe.SE_URANUS,Neptuno:swe.SE_NEPTUNE,'Plutón':swe.SE_PLUTO,'Nodo Norte':swe.SE_MEAN_NODE,'Quirón':swe.SE_CHIRON};
+  const names=requested||Object.keys(ids);const result=[];
+  for(const name of names){const id=ids[name];if(typeof id!=='number'){if(requested)throw Error('Factor no disponible: '+name);continue}
+   let raw;try{raw=swe.calc_ut(jd,id,flags)}catch(e){raw=swe.calc_ut(jd,id,fallback)}
+   result.push(normalizaPos(name,raw));
+  }
+  if(!result.some(p=>p.nombre==='Sol'))throw Error('Swiss no devolvió el Sol');
+  return result;
+ },
+ async housesAtJD(jd,lat,lon){const swe=await cargarSwissEphemeris();return calcularCasasSwiss(swe,jd,lat,lon)}
+});
 const STORAGE_KEY='astrodb_validation_v51';
 function leerJSONLocal(key){try{return JSON.parse(localStorage.getItem(key)||'[]')||[]}catch(e){return []}}
 function cargarTodasLasFichasGuardadas(){
@@ -1950,5 +1973,7 @@ if (logoutBtn) {
 
 
 
+<script src="modules/cycles-core.js?v=21"></script>
+<script src="modules/cycles-workspace.js?v=21"></script>
 </body>
 </html>
