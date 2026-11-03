@@ -1,0 +1,14 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const core=require('../modules/cycles-core.js');
+const natal=()=>({id:'A1',nombre:'EJEMPLO A',dia:2,mes:1,anio:1985,hora:'14:45',tz:'Europe/Madrid',planetas:[{nombre:'Sol',longitude:282.12},{nombre:'Luna',longitude:48.6},{nombre:'Mercurio',longitude:259.4}],casas:Array.from({length:12},(_,i)=>({casa:i+1,longitude:(30*i+5)%360}))});
+const second=()=>({...natal(),id:'B1',nombre:'EJEMPLO B',planetas:[{nombre:'Sol',longitude:282.14},{nombre:'Luna',longitude:220},{nombre:'Mercurio',longitude:199}]});
+test('twelve opposite Placidus cusps and boundaries',()=>{const h=core.houses(natal().casas);assert.equal(h.length,12);assert.equal(core.houseAt(5,h),1);assert.equal(core.houseAt(35,h),2)});
+test('missing house is not invented',()=>assert.equal(core.houses(natal().casas.slice(1)).length,0));
+test('synastry finds conjunction',()=>assert.ok(core.synastry(natal(),second(),3).contacts.some(x=>x.moving==='Sol'&&x.target==='Sol'&&x.orb<0.03)));
+test('synastry preserves input',()=>{const a=natal(),serialized=JSON.stringify(a);core.synastry(a,second(),3);assert.equal(JSON.stringify(a),serialized)});
+test('invalid orb blocked',()=>assert.throws(()=>core.synastry(natal(),second(),20),/Orbe/));
+test('transits map natal houses',()=>{const t=core.transits(natal(),{utcISO:'2026-11-03T12:00:00Z'},[{nombre:'Sol',longitude:282.1}],3);assert.equal(t.points.length,1);assert.ok(t.aspects_to_natal.length);assert.equal(t.writes.natal,false)});
+test('non-canonical subject ID does not block calculation',()=>{const a=natal();a.meta={subject_id:'another:ID',astrodb_version:'11.1'};const t=core.transits(a,{utcISO:'2026-11-03T12:00:00Z'},[{nombre:'Sol',longitude:282}],3);assert.ok(t.provenance.source_warnings.length);assert.equal(t.points.length,1)});
+test('solar root and real-house provider contract (synthetic provider)',async()=>{const reference=2460000;const p={localToJD:async()=>({jd:reference}),positionsAtJD:async(jd,names)=>names?.length===1?[{nombre:'Sol',longitude:(282.12+jd-reference)%360}]:[{nombre:'Sol',longitude:(282.12+jd-reference)%360},{nombre:'Luna',longitude:20}],housesAtJD:async()=>natal().casas};const r=await core.solar(natal(),2026,{name:'TEST',lat:41,lon:2,timezone:'Europe/Madrid'},p,3);assert.equal(r.schema,'RsolarCore');assert.ok(r.solar_return.residual_degrees<1e-6);assert.equal(r.return_houses.cusps.length,12);assert.equal(r.writes.natal,false)});
+test('no invented return houses without location',async()=>{const reference=2460000;const p={localToJD:async()=>({jd:reference}),positionsAtJD:async(jd,names)=>names?.length===1?[{nombre:'Sol',longitude:(282.12+jd-reference)%360}]:[{nombre:'Sol',longitude:(282.12+jd-reference)%360}],housesAtJD:async()=>{throw Error('should not call')}};const r=await core.solar(natal(),2026,{name:'',lat:'',lon:'',timezone:'Europe/Madrid'},p,3);assert.equal(r.return_houses.status,'not_requested')});
