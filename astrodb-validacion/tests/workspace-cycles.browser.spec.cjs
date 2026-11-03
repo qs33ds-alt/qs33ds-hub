@@ -32,5 +32,5 @@ test('synastry reads two saved cards and leaves natal storage intact',async({pag
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')));
  expect(saved).toEqual(fixture);
  await page.locator('#cySynSave').click();
- await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_workspace_v21_studies')||'[]').length)).toBe(1);
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_workspace_v21_studies:anonymous')||'[]').length)).toBe(1);
 });
