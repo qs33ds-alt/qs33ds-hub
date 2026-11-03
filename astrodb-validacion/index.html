@@ -997,7 +997,8 @@ function recuperarFichasLocalesAstroDB(){
 let recuperacionSupabaseAstroDB=null;
 function recuperarFichasSupabaseAstroDB(){
   const estado=$('estadoRecuperacionAstroDB');
-  if(!astrodbSupabase||astrodbUser?.id!==ASTRODB_OWNER_ID){if(estado)estado.textContent='Pulsa Entrar para recuperar tus fichas guardadas en Supabase.';return Promise.resolve(false);}
+  if(!astrodbSupabase||astrodbUser?.id!==ASTRODB_OWNER_ID){if(estado)estado.textContent='Inicia sesión con qs33ds@gmail.com mediante Entrar y vuelve a pulsar Recuperar. No se han modificado las cartas.';return Promise.resolve(false);}
+  if(!window.AstroDBRecovery){if(estado)estado.textContent='El módulo de recuperación no se ha cargado. Actualiza la página e inténtalo otra vez.';return Promise.resolve(false);}
   const client=astrodbSupabase,userId=astrodbUser.id;
   if(recuperacionSupabaseAstroDB?.client===client && recuperacionSupabaseAstroDB?.userId===userId)return recuperacionSupabaseAstroDB.promise;
   if(estado)estado.textContent='Recuperando tus fichas de Supabase…';
@@ -1005,9 +1006,9 @@ function recuperarFichasSupabaseAstroDB(){
     .then(fichas=>{
       if(astrodbSupabase!==client||astrodbUser?.id!==userId)throw new Error('La cuenta cambió antes de incorporar las fichas. No se ha modificado el almacenamiento local.');
       const resultado=incorporarFichasRecuperadasAstroDB(fichas);
-      if(estado)estado.textContent=resultado.added+' fichas añadidas desde Supabase; '+resultado.skipped+' ya existentes. Se conservan las fichas locales y las originales.';
+      if(estado)estado.textContent=resultado.added+' fichas añadidas desde Supabase; '+resultado.skipped+' ya existentes. Total visible: '+datos.length+'. Se conservan las fichas locales y las originales.';
       return true;
-    }).catch(error=>{if(estado && astrodbSupabase===client && astrodbUser?.id===userId)estado.textContent=error.message;return false;})
+    }).catch(error=>{console.error('[AstroDB] Recuperación Supabase:',error);if(estado && astrodbSupabase===client && astrodbUser?.id===userId)estado.textContent='Error al recuperar: '+(error?.message||String(error));return false;})
     .finally(()=>{if(recuperacionSupabaseAstroDB?.promise===promise)recuperacionSupabaseAstroDB=null;});
   recuperacionSupabaseAstroDB={client,userId,promise};
   return promise;
@@ -1973,6 +1974,15 @@ document.addEventListener('DOMContentLoaded',async()=>{
   ['nombre','interpretacionDirecta'].forEach(id=>$(id)?.addEventListener('input',()=>{invalidarEstadoGuardadoAstroDB();programarAutoguardadoAstroDB();}));
   actualizarSelectorCartas();
   render();
+  // Restore the recovery controls in the actual V2 library (the old IDs had no HTML elements).
+  const recoveryHost=document.getElementById('workspaceLibrarySlot');
+  if(recoveryHost && !document.getElementById('btnRecuperarSupabaseAstroDB')){
+    const recoveryPanel=document.createElement('section');
+    recoveryPanel.className='card';
+    recoveryPanel.setAttribute('aria-label','Recuperación de cartas');
+    recoveryPanel.innerHTML='<h3>Recuperar cartas natales</h3><p class="small">Recupera tus cartas privadas de Supabase sin eliminar las fichas locales ni las copias originales.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-gold" id="btnRecuperarSupabaseAstroDB">Recuperar fichas de Supabase</button><button type="button" class="btn" id="btnRecuperarLocalesAstroDB">Buscar fichas antiguas de este navegador</button></div><p id="estadoRecuperacionAstroDB" role="status" aria-live="polite" class="small">Inicia sesión para recuperar las cartas de Supabase.</p>';
+    recoveryHost.prepend(recoveryPanel);
+  }
   if(window.AstroDBBulk){
     const host=document.getElementById('workspaceLibrarySlot');
     if(host){
