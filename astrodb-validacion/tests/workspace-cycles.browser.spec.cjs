@@ -34,3 +34,19 @@ test('synastry reads two saved cards and leaves natal storage intact',async({pag
  await page.locator('#cySynSave').click();
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_workspace_v21_studies:anonymous')||'[]').length)).toBe(1);
 });
+
+test('real Swiss transit produces live positions without overwriting natal fixture',async({page})=>{
+ test.setTimeout(90000);
+ await page.goto(app);
+ const f={id:'transit-e2e',nombre:'E2E ficticio',dia:2,mes:1,anio:1985,hora:'14:45',tz:'Europe/Madrid',lat:'41.38879',lon:'2.15899',ciudad:'Barcelona',planetas:[{nombre:'Sol',longitude:282.11955738},{nombre:'Luna',longitude:48.60482935}],casas:Array.from({length:12},(_,i)=>({casa:i+1,longitude:(i*30+5)%360}))};
+ await page.evaluate(row=>localStorage.setItem('astrodb_validation_v51',JSON.stringify([row])),f);
+ await page.reload();await page.getByRole('button',{name:'Biblioteca',exact:true}).click();
+ await page.locator('#lista .listItem').filter({hasText:'E2E ficticio'}).click();
+ await page.getByRole('button',{name:'Tránsitos',exact:true}).click();
+ await page.locator('#cyWhen').fill('2026-11-03T12:00');
+ await page.locator('#cyTransitRun').click();
+ await expect(page.locator('#cyTransitExport')).toBeEnabled({timeout:60000});
+ await expect(page.locator('#cyTransitResult .cycleTable').first()).toContainText('Sol');
+ const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51'))[0]);
+ expect(after).toEqual(f);
+});
