@@ -1,7 +1,7 @@
 /* AstroDB Workspace V2 — isolated presentation controller. No changes to calculation, chart IDs or storage. */
 (function(){'use strict';
 const mount=document.getElementById('astrodbWorkspaceNav');const editor=document.getElementById('editor');if(!mount||!editor)return;
-const items=[['biblioteca','Biblioteca'],['observatorio','Observatorio'],['datos','Datos natales'],['analisis','Análisis'],['natalcore','NatalCore']];
+const items=[['biblioteca','Biblioteca'],['observatorio','Observatorio'],['datos','Datos natales'],['analisis','Análisis'],['natalcore','NatalCore'],['transitos','Tránsitos'],['solar','Revolución solar'],['sinastria','Sinastría']];
 const nav=document.createElement('nav');nav.className='workspaceV2Nav';nav.setAttribute('aria-label','Espacios de trabajo');
 for(const [id,label] of items){const button=document.createElement('button');button.type='button';button.dataset.workspace=id;button.textContent=label;button.setAttribute('aria-pressed',String(id==='observatorio'));nav.appendChild(button)}mount.appendChild(nav);
 const sidebar=document.querySelector('.sidebar');const library=sidebar?.querySelector('.sideCard');
