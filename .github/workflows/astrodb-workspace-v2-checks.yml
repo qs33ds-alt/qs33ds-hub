@@ -36,6 +36,18 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Chromium desktop and mobile smoke tests
         run: npx playwright test astrodb-validacion/tests/workspace-v2.browser.spec.cjs astrodb-validacion/tests/workspace-cycles.browser.spec.cjs --reporter=line --workers=1
+      - name: Package AstroDB Workspace V2.1 for later publication
+        if: always()
+        run: |
+          mkdir -p release
+          zip -q -r release/AstroDB_Workspace_V2_1_CICLOS_PREPUBLICACION.zip astrodb-validacion
+      - name: Upload prepublication source archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: AstroDB_Workspace_V2_1_Codigo_Prepublicacion
+          path: release/AstroDB_Workspace_V2_1_CICLOS_PREPUBLICACION.zip
+          if-no-files-found: error
       - name: Upload browser screenshots and diagnostics
         if: always()
         uses: actions/upload-artifact@v4
