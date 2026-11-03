@@ -161,6 +161,7 @@ const REG={Aries:['Marte'],Tauro:['Venus'],'Géminis':['Mercurio'],'Cáncer':['L
 window.WorkspaceAstroBridge=Object.freeze({
  snapshot(){return JSON.parse(JSON.stringify(fichaActualComoObjeto(false)))},
  savedCharts(){return JSON.parse(JSON.stringify(datos))},
+ userId(){return astrodbUser?.id||null},
  async localToJD(iso,tz){
   const [{DateTime},swe]=await Promise.all([cargarLuxon(),cargarSwissEphemeris()]);
   const dt=DateTime.fromISO(iso,{zone:tz});if(!dt.isValid)throw Error('Fecha o zona horaria inválida');
