@@ -1,0 +1,43 @@
+name: Compilación Windows Tauri
+on:
+  push:
+    branches:
+      - preview/qs33ds-local-tauri
+    paths:
+      - 'qs33ds-local-tauri-preview/**'
+      - '.github/workflows/qs33ds-local-tauri-windows.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    name: Crear instalador Windows x64
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: qs33ds-local-tauri-preview
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar Rust estable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: qs33ds-local-tauri-preview/src-tauri
+      - name: Instalar dependencias JavaScript
+        run: npm install --no-audit --no-fund
+      - name: Comprobar construcción frontend
+        run: npm run build
+      - name: Compilar Tauri + NSIS
+        run: npm run tauri build
+      - name: Publicar instalador para revisión
+        uses: actions/upload-artifact@v4
+        with:
+          name: QS33DS-Local-Tauri-Windows-Preview
+          path: qs33ds-local-tauri-preview/src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error
+          retention-days: 14
