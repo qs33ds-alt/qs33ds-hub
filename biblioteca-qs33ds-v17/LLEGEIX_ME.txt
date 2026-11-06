@@ -1,0 +1,8 @@
+QS33DS Biblioteca V17 — Integració modular conservadora
+
+Obre index.html per accedir a les cinc aplicacions.
+Els 17 HTML originals es troben a modulos/ sense modificar.
+Els mòduls s’obren dins un marc independent per evitar conflictes CSS/JavaScript i preservar la impressió pròpia.
+Mantén la carpeta completa; no moguis els HTML individualment.
+Versió inicial: cal validar manualment cada generació, interacció i impressió A4/A5 al navegador de destí.
+No substitueix automàticament la V16.3.

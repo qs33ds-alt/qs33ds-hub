@@ -1,0 +1,60 @@
+<!doctype html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dominó i comprensió lectora · QS33DS V2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f7fb;color:#23374e;font:18px system-ui,-apple-system,sans-serif}
+header{background:#e0efff;padding:20px max(18px,calc((100vw - 1500px)/2));border-bottom:2px solid #d3e2f0}
+h1{font-size:clamp(1.5rem,3vw,2.3rem);margin:0}header p{margin:6px 0;color:#4e6279}
+main{max-width:1500px;margin:auto;padding:18px}.panel{background:white;border:1px solid #dbe7ef;border-radius:20px;padding:20px;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:end}label{display:flex;flex-direction:column;gap:5px;font-weight:700}
+select,button{font:inherit;border-radius:12px;min-height:53px;padding:10px 16px}select{background:white;border:2px solid #c6d8e8}
+button{border:2px solid transparent;background:#286bb2;color:white;font-weight:750;cursor:pointer}
+button.secondary{background:#e8f2ff;color:#1c558c}button:focus-visible,select:focus-visible{outline:4px solid #f3b34e}
+button:disabled{opacity:.5;cursor:default}.status{font-weight:750;color:#267256;min-height:30px;font-size:1.2rem}
+.instructions{color:#5b7082;font-size:1rem}.workspace{min-height:450px;position:relative;border:3px dashed #d3e3ef;border-radius:18px;background:repeating-linear-gradient(0deg,#fbfdff,#fbfdff 49px,#f4f8fc 50px);overflow:hidden}
+.domino{width:260px;height:130px;display:flex;border:5px solid #263e58;border-radius:17px;background:#fff;box-shadow:0 6px 12px #2334;position:absolute;touch-action:none;user-select:none;cursor:grab;padding:0;color:#1c344c}
+.domino:active{cursor:grabbing}.domino.selected{outline:5px solid #ffb83e}.domino.matched{border-color:#289467;background:#e7fff1}
+.half{width:50%;display:grid;place-items:center;position:relative;padding:7px;text-align:center;overflow-wrap:anywhere}.half+.half{border-left:4px solid #253b54}
+.half .picture{font-size:clamp(3rem,5vw,4.6rem)}.half .textword{font-weight:850;line-height:1.08}
+.letter-print{font-family:Arial,sans-serif;text-transform:uppercase;font-size:clamp(1.35rem,2.2vw,2.1rem)}
+.letter-lower{font-family:Arial,sans-serif;text-transform:lowercase;font-size:clamp(1.35rem,2.2vw,2.1rem)}
+.letter-cursive{font-family:"Segoe Print","Comic Sans MS",cursive;font-style:italic;text-transform:lowercase;font-size:clamp(1.35rem,2.2vw,2rem)}
+.corner-dot{position:absolute;top:7px;left:7px;width:9px;height:9px;background:#263e58;border-radius:50%}
+.connect{position:absolute;bottom:8px;right:8px;width:9px;height:9px;background:#263e58;border-radius:50%}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px;margin:auto}.column{display:grid;gap:12px;align-content:start}
+.column h2{text-align:center;font-size:1.35rem;margin:0 0 8px}.choice{background:#f6faff;color:#203e5e;border:3px solid #bcd4e8;min-height:105px;font-size:clamp(1.4rem,3vw,2.3rem);border-radius:18px}
+.choice .picture{font-size:clamp(3.5rem,6vw,5.2rem)}.choice.selected{border-color:#e7a43c;background:#fff5df}
+.choice.matched{border-color:#369c73;background:#e3f8ed}.choice:disabled{opacity:1}
+@media(max-width:650px){.domino{width:205px;height:106px}.workspace{min-height:560px}.panel{padding:12px}.columns{gap:10px}.choice{min-height:90px;padding:8px}}
+</style></head><body>
+<header><h1>Dominó i comprensió de paraules</h1><p>QS33DS · Relaciona imatges i paraules amb peces mòbils o dues columnes.</p></header>
+<main><section class="panel"><div class="controls">
+<label>Activitat<select id="mode"><option value="domino">Dominó · peces mòbils</option><option value="columns">Dues columnes · paraula i imatge</option></select></label>
+<label>Categoria<select id="cat"><option value="animals">Animals</option><option value="fruites">Fruites</option><option value="escola">Escola</option><option value="cos">Cos humà</option></select></label>
+<label>Tipus de lletra<select id="font"><option value="print">Lletra de pal</option><option value="lower">Lletra d'impremta</option><option value="cursive">Lletra lligada (aproximada)</option></select></label>
+<label>Paraules<select id="count"><option value="4">4</option><option value="6" selected>6</option><option value="8">8</option></select></label>
+<button id="new">Nova activitat</button><button class="secondary" id="reset">Recol·loca les peces</button>
+</div></section>
+<section class="panel"><div id="status" class="status" role="status" aria-live="polite"></div><p class="instructions" id="help"></p><div id="activity"></div></section>
+</main>
+<script>
+const DATA={animals:[['GAT','🐱'],['GOS','🐶'],['VACA','🐄'],['LLEÓ','🦁'],['PEIX','🐟'],['ÀNEC','🦆'],['CONILL','🐰'],['CAVALL','🐴'],['OVELLA','🐑'],['PORC','🐷'],['RATOLÍ','🐭'],['TORTUGA','🐢']],fruites:[['POMA','🍎'],['PERA','🍐'],['PLÀTAN','🍌'],['RAÏM','🍇'],['MADUIXA','🍓'],['TARONJA','🍊'],['LLIMONA','🍋'],['CIRERA','🍒'],['MELÓ','🍈'],['PINYA','🍍']],escola:[['LLAPIS','✏️'],['LLIBRE','📖'],['MOTXILLA','🎒'],['TISORES','✂️'],['REGLA','📏'],['PAPER','📄'],['RELLOTGE','🕒'],['PISSARRA','🧑‍🏫']],cos:[['MÀ','✋'],['ULL','👁️'],['NAS','👃'],['BOCA','👄'],['ORELLA','👂'],['PEU','🦶'],['BRAÇ','💪'],['DENT','🦷']]};
+const $=s=>document.querySelector(s),rnd=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function escapeHTML(t){return String(t).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
+function displayWord(w){return `<span class="textword letter-${$('#font').value}">${escapeHTML(w)}</span>`}
+let items=[],selected=null,matched=new Set(),positions=[],z=10,drag=null;
+function sound(){try{let ctx=new(window.AudioContext||window.webkitAudioContext)();[523,659,784].forEach((f,i)=>{let o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=f;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(.0001,ctx.currentTime+i*.12);g.gain.exponentialRampToValueAtTime(.13,ctx.currentTime+i*.12+.02);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+i*.12+.18);o.start(ctx.currentTime+i*.12);o.stop(ctx.currentTime+i*.12+.2)});setTimeout(()=>ctx.close(),800)}catch(e){}}
+function status(t,good=false){$('#status').textContent=(good?'⭐ ✨ ':'')+t;if(good)sound()}
+function start(){items=shuffle(DATA[$('#cat').value]).slice(0,Number($('#count').value));selected=null;matched.clear();positions=[];$('#reset').hidden=$('#mode').value!=='domino';render();status('Activitat preparada.')}
+function render(){let mode=$('#mode').value;$('#help').textContent=mode==='domino'?'Arrossega les peces per la pantalla. Toca una meitat amb una imatge i després una meitat amb la paraula corresponent.':'Selecciona una paraula de la columna esquerra i després la imatge de la dreta.';if(mode==='domino')renderDomino();else renderColumns()}
+function renderDomino(){let area=$('#activity');area.innerHTML='<div id="workspace" class="workspace"></div>';let ws=$('#workspace');let order=shuffle(items.map((it,i)=>({it,i})));let width=ws.clientWidth||800;let tileW=width<650?205:260;let cols=Math.max(1,Math.floor((width-18)/(tileW+16)));let rows=Math.ceil(order.length/cols);ws.style.minHeight=Math.max(450,rows*155+25)+'px';order.forEach(({it,i},index)=>{let x=positions[i]?.x??(12+(index%cols)*(tileW+16)),y=positions[i]?.y??(12+Math.floor(index/cols)*155);let el=document.createElement('div');el.className='domino';el.dataset.i=i;el.style.left=x+'px';el.style.top=y+'px';el.innerHTML=`<div class="half" data-type="image" data-i="${i}"><span class="corner-dot"></span><span class="picture">${it[1]}</span></div><div class="half" data-type="word" data-i="${i}">${displayWord(it[0])}<span class="connect"></span></div>`;el.addEventListener('pointerdown',pointerDown);el.addEventListener('pointermove',pointerMove);el.addEventListener('pointerup',pointerUp);el.addEventListener('pointercancel',pointerUp);ws.append(el)});refreshDomino()}
+function refreshDomino(){document.querySelectorAll('.half').forEach(el=>{let k=el.dataset.i+':'+el.dataset.type;el.classList.toggle('selected',selected===k);el.classList.toggle('matched',matched.has(k));el.style.background=matched.has(k)?'#d9f6e6':selected===k?'#fff0d2':''})}
+function choose(i,type){let key=i+':'+type;if(matched.has(key))return;if(!selected){selected=key;refreshDomino();return}if(selected===key){selected=null;refreshDomino();return}let [other,t]=selected.split(':');other=Number(other);let good=other===i&&t!==type;if(good){matched.add(selected);matched.add(key);status('Parella correcta!',true)}else status('Torna-ho a provar.');selected=null;refreshDomino();if(matched.size===items.length*2)status('Has completat totes les parelles!',true)}
+function pointerDown(e){if(e.button!==0)return;let el=e.currentTarget;let rect=el.getBoundingClientRect();drag={el,i:Number(el.dataset.i),id:e.pointerId,x:e.clientX,y:e.clientY,left:el.offsetLeft,top:el.offsetTop,moved:false,type:e.target.closest('.half')?.dataset.type};el.style.zIndex=++z;el.setPointerCapture(e.pointerId)}
+function pointerMove(e){if(!drag||drag.id!==e.pointerId||drag.el!==e.currentTarget)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>9)drag.moved=true;if(!drag.moved)return;let ws=$('#workspace');let x=Math.max(0,Math.min(ws.clientWidth-drag.el.offsetWidth,drag.left+dx));let y=Math.max(0,Math.min(ws.clientHeight-drag.el.offsetHeight,drag.top+dy));drag.el.style.left=x+'px';drag.el.style.top=y+'px';positions[drag.i]={x,y}}
+function pointerUp(e){if(!drag||drag.id!==e.pointerId||drag.el!==e.currentTarget)return;let d=drag;drag=null;if(!d.moved&&d.type)choose(d.i,d.type)}
+function renderColumns(){let words=shuffle(items.map((it,i)=>({it,i}))),pictures=shuffle(items.map((it,i)=>({it,i})));$('#activity').innerHTML=`<div class="columns"><div class="column"><h2>Paraules</h2>${words.map(({it,i})=>`<button class="choice word-choice" data-i="${i}" onclick="chooseColumn(${i},'word')">${displayWord(it[0])}</button>`).join('')}</div><div class="column"><h2>Imatges</h2>${pictures.map(({it,i})=>`<button class="choice image-choice" data-i="${i}" onclick="chooseColumn(${i},'image')"><span class="picture">${it[1]}</span></button>`).join('')}</div></div>`;refreshColumns()}
+function chooseColumn(i,type){let key=i+':'+type;if(matched.has(key))return;if(!selected){selected=key;refreshColumns();return}if(selected===key){selected=null;refreshColumns();return}let [j,t]=selected.split(':');let good=Number(j)===i&&t!==type;if(good){matched.add(key);matched.add(selected);status('Molt bé! Has relacionat la paraula i la imatge.',true)}else status('No coincideixen. Prova-ho de nou.');selected=null;refreshColumns();if(matched.size===items.length*2)status('Activitat completada!',true)}
+function refreshColumns(){document.querySelectorAll('.choice').forEach(el=>{let type=el.classList.contains('word-choice')?'word':'image',key=el.dataset.i+':'+type;el.classList.toggle('selected',selected===key);el.classList.toggle('matched',matched.has(key));el.disabled=matched.has(key)})}
+$('#new').addEventListener('click',start);$('#reset').addEventListener('click',()=>{positions=[];renderDomino()});$('#mode').addEventListener('change',start);$('#font').addEventListener('change',render);start();
+</script></body></html>
