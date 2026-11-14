@@ -1,0 +1,21 @@
+const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES?require('node:path').join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES,'playwright'):'playwright');
+const assert=require('node:assert/strict');const fs=require('node:fs');
+(async()=>{const browser=await chromium.launch({...(process.env.CHROME_EXECUTABLE_PATH?{executablePath:process.env.CHROME_EXECUTABLE_PATH}:{}),headless:true,args:['--no-sandbox']});try{
+ const page=await browser.newPage({viewport:{width:390,height:844}});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());await page.route('https://**/*',r=>r.abort());
+ await page.goto(require('node:url').pathToFileURL(process.env.ASTRODB_RECOVERY_PAGE||require('node:path').resolve(__dirname,'../../astrodb-validacion/index.html')).href);
+ const original=JSON.stringify([{id:'test-recovery-local-1',nombre:'Persona igual'},{id:'test-recovery-local-2',nombre:'Persona igual'}]);
+ await page.evaluate(value=>{localStorage.setItem('astrodb_v51',value);localStorage.setItem('astrodb_validation_v51','[]');},original);await page.reload();
+ assert.equal(await page.locator('#selectorCartas option').count(),3);
+ await page.click('#btnRecuperarLocalesAstroDB');assert.equal(await page.locator('#selectorCartas option').count(),3);assert.equal(await page.evaluate(()=>localStorage.getItem('astrodb_v51')),original);
+ await page.screenshot({path:'/tmp/astrodb-recovery-buttons-mobile.png',fullPage:true});
+ const privatePath=process.env.ASTRODB_RECOVERY_JSON||require('node:path').join(require('node:os').tmpdir(),'astrodb-recovery-fixture.json');
+ if(!process.env.ASTRODB_RECOVERY_JSON)fs.writeFileSync(privatePath,JSON.stringify({fichas:Array.from({length:5},(_,i)=>({id:'recovery-fixture-'+i,nombre:'Prueba '+i,planetas:[],casas:[]}))}));
+ const expected=JSON.parse(fs.readFileSync(privatePath,'utf8')).fichas;
+ await page.locator('#inputImportarBD').setInputFiles(privatePath);await page.waitForTimeout(100);
+ assert.equal(await page.locator('#selectorCartas option').count(),8);
+ await page.locator('#inputImportarBD').setInputFiles(privatePath);await page.waitForTimeout(100);assert.equal(await page.locator('#selectorCartas option').count(),8);
+ const recovered=await page.evaluate(()=>JSON.parse(localStorage.getItem('astrodb_validation_v51')));
+ for(const f of expected)assert.deepEqual(recovered.find(g=>String(g.id)===String(f.id)),f);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('astrodb_v51')),original);assert.deepEqual(errors,[]);
+ console.log('PASS browser: two distinct equal-name records, original unchanged, private JSON imports five exact charts, repeated import keeps seven records, no runtime errors');
+ }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
